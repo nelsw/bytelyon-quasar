@@ -1,1 +1,43 @@
-// app global css in SCSS form
+/**
+ * src/styles/settings.scss
+ *
+ * Configures SASS variables and Vuetify overwrites
+ */
+@font-face {
+  font-style: normal;
+  font-weight: 400;
+  font-family: 'Stem';
+  src: url('../assets/fonts/Stem-Regular.otf');
+}
+@font-face {
+  font-style: normal;
+  font-weight: 500;
+  font-family: 'Stem';
+  src: url('../assets/fonts/Stem-Medium.otf');
+}
+@font-face {
+  font-style: normal;
+  font-weight: 700;
+  font-family: 'Stem';
+  src: url('../assets/fonts/Stem-Bold.otf');
+}
+h1,h2,h3,h4,h5,h6, .brand-font {
+  font-family: 'Stem', sans-serif;
+  font-weight: 700;
+}
+
+.brand-font-400, .brand-font {
+  font-family: 'Stem', sans-serif;
+  font-weight: 400;
+}
+
+.brand-font-500, .brand-font {
+  font-family: 'Stem', sans-serif;
+  font-weight: 500;
+}
+
+.brand-font-700, .brand-font {
+  font-family: 'Stem', sans-serif;
+  font-weight: 700;
+}
+

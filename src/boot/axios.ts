@@ -1,5 +1,10 @@
 import { defineBoot } from '#q-app/wrappers';
-import axios, { type AxiosInstance } from 'axios';
+import axios, {
+  type AxiosError,
+  type AxiosBasicCredentials,
+  type AxiosResponse,
+  type AxiosInstance,
+} from 'axios';
 
 declare module 'vue' {
   interface ComponentCustomProperties {
@@ -28,4 +33,4 @@ export default defineBoot(({ app }) => {
   //       so you can easily perform requests against your app's API
 });
 
-export { api };
+export { api, type AxiosError, type AxiosBasicCredentials, type AxiosResponse };
