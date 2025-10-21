@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import FooterComponent from 'components/layout/FooterComponent.vue';
 import HeaderComponent from 'components/layout/HeaderComponent.vue';
 </script>
 
@@ -9,6 +8,7 @@ import HeaderComponent from 'components/layout/HeaderComponent.vue';
     <q-page-container>
       <router-view />
     </q-page-container>
-    <FooterComponent />
   </q-layout>
 </template>
+
+<style scoped></style>

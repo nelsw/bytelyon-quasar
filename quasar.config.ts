@@ -53,8 +53,11 @@ export default defineConfig((/* ctx */) => {
       // publicPath: '/',
       // analyze: true,
       env: {
+        API_CONTACT: 'https://yr6ej2omycqbeyidf7i6bum3oy0vqjuy.lambda-url.us-east-1.on.aws',
+        API_JOB: 'https://3bzqwrfabt3przdzbtmihmkseq0lryxo.lambda-url.us-east-1.on.aws',
         API_LOGIN: 'https://ckkczji3hn6vnfintlkcf7b6vm0cfafl.lambda-url.us-east-1.on.aws',
-        FOO: 'bar',
+        API_SITEMAP: 'https://nidtmhqsksaoszkp53smlyylt40vdlyc.lambda-url.us-east-1.on.aws',
+        API_USER: 'https://b4idcozvm4a364rcexm6lmyyxm0flmaq.lambda-url.us-east-1.on.aws',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

@@ -1,37 +1,56 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { api, type AxiosBasicCredentials, type AxiosError, type AxiosResponse } from 'boot/axios';
+import {
+  api,
+  type AxiosBasicCredentials,
+  type AxiosError,
+  type AxiosResponse,
+} from 'boot/axios';
 
-interface State {
+interface Data {
   token: string | null;
 }
 
 export const useTokenStore = defineStore('token-store', {
-  state: (): State => ({
+
+  state: (): Data => ({
     token: null,
   }),
 
   getters: {
-    authorized: (state: State) => state.token !== null,
-    authorization: (state: State): string => `Bearer ${state.token}`,
+    authorized: (state: Data): boolean => !!state.token,
   },
 
   actions: {
+
     async authorize(auth: AxiosBasicCredentials): Promise<boolean> {
       return await api
         .post(process.env.API_LOGIN, {}, { auth })
-        .then((response: AxiosResponse<State>): boolean => {
-          this.token = response.data.token;
+        .then((res: AxiosResponse<Data>): boolean => {
+          this.token = res.data.token;
+          api.defaults.headers.common.Authorization = `Bearer ${this.token}`;
           return true;
         })
-        .catch((error: AxiosError): boolean => {
-          console.error(error);
+        .catch((err: AxiosError): boolean => {
+          console.error(err);
           this.token = null;
           return false;
+        }).finally((): void => {
+
         });
+    },
+
+    async logout(): Promise<void> {
+      return Promise.try(() => {
+        this.token = null;
+        api.defaults.headers.common.Authorization = null;
+      });
     },
   },
 
-  persist: true,
+  persist: {
+    debug: true,
+    storage: sessionStorage,
+  },
 });
 
 if (import.meta.hot) {
