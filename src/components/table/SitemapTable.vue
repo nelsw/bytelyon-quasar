@@ -41,6 +41,7 @@ onMounted(store.fetch);
     :loading="store.loading"
     :pagination="{ sortBy: 'start' }"
     :rows="store.items"
+    bordered
     color="primary"
     row-key="start"
     flat

@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <q-header class="bg-dark" bordered>
+  <q-header class="bg-dark" >
     <q-toolbar>
       <q-avatar>
         <img src="../../assets/logo.svg" alt="Logo">

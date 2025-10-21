@@ -2,10 +2,10 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    path: '',
+    component: () => import('layouts/EmptyLayout.vue'),
     children: [
-      { path: '', name: 'index', component: () => import('pages/IndexPage.vue') },
+      { path: '', name: 'index', component: () => import('pages/LoginPage.vue') },
       { path: '/login', name: 'login', component: () => import('pages/LoginPage.vue') },
     ],
     meta: { requiresAuth: false },
@@ -13,7 +13,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/dashboard',
     component: () => import('layouts/DashboardLayout.vue'),
-    children: [{ path: '', component: () => import('pages/DashboardPage.vue') },],
+    children: [
+      { path: '', name: 'dashboard', component: () => import('pages/DashboardPage.vue') },
+    ],
     meta: { requiresAuth: true },
   },
   // Always leave this as last one, but we can also remove it

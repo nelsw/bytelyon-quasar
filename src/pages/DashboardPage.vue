@@ -3,9 +3,14 @@ import SitemapTable from 'components/table/SitemapTable.vue';
 </script>
 
 <template>
-  <h1>Dash Page</h1>
-  <div class="q-pa-md">
-    <SitemapTable />
+  <div class="row q-pa-md">
+    <div class="col-12">
+      <SitemapTable />
+    </div>
+    <div class="col-12 q-pt-md">
+    </div>
   </div>
+
+
 </template>
 

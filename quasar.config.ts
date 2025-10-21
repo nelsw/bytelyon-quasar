@@ -109,6 +109,7 @@ export default defineConfig((/* ctx */) => {
       // Quasar plugins
       plugins: [
         'Notify',
+        'Loading',
       ],
     },
 
@@ -161,7 +162,11 @@ export default defineConfig((/* ctx */) => {
       // extendManifestJson (json) {},
       // useCredentialsForManifestTag: true,
       // injectPwaMetaTags: false,
-      // extendPWACustomSWConf (esbuildConf) {},
+      extendPWACustomSWConf (esbuildConf) {
+        esbuildConf.logOverride = {
+          'this-is-undefined-in-esm': 'silent'
+        };
+      },
       // extendGenerateSWOptions (cfg) {},
       // extendInjectManifestOptions (cfg) {}
     },

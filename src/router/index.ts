@@ -17,7 +17,7 @@ import { useTokenStore } from 'stores/token-store';
  * with the Router instance.
  */
 
-export default defineRouter(function ({ store }) {
+export default defineRouter(async function ({ store }) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
@@ -34,11 +34,11 @@ export default defineRouter(function ({ store }) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  const tokenStore = useTokenStore(store);
-
   Router.beforeEach((to, from, next) => {
 
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+    const tokenStore = useTokenStore(store);
 
     if (requiresAuth && !tokenStore.authorized) {
       next({ path: '/login', query: { next: to.fullPath } });
@@ -47,5 +47,5 @@ export default defineRouter(function ({ store }) {
     }
   });
 
-  return Router;
+  return new Promise(resolve => resolve(Router));
 });
