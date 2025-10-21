@@ -28,11 +28,12 @@ export default defineBoot(({ app, router, store }) => {
     api.defaults.headers.common.Authorization = `Bearer ${tokenStore.token}`;
   }
 
-  // todo - login page or dialog
-  axios.interceptors.response.use(null, async (e: AxiosError) => {
-
-    if (e.status === 401 || e.status === 403) {
-      await router.push('/')
+  // handle expired token
+  api.interceptors.response.use(null, async (e: AxiosError) => {
+    console.error(e);
+    if (e.status === 401) {
+      api.defaults.headers.common.Authorization = null
+      return router.replace({ path: '/login', query: { next: router.currentRoute.value.fullPath } });
     }
 
     return Promise.reject(e)

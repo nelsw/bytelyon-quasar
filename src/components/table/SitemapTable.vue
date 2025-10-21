@@ -4,7 +4,8 @@ import { useSitemapStore } from 'stores/sitemap-store';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 
 const store = useSitemapStore();
-const url = ref<string>('');
+const filter = ref<string>('');
+
 onMounted(store.fetch);
 </script>
 
@@ -44,13 +45,16 @@ onMounted(store.fetch);
     row-key="start"
     flat
   >
+    <template v-slot:loading>
+      <q-inner-loading showing color="primary" />
+    </template>
     <template v-slot:top-left>
       <q-icon name="mdi-web" size="md" />
       <span class="text-h5 q-ml-sm q-mt-xs brand-font"> Sitemaps </span>
     </template>
     <template v-slot:top-right>
-      <q-form @submit.prevent="store.create(url)" class="row">
-        <q-input v-model="url" color="positive" label="URL" name="url" type="url" dense>
+      <q-form @submit.prevent="store.create()" class="row">
+        <q-input v-model="store.url" color="positive" label="URL" name="url" type="url" dense>
           <template v-slot:prepend>
             <q-icon name="mdi-web-box" size="md" />
           </template>
@@ -89,7 +93,43 @@ onMounted(store.fetch);
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
         <q-td colspan="100%">
-          <div class="text-left">This is expand slot for row above: {{ props.row.start }}.</div>
+          <q-table
+            :fullscreen="false"
+            :rows="props.row.visited.concat(props.row.tracked ?? [])"
+            dense
+            flat
+            hide-header
+            :rows-per-page-options="[10, 50, 100, 1000]"
+            :filter="filter"
+            :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
+          >
+            <template v-slot:top-right>
+              <q-input
+                v-model="filter"
+                debounce="300"
+                color="primary"
+                label="Filter"
+                name="filter"
+                dense
+              >
+                <template v-slot:prepend>
+                  <q-icon name="mdi-filter" size="md" />
+                </template>
+              </q-input>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td colspan="100%">
+                  <span v-if="props.row.length > 97">
+                    {{ props.row.slice(0, 97) + '...' }}
+                  </span>
+                  <span v-else>
+                    {{ props.row }}
+                  </span>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
         </q-td>
       </q-tr>
     </template>

@@ -10,6 +10,7 @@ const handleClick = () => {
     setTimeout(() => (softDelete.value = true), 5000);
   } else {
     emit('delete');
+    softDelete.value = true;
   }
 };
 </script>

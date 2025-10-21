@@ -3,6 +3,7 @@
 
 import { defineConfig } from '#q-app/wrappers';
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig((/* ctx */) => {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
@@ -98,7 +99,7 @@ export default defineConfig((/* ctx */) => {
       iconSet: 'mdi-v7', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
 
-      // For special cases outside of where the auto-import strategy can have an impact
+      // For special cases outside where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
       // you can manually specify Quasar components/directives to be available everywhere:
       //

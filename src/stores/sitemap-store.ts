@@ -21,6 +21,7 @@ export const useSitemapStore = defineStore('sitemap-store', () => {
 
   const loading = ref<boolean>(true);
   const items = ref<Item[]>([]);
+  const url = ref<string>('');
 
   const fetch = async () => {
     loading.value = true;
@@ -31,13 +32,16 @@ export const useSitemapStore = defineStore('sitemap-store', () => {
       .finally(() => loading.value = false);
   };
 
-  const create = async (url:string) => {
+  const create = async () => {
     loading.value = true;
     return await api
-      .post(process.env.API_SITEMAP, { url: url })
+      .post(process.env.API_SITEMAP, { url: url.value })
       .then((res: AxiosResponse<Item>) => items.value.push(res.data))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
+      .finally(() => {
+        loading.value = false;
+        url.value = '';
+      });
   }
 
   const remove = async (url:string) => {
@@ -49,7 +53,7 @@ export const useSitemapStore = defineStore('sitemap-store', () => {
       .finally(() => loading.value = false);
   }
 
-  return { loading, items, fetch, create, remove };
+  return { loading, items, url, fetch, create, remove };
 });
 
 if (import.meta.hot) {
