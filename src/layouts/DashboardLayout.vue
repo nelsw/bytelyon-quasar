@@ -21,7 +21,7 @@ const store = useTokenStore();
             flat
             icon-right="mdi-logout"
           >
-            <div class="q-mt-xs q-mx-xs">Logout</div>
+            <div class="q-mt-xs q-mx-xs text-weight-medium">Logout</div>
           </q-btn>
       </q-toolbar>
     </q-header>
@@ -31,4 +31,11 @@ const store = useTokenStore();
   </q-layout>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.q-header {
+  border-color: rgb(255, 255, 255, 0.12) !important;
+}
+.q-separator--dark {
+  background-color: rgb(255, 255, 255, 0.12);
+}
+</style>

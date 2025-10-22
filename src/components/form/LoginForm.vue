@@ -33,7 +33,7 @@ const login = async () => {
           (val: string) => (val && val.length > 0) || 'Email is required',
           (val: string) => /.+@.+\..+/.test(val) || 'Email must be valid',
         ]"
-        class="col-12-400"
+        class="col-12 text-weight-bold"
         label="Email"
         lazy-rules="ondemand"
         name="email"

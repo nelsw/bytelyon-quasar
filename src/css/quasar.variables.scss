@@ -25,10 +25,6 @@ $negative: #f23d4c;
 $info: #13c9f2;
 $warning: #efad47;
 
-.q-header {
-  border-color: rgb(255, 255, 255, 0.12) !important;
-}
-
-.q-separator--dark {
-  background-color: rgb(255, 255, 255, 0.12);
-}
+$typography-font-family: 'Stem', "-apple-system", "Helvetica Neue";
+$button-font-weight: 600;
+$text-weights: (thin: 300, light: 400, regular: 600, medium: 700, bold: 800, bolder: 800) !default;
