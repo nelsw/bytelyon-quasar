@@ -10,18 +10,19 @@ const store = useTokenStore();
         <q-avatar>
           <img src="~assets/logo.svg" alt="Logo" />
         </q-avatar>
-        <q-toolbar-title class="brand-font-700"> ByteLyon </q-toolbar-title>
+        <q-toolbar-title class="text-weight-bold"> ByteLyon </q-toolbar-title>
         <q-space />
         <q-separator vertical inset />
-        <q-btn
-          @click="store.logout()"
-          color="info"
-          icon-right="mdi-login"
-          label="Logout"
-          style="margin-left: 12px"
-          dense
-          flat
-        />
+          <q-btn
+            @click="store.logout()"
+            color="accent"
+            style="margin-left: 12px"
+            dense
+            flat
+            icon-right="mdi-logout"
+          >
+            <div class="q-mt-xs q-mx-xs">Logout</div>
+          </q-btn>
       </q-toolbar>
     </q-header>
     <q-page-container>

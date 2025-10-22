@@ -24,7 +24,7 @@ const login = async () => {
 
 <template>
   <div class="q-px-md text-center q-mt-lg">
-    <img src="~assets/logo.svg" alt="Logo" width="75%" />
+    <img src="~assets/logo.svg" alt="Logo" width="50%" />
     <h2 style="margin: 30px 0">ByteLyon</h2>
     <q-form @submit.prevent="login" class="row">
       <q-input
@@ -33,7 +33,7 @@ const login = async () => {
           (val: string) => (val && val.length > 0) || 'Email is required',
           (val: string) => /.+@.+\..+/.test(val) || 'Email must be valid',
         ]"
-        class="col-12 brand-font-400"
+        class="col-12-400"
         label="Email"
         lazy-rules="ondemand"
         name="email"
@@ -47,7 +47,7 @@ const login = async () => {
       <q-input
         v-model="auth.password"
         :rules="[(val: string) => (val && val.length > 0) || 'Password is required']"
-        class="col-12 q-mb-sm brand-font-400"
+        class="col-12 q-mb-sm"
         label="Password"
         lazy-rules="ondemand"
         name="password"
@@ -62,17 +62,17 @@ const login = async () => {
         type="submit"
         size="lg"
         color="primary"
-        class="col-12 full-width brand-font-700"
+        class="col-12 full-width text-weight-bold"
       />
     </q-form>
     <q-form @submit.prevent="loginAsGuest">
       <q-btn
-        outline
-        label="Login As Guest"
+        flat
+        label="Guest Login"
         type="submit"
         size="md"
         color="primary"
-        class="col-12 q-mt-sm full-width brand-font-500"
+        class="col-12 q-mt-sm full-width text-weight-medium"
       />
     </q-form>
   </div>

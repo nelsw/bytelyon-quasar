@@ -77,8 +77,8 @@ onMounted(() => {
   <q-dialog ref="dialogRef" @hide="onDialogHide" persistent>
     <q-card class="q-dialog-plugin" style="min-width: 400px" flat>
       <q-card-section>
-        <div class="text-h4 brand-font text-center">News Feed Details</div>
-        <div class="text-subtitle brand-font-400 text-center">
+        <div class="text-h4 text-center text-weight-bold">News Feed Details</div>
+        <div class="text-subtitle text-center">
           What are we searching for, and how often?
         </div>
         <q-select
@@ -136,7 +136,7 @@ onMounted(() => {
       </q-card-section>
       <q-card-actions align="center">
         <q-btn
-          class="full-width brand-font-700 q-mb-sm"
+          class="full-width q-mb-sm text-weight-bolder"
           :color="color"
           size="lg"
           label="Save"
@@ -144,7 +144,7 @@ onMounted(() => {
           @click="onDialogOK(model)"
         />
         <q-btn
-          class="full-width brand-font-500"
+          class="full-width text-weight-normal"
           flat
           :color="color"
           size="lg"

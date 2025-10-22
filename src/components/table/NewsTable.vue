@@ -77,7 +77,7 @@ onMounted(store.fetch);
     </template>
     <template v-slot:top-left>
       <q-icon name="mdi-newspaper" size="md" />
-      <span class="text-h5 q-ml-sm q-mt-xs brand-font"> News Feeds </span>
+      <span class="text-h5 q-ml-sm q-mt-xs"> News Feeds </span>
     </template>
     <template v-slot:top-right>
       <q-btn icon="mdi-plus" color="positive" flat dense @click="showDialog()" />

@@ -2,6 +2,7 @@
 // Configurations: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app/wrappers';
+import type { UserConfig as ViteUserConfig } from 'vite';
 
 export default defineConfig(() => {
   return {
@@ -25,6 +26,16 @@ export default defineConfig(() => {
         API_LOGIN: 'https://ckkczji3hn6vnfintlkcf7b6vm0cfafl.lambda-url.us-east-1.on.aws',
         API_SITEMAP: 'https://nidtmhqsksaoszkp53smlyylt40vdlyc.lambda-url.us-east-1.on.aws',
         API_USER: 'https://b4idcozvm4a364rcexm6lmyyxm0flmaq.lambda-url.us-east-1.on.aws',
+      },
+      extendViteConf (viteConf: ViteUserConfig) {
+        viteConf.resolve = {
+          alias: {
+            ['./runtimeConfig']: './runtimeConfig.browser'
+          }
+        }
+      },
+      viteVuePluginOptions: {
+
       },
       vitePlugins: [
         [

@@ -51,7 +51,7 @@ onMounted(store.fetch);
     </template>
     <template v-slot:top-left>
       <q-icon name="mdi-web" size="md" />
-      <span class="text-h5 q-ml-sm q-mt-xs brand-font"> Sitemaps </span>
+      <span class="text-h5 q-ml-sm q-mt-xs"> Sitemaps </span>
     </template>
     <template v-slot:top-right>
       <q-form @submit.prevent="store.create()" class="row">
