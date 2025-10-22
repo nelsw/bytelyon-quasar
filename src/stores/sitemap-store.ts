@@ -18,7 +18,6 @@ interface Item {
 }
 
 export const useSitemapStore = defineStore('sitemap-store', () => {
-
   const loading = ref<boolean>(true);
   const items = ref<Item[]>([]);
   const url = ref<string>('');
@@ -27,9 +26,9 @@ export const useSitemapStore = defineStore('sitemap-store', () => {
     loading.value = true;
     return await api
       .get(process.env.API_USER, { params: { delimiter: 'sitemap' } })
-      .then((res: AxiosResponse<State>) => items.value = res.data.items)
+      .then((res: AxiosResponse<State>) => (items.value = res.data.items))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
+      .finally(() => (loading.value = false));
   };
 
   const create = async () => {
@@ -42,16 +41,16 @@ export const useSitemapStore = defineStore('sitemap-store', () => {
         loading.value = false;
         url.value = '';
       });
-  }
+  };
 
-  const remove = async (url:string) => {
+  const remove = async (url: string) => {
     loading.value = true;
     return await api
-      .delete(process.env.API_USER, { params: { delimiter: 'sitemap' }, data: { url:url } })
-      .then(() => items.value = items.value.filter(item => item.url !== url))
+      .delete(process.env.API_USER, { params: { delimiter: 'sitemap' }, data: { url: url } })
+      .then(() => (items.value = items.value.filter((item) => item.url !== url)))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
-  }
+      .finally(() => (loading.value = false));
+  };
 
   return { loading, items, url, fetch, create, remove };
 });

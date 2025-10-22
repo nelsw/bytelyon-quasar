@@ -4,11 +4,9 @@ import { Loading, Notify } from 'quasar';
 import { ref } from 'vue';
 import { type NavigationFailure } from 'vue-router';
 
-
 export const useTokenStore = defineStore(
   'token-store',
   () => {
-
     const token = ref<string | null>(null);
 
     const login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
@@ -38,7 +36,9 @@ export const useTokenStore = defineStore(
         });
     };
 
-    async function logout(this: ReturnType<typeof useTokenStore>): Promise<NavigationFailure | void | undefined> {
+    async function logout(
+      this: ReturnType<typeof useTokenStore>,
+    ): Promise<NavigationFailure | void | undefined> {
       token.value = null;
       api.defaults.headers.common.Authorization = null;
       return await this.router.push({ name: 'index' });

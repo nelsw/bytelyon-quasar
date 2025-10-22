@@ -12,4 +12,3 @@ export interface SitemapProps {
   trackedCount(): number;
   totalUrlCount(): number;
 }
-

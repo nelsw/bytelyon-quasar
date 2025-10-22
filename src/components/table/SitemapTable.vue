@@ -71,9 +71,7 @@ onMounted(store.fetch);
         <q-td auto-width>
           <q-btn dense flat target="_blank" :href="props.row.url" no-caps>
             <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-xs" />
-            <span style="font-size: 13px; margin-left: 2px;">{{
-              props.row.url
-            }}</span>
+            <span style="font-size: 13px; margin-left: 2px">{{ props.row.url }}</span>
           </q-btn>
         </q-td>
         <q-td auto-width>
@@ -83,7 +81,7 @@ onMounted(store.fetch);
               color="primary"
               size="xs"
             />
-            <span style="font-size: 13px;">{{
+            <span style="font-size: 13px">{{
               props.row.visited.length + (props.row.tracked?.length ?? 0)
             }}</span>
           </q-btn>
@@ -102,9 +100,8 @@ onMounted(store.fetch);
             hide-header
             :rows-per-page-options="[10, 50, 100, 1000]"
             :filter="filter"
-            :filter-method="(rows, terms) => rows.filter(row => row.includes(terms))"
+            :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
           >
-
             <template v-slot:top-left>
               <q-input
                 v-model="filter"
@@ -124,7 +121,7 @@ onMounted(store.fetch);
                 <q-td colspan="100%">
                   <q-btn dense flat target="_blank" :href="props.row.url" no-caps size="sm">
                     <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-xs" />
-                    <span style="font-size: 12px; margin-left: 2px;">
+                    <span style="font-size: 12px; margin-left: 2px">
                       <span v-if="props.row.length > 197">
                         {{ props.row.slice(0, 197) + '...' }}
                       </span>

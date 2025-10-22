@@ -13,12 +13,12 @@ export const useNewsStore = defineStore('news-store', () => {
     loading.value = true;
     return await api
       .get(process.env.API_JOB)
-      .then((res: AxiosResponse<PageProps<JobItemsProps>>) => items.value = res.data.items)
+      .then((res: AxiosResponse<PageProps<JobItemsProps>>) => (items.value = res.data.items))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
+      .finally(() => (loading.value = false));
   };
 
-  const voidSave = (job: Job): void => void save(job)
+  const voidSave = (job: Job): void => void save(job);
 
   const save = async (job: Job) => {
     const data = {
@@ -31,7 +31,7 @@ export const useNewsStore = defineStore('news-store', () => {
       worked_ok: job.worked_ok,
       keywords: job.keywords,
       frequency: job.frequency,
-    }
+    };
 
     loading.value = true;
     return await api
@@ -39,27 +39,27 @@ export const useNewsStore = defineStore('news-store', () => {
       .then(async (res: AxiosResponse<JobProps>) => {
         if (job.id === '') {
           await fetch();
-          return
+          return;
         }
-        items.value = items.value.map(item => {
+        items.value = items.value.map((item) => {
           if (item.job.id === job.id) {
-            item.job = res.data
+            item.job = res.data;
           }
           return item;
-        })
+        });
       })
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
-  }
+      .finally(() => (loading.value = false));
+  };
 
-  const remove = async (id:string) => {
+  const remove = async (id: string) => {
     loading.value = true;
     return await api
-      .delete(process.env.API_JOB, { params: { id: id }})
-      .then(() => items.value = items.value.filter(item => item.job.id !== id))
+      .delete(process.env.API_JOB, { params: { id: id } })
+      .then(() => (items.value = items.value.filter((item) => item.job.id !== id)))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
-  }
+      .finally(() => (loading.value = false));
+  };
 
   return { loading, items, fetch, save, voidSave, remove };
 });

@@ -25,7 +25,7 @@ export class Job implements JobProps {
 
   constructor(props?: JobProps) {
     this.description = props?.description ?? '';
-    this.frequency = props?.frequency ?? { unit: Unit.DAY, value: 1, };
+    this.frequency = props?.frequency ?? { unit: Unit.DAY, value: 1 };
     this.id = props?.id ?? '';
     this.keywords = props?.keywords ?? [];
     this.name = props?.name ?? '';

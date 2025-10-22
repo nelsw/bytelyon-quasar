@@ -55,8 +55,7 @@ const columns: Array<QTableColumn<JobItemsProps>> = [
   },
 ];
 const showDialog = (job: Job | undefined = undefined): void => {
-  $q.dialog({ component: NewsDialog, componentProps: { job } })
-    .onOk(store.voidSave);
+  $q.dialog({ component: NewsDialog, componentProps: { job } }).onOk(store.voidSave);
 };
 onMounted(store.fetch);
 </script>

@@ -12,7 +12,4 @@ import NewsTable from 'components/table/NewsTable.vue';
       <NewsTable />
     </div>
   </div>
-
-
 </template>
-

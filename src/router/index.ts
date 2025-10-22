@@ -35,17 +35,16 @@ export default defineRouter(async function ({ store }) {
   });
 
   Router.beforeEach((to, from, next) => {
-
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 
     const tokenStore = useTokenStore(store);
 
     if (requiresAuth && !tokenStore.authorized) {
       next({ path: '/login', query: { next: to.fullPath } });
     } else {
-      next()
+      next();
     }
   });
 
-  return new Promise(resolve => resolve(Router));
+  return new Promise((resolve) => resolve(Router));
 });
