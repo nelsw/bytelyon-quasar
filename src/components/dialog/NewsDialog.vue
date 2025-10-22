@@ -74,7 +74,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-dialog ref="dialogRef" @hide="onDialogHide">
+  <q-dialog ref="dialogRef" @hide="onDialogHide" persistent>
     <q-card class="q-dialog-plugin" style="min-width: 400px" flat>
       <q-card-section>
         <div class="text-h4 brand-font text-center">News Feed Details</div>

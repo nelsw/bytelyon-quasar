@@ -4,10 +4,10 @@ import { onMounted } from 'vue';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 import { date, type QTableColumn, useQuasar } from 'quasar';
 import NewsDialog from 'components/dialog/NewsDialog.vue';
+import { type JobItemsProps } from 'src/models/data';
+import { type Job } from 'src/models/job';
 const $q = useQuasar();
 const store = useNewsStore();
-import { type JobItemsProps } from 'src/models/data';
-import  { type Job } from 'src/models/job';
 
 const columns: Array<QTableColumn<JobItemsProps>> = [
   {
@@ -54,29 +54,8 @@ const columns: Array<QTableColumn<JobItemsProps>> = [
     field: () => {},
   },
 ];
-
-const handleNewsDialogClick = (job: Job | undefined = undefined): void => {
-  $q.dialog({
-    component: NewsDialog,
-
-    // props forwarded to your custom component
-    componentProps: {
-      job: job
-        ? job
-        : {
-            id: '',
-            worked_at: '',
-            frequency: {
-              unit: 'd',
-              value: 1,
-            },
-            name: '',
-            description: '',
-            keywords: [],
-          },
-      persistent: true,
-    },
-  })
+const showDialog = (job: Job | undefined = undefined): void => {
+  $q.dialog({ component: NewsDialog, componentProps: { job } })
     .onOk(store.voidSave);
 };
 onMounted(store.fetch);
@@ -102,7 +81,7 @@ onMounted(store.fetch);
       <span class="text-h5 q-ml-sm q-mt-xs brand-font"> News Feeds </span>
     </template>
     <template v-slot:top-right>
-      <q-btn icon="mdi-plus" color="positive" flat dense @click="handleNewsDialogClick()" />
+      <q-btn icon="mdi-plus" color="positive" flat dense @click="showDialog()" />
     </template>
     <template v-slot:body="props">
       <q-tr :props="props">
@@ -147,7 +126,7 @@ onMounted(store.fetch);
             round
             color="warning"
             icon="mdi-pencil"
-            @click="handleNewsDialogClick(props.row.job)"
+            @click="showDialog(props.row.job)"
           />
         </q-td>
       </q-tr>
@@ -189,7 +168,9 @@ onMounted(store.fetch);
                     <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-sm" />
                     <span style="font-size: 13px">
                       {{
-                        props.row.title.lastIndexOf(' - ') < 0 ? props.row.title : props.row.title.substring(0, props.row.title.lastIndexOf(' - '))
+                        props.row.title.lastIndexOf(' - ') < 0
+                          ? props.row.title
+                          : props.row.title.substring(0, props.row.title.lastIndexOf(' - '))
                       }}
                     </span>
                   </q-btn>
