@@ -57,7 +57,7 @@ onMounted(store.fetch);
       <q-form @submit.prevent="store.create()" class="row">
         <q-input v-model="store.url" color="positive" label="URL" name="url" type="url" dense>
           <template v-slot:prepend>
-            <q-icon name="mdi-web-box" size="md" />
+            <q-icon name="mdi-web-box" size="sm" />
           </template>
         </q-input>
         <q-btn icon="mdi-plus" color="positive" flat dense type="submit" />
@@ -70,8 +70,8 @@ onMounted(store.fetch);
         </q-td>
         <q-td auto-width>
           <q-btn dense flat target="_blank" :href="props.row.url" no-caps>
-            <q-icon name="mdi-open-in-new" color="primary" size="xs" />
-            <span style="font-size: 13px; margin-left: 2px; padding-right: 2px">{{
+            <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-xs" />
+            <span style="font-size: 13px; margin-left: 2px;">{{
               props.row.url
             }}</span>
           </q-btn>
@@ -83,7 +83,7 @@ onMounted(store.fetch);
               color="primary"
               size="xs"
             />
-            <span style="font-size: 13px; padding-right: 5px">{{
+            <span style="font-size: 13px;">{{
               props.row.visited.length + (props.row.tracked?.length ?? 0)
             }}</span>
           </q-btn>
@@ -102,31 +102,37 @@ onMounted(store.fetch);
             hide-header
             :rows-per-page-options="[10, 50, 100, 1000]"
             :filter="filter"
-            :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
+            :filter-method="(rows, terms) => rows.filter(row => row.includes(terms))"
           >
-            <template v-slot:top-right>
+
+            <template v-slot:top-left>
               <q-input
                 v-model="filter"
                 debounce="300"
                 color="primary"
-                label="Filter"
+                label="Filter Links"
                 name="filter"
                 dense
               >
                 <template v-slot:prepend>
-                  <q-icon name="mdi-filter" size="md" />
+                  <q-icon name="mdi-filter" size="sm" />
                 </template>
               </q-input>
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
                 <q-td colspan="100%">
-                  <span v-if="props.row.length > 97">
-                    {{ props.row.slice(0, 97) + '...' }}
-                  </span>
-                  <span v-else>
-                    {{ props.row }}
-                  </span>
+                  <q-btn dense flat target="_blank" :href="props.row.url" no-caps size="sm">
+                    <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-xs" />
+                    <span style="font-size: 12px; margin-left: 2px;">
+                      <span v-if="props.row.length > 197">
+                        {{ props.row.slice(0, 197) + '...' }}
+                      </span>
+                      <span v-else>
+                        {{ props.row }}
+                      </span>
+                    </span>
+                  </q-btn>
                 </q-td>
               </q-tr>
             </template>
