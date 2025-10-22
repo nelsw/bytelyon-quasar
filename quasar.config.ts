@@ -58,18 +58,12 @@ export default defineConfig(() => {
       pwa: false,
     },
     pwa: {
-      workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      extendPWACustomSWConf (esbuildConf) {
-        esbuildConf.logOverride = {
-          'this-is-undefined-in-esm': 'silent'
-        };
-      },
+      workboxMode: 'GenerateSW',
     },
-    cordova: {},
-    capacitor: {
+    capacitor: { // mip
       hideSplashscreen: true,
     },
-    electron: {
+    electron: { // wip
       preloadScripts: ['electron-preload'],
       inspectPort: 5858,
       bundler: 'packager', // 'packager' or 'builder'
@@ -78,6 +72,5 @@ export default defineConfig(() => {
         appId: 'bytelyon-quasar',
       },
     },
-    bex: {},
   };
 });
