@@ -54,7 +54,7 @@ const columns: Array<QTableColumn<JobProps>> = [
   },
 ];
 const showDialog = (job: Job | undefined = undefined): void => {
-  $q.dialog({ component: NewsDialog, componentProps: { job } }).onOk(store.voidSave);
+  $q.dialog({ component: NewsDialog, componentProps: { job } }).onOk(store.save);
 };
 onMounted(store.fetch);
 </script>
@@ -113,7 +113,7 @@ onMounted(store.fetch);
               color="primary"
               size="xs"
             />
-            <span style="font-size: 13px; padding-right: 5px">{{ props.row.items?.length }}</span>
+            <span style="font-size: 13px; padding-right: 5px">{{ props.row?.items?.length ?? 0 }}</span>
           </q-btn>
         </q-td>
         <q-td auto-width style="direction: rtl">
@@ -148,7 +148,7 @@ onMounted(store.fetch);
               },
             ]"
             :fullscreen="false"
-            :rows="props.row.items"
+            :rows="props.row?.items"
             dense
             flat
             hide-header

@@ -16,9 +16,15 @@ export const useNewsStore = defineStore('news', () => {
       .finally(handleFinally);
   };
 
-  const voidSave = (job: Job): void => void save(job);
+  const save = (job: Job): void => {
+    if (job.id === '') {
+      create(job).catch(handleError);
+    } else {
+      update(job).catch(handleError);
+    }
+  };
 
-  const save = async (job: Job) => {
+  const create = async (job: Job) => {
     const data = {
       id: job.id === '' ? null : job.id,
       name: job.name,
@@ -29,11 +35,45 @@ export const useNewsStore = defineStore('news', () => {
       worked_ok: job.worked_ok,
       keywords: job.keywords,
       frequency: job.frequency,
+      items: job.items,
     };
 
     loading.value = true;
     return await api
       .post('/jobs', data)
+      .then(async (res: AxiosResponse<JobProps>) => {
+        if (job.id === '') {
+          await fetch();
+          return;
+        }
+        items.value = items.value.map((item) => {
+          if (item.id === job.id) {
+            item = res.data;
+          }
+          return item;
+        });
+      })
+      .catch(handleError)
+      .finally(handleFinally);
+  };
+
+  const update = async (job: Job) => {
+    const data = {
+      id: job.id === '' ? null : job.id,
+      name: job.name,
+      description: job.description,
+      type: 1,
+      urls: job.urls,
+      worked_at: job.id === '' ? null : job.worked_at,
+      worked_ok: job.worked_ok,
+      keywords: job.keywords,
+      frequency: job.frequency,
+      items: job.items,
+    };
+
+    loading.value = true;
+    return await api
+      .put('/jobs', data)
       .then(async (res: AxiosResponse<JobProps>) => {
         if (job.id === '') {
           await fetch();
@@ -62,7 +102,7 @@ export const useNewsStore = defineStore('news', () => {
   const handleError = (err: AxiosError) => console.error(err)
   const handleFinally = () => loading.value = false;
 
-  return { loading, items, fetch, save, voidSave, remove };
+  return { loading, items, fetch, save, remove };
 });
 
 if (import.meta.hot) {
