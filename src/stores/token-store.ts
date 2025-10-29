@@ -4,21 +4,33 @@ import { Loading, Notify } from 'quasar';
 import { ref } from 'vue';
 import { type NavigationFailure } from 'vue-router';
 
+type thisType = ReturnType<typeof useTokenStore>;
+type Token = string | undefined;
+
+interface Auth {
+  isAuthenticated: boolean;
+  context: {
+    token: Token;
+    message?: string;
+  };
+}
+
 export const useTokenStore = defineStore(
-  'token-store',
+  'token',
   () => {
-    const token = ref<string | null>(null);
+    const token = ref<Token>();
 
     const login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
       Loading.show({ spinnerColor: 'primary' });
+
       return await api
-        .post(process.env.API_LOGIN, {}, { auth })
-        .then((res: AxiosResponse<{ token: string | null }>): boolean => {
-          token.value = res.data.token;
+        .post('/auth', {}, { auth })
+        .then((res: AxiosResponse<Auth>): boolean => {
+          token.value = res.data.context.token;
           api.defaults.headers.common.Authorization = `Bearer ${token.value}`;
           return true;
         })
-        .catch((err: AxiosError): boolean => {
+        .catch((err: AxiosError<Auth>): boolean => {
           console.error(err);
           Notify.create({
             color: 'negative',
@@ -27,19 +39,16 @@ export const useTokenStore = defineStore(
             message: 'Login failed; Check your credentials and try again.',
             position: 'top',
           });
-          token.value = null;
+          token.value = undefined;
           api.defaults.headers.common.Authorization = null;
           return false;
         })
-        .finally(() => {
-          Loading.hide();
-        });
+        .finally(() => Loading.hide());
     };
 
-    async function logout(
-      this: ReturnType<typeof useTokenStore>,
-    ): Promise<NavigationFailure | void | undefined> {
-      token.value = null;
+    // Cannot be an arrow function give "this"
+    async function logout(this: thisType): Promise<NavigationFailure | void | undefined> {
+      token.value = undefined;
       api.defaults.headers.common.Authorization = null;
       return await this.router.push({ name: 'index' });
     }

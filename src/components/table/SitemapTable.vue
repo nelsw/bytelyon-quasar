@@ -1,42 +1,72 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useSitemapStore } from 'stores/sitemap-store';
+import { type QTableColumn } from 'quasar';
+import { type Sitemap } from 'src/types/sitemap';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 
 const store = useSitemapStore();
 const filter = ref<string>('');
+const columns: Array<QTableColumn<Sitemap>> = [
+  {
+    name: 'start',
+    label: 'Created',
+    field: 'start',
+    align: 'left',
+    format: (value) => new Date(value).toLocaleString(),
+    sort: (a, b) => Date.parse(a) - Date.parse(b),
+  },
+  {
+    name: 'duration',
+    label: 'Duration',
+    field: 'duration',
+    align: 'left',
+    format: (value) => `${value}s`,
+  },
+  {
+    name: 'url',
+    label: 'URL',
+    field: 'url',
+    align: 'left',
+    sort: (a, b) => a.localeCompare(b),
+  },
+  {
+    name: 'domain',
+    label: 'Domain',
+    field: 'domain',
+    align: 'left',
+    sort: (a, b) => a.localeCompare(b),
+  },
+
+  {
+    name: 'relative',
+    label: 'Relative',
+    field: 'relative',
+    align: 'left',
+    format: (value) => value?.length,
+  },
+  {
+    name: 'remote',
+    label: 'Remote',
+    field: 'remote',
+    align: 'left',
+    format: (value) => value?.length,
+  },
+  {
+    name: 'delete',
+    label: 'Delete',
+    field: 'id',
+  },
+];
+
+const expanded = ref<string[]>([]);
 
 onMounted(store.fetch);
 </script>
 
 <template>
   <q-table
-    :columns="[
-      {
-        name: 'start',
-        label: 'Created',
-        field: 'start',
-        align: 'left',
-        sort: (a, b) => Date.parse(a) - Date.parse(b),
-      },
-      {
-        name: 'url',
-        label: 'URL',
-        field: 'url',
-        align: 'left',
-      },
-      {
-        name: 'links',
-        label: 'Links',
-        field: 'tracked',
-        align: 'left',
-      },
-      {
-        name: 'delete',
-        label: 'Delete',
-        field: 'delete',
-      },
-    ]"
+    :columns="columns"
     :fullscreen="false"
     :loading="store.loading"
     :pagination="{ sortBy: 'start' }"
@@ -65,36 +95,37 @@ onMounted(store.fetch);
     </template>
     <template v-slot:body="props">
       <q-tr :props="props">
-        <q-td auto-width>
-          {{ new Date(props.row.start).toLocaleString() }}
-        </q-td>
-        <q-td auto-width>
-          <q-btn dense flat target="_blank" :href="props.row.url" no-caps>
-            <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-xs" />
-            <span style="font-size: 13px; margin-left: 2px">{{ props.row.url }}</span>
-          </q-btn>
-        </q-td>
-        <q-td auto-width>
-          <q-btn dense flat @click="props.expand = !props.expand">
-            <q-icon
-              :name="props.expand ? 'mdi-chevron-down' : 'mdi-chevron-up'"
-              color="primary"
-              size="xs"
-            />
-            <span style="font-size: 13px">{{
-              props.row.visited.length + (props.row.tracked?.length ?? 0)
-            }}</span>
-          </q-btn>
-        </q-td>
-        <q-td auto-width style="direction: rtl">
-          <DeleteBtn style="margin-right: 2px" @delete="store.remove(props.row.url)" />
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+          <span v-if="col.name.match(/relative|remote/)">
+            <q-btn
+              dense
+              flat
+              @click="
+                expanded = col.name === 'relative' ? props.row.relative : props.row.remote;
+                props.expand = !props.expand;
+              "
+            >
+              <q-icon
+                :name="props.expand ? 'mdi-chevron-down' : 'mdi-chevron-up'"
+                color="primary"
+                size="xs"
+              />
+              <span style="font-size: 13px; padding-right: 5px">{{ col.value }}</span>
+            </q-btn>
+          </span>
+          <span v-else-if="col.name === 'delete'">
+            <DeleteBtn style="margin-right: 5px" @delete="store.remove(props.row.url)" />
+          </span>
+          <span v-else>
+            {{ col.value }}
+          </span>
         </q-td>
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
         <q-td colspan="100%">
           <q-table
             :fullscreen="false"
-            :rows="props.row.visited.concat(props.row.tracked ?? [])"
+            :rows="expanded"
             dense
             flat
             hide-header
@@ -122,12 +153,7 @@ onMounted(store.fetch);
                   <q-btn dense flat target="_blank" :href="props.row.url" no-caps size="sm">
                     <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-xs" />
                     <span style="font-size: 12px; margin-left: 2px">
-                      <span v-if="props.row.length > 197">
-                        {{ props.row.slice(0, 197) + '...' }}
-                      </span>
-                      <span v-else>
-                        {{ props.row }}
-                      </span>
+                      {{ props.row }}
                     </span>
                   </q-btn>
                 </q-td>

@@ -18,12 +18,8 @@ export default defineConfig(() => {
       },
       vueRouterMode: 'history',
       env: {
-        // public API endpoints
-        API_CONTACT: 'https://yr6ej2omycqbeyidf7i6bum3oy0vqjuy.lambda-url.us-east-1.on.aws',
-        API_JOB: 'https://3bzqwrfabt3przdzbtmihmkseq0lryxo.lambda-url.us-east-1.on.aws',
-        API_LOGIN: 'https://ckkczji3hn6vnfintlkcf7b6vm0cfafl.lambda-url.us-east-1.on.aws',
-        API_SITEMAP: 'https://nidtmhqsksaoszkp53smlyylt40vdlyc.lambda-url.us-east-1.on.aws',
-        API_USER: 'https://b4idcozvm4a364rcexm6lmyyxm0flmaq.lambda-url.us-east-1.on.aws',
+        // Public API
+        API: 'https://api.bytelyon.com',
       },
       vitePlugins: [
         [
@@ -40,6 +36,7 @@ export default defineConfig(() => {
       ],
     },
     devServer: {
+      port: 8080,
       open: true, // opens browser window automatically
     },
     framework: {

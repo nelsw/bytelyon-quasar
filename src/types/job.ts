@@ -1,4 +1,5 @@
-import { type FrequencyProps, Unit, unitLabel } from 'src/models/frequency';
+import { type FrequencyProps, Unit, unitLabel } from 'src/types/frequency';
+import { type ItemProps } from 'src/types/item';
 
 export interface JobProps {
   description: string;
@@ -10,6 +11,7 @@ export interface JobProps {
   urls: string[];
   worked_at: string;
   worked_ok: boolean;
+  items: ItemProps[];
 }
 
 export class Job implements JobProps {
@@ -22,6 +24,7 @@ export class Job implements JobProps {
   urls: string[];
   worked_at: string;
   worked_ok: boolean;
+  items: ItemProps[];
 
   constructor(props?: JobProps) {
     this.description = props?.description ?? '';
@@ -33,6 +36,7 @@ export class Job implements JobProps {
     this.urls = props?.urls ?? [];
     this.worked_at = props?.worked_at ?? '';
     this.worked_ok = props?.worked_ok ?? true;
+    this.items = props?.items ?? [];
   }
 
   computedName(): string {
@@ -40,7 +44,7 @@ export class Job implements JobProps {
   }
 
   computedDesc(): string {
-    const k = (this.keywords.length > 0 ? this.keywords : ['<KEYWORDS>']).join(', ');
+    const k = (this.keywords?.length > 0 ? this.keywords : ['<KEYWORDS>']).join(', ');
     const n = this.frequency.value;
     const p = n > 0;
     const u = unitLabel(this.frequency);

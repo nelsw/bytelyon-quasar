@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { QInput, useDialogPluginComponent } from 'quasar';
-import { Job } from 'src/models/job';
+import { Job } from 'src/types/job';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { Unit, UnitOptions } from 'src/models/frequency';
+import { Unit, UnitOptions } from 'src/types/frequency';
 
 interface Option {
   label: string;

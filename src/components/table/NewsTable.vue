@@ -4,41 +4,40 @@ import { onMounted } from 'vue';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 import { date, type QTableColumn, useQuasar } from 'quasar';
 import NewsDialog from 'components/dialog/NewsDialog.vue';
-import { type JobItemsProps } from 'src/models/data';
-import { type Job } from 'src/models/job';
+import { type Job, type JobProps } from 'src/types/job';
 const $q = useQuasar();
 const store = useNewsStore();
 
-const columns: Array<QTableColumn<JobItemsProps>> = [
+const columns: Array<QTableColumn<JobProps>> = [
   {
     name: 'worked_at',
     label: 'Updated',
-    field: (row: JobItemsProps) => row.job.worked_at,
+    field: (row: JobProps) => row.worked_at,
     align: 'left',
     sort: (a, b) => Date.parse(a) - Date.parse(b),
   },
   {
     name: 'name',
     label: 'Name',
-    field: (row) => row.job.name,
+    field: (row) => row.name,
     align: 'left',
   },
   {
     name: 'description',
     label: 'Description',
-    field: (row) => row.job.description,
+    field: (row) => row.description,
     align: 'left',
   },
   {
     name: 'frequency',
     label: 'Frequency',
-    field: (row) => row.job.frequency,
+    field: (row) => row.frequency,
     align: 'center',
   },
   {
     name: 'keywords',
     label: 'Keywords',
-    field: (row) => row.job.keywords,
+    field: (row) => row.keywords,
     align: 'left',
   },
   {
@@ -69,7 +68,7 @@ onMounted(store.fetch);
     :rows="store.items"
     bordered
     color="primary"
-    :row-key="(row) => row.job.worked_at"
+    :row-key="(row) => row.worked_at"
     flat
   >
     <template v-slot:loading>
@@ -85,20 +84,20 @@ onMounted(store.fetch);
     <template v-slot:body="props">
       <q-tr :props="props">
         <q-td auto-width>
-          {{ new Date(props.row.job.worked_at).toLocaleString() }}
+          {{ new Date(props.row.worked_at).toLocaleString() }}
         </q-td>
         <q-td auto-width>
-          {{ props.row.job.name }}
+          {{ props.row.name }}
         </q-td>
         <q-td auto-width>
-          {{ props.row.job.description }}
+          {{ props.row.description }}
         </q-td>
         <q-td auto-width style="text-align: center">
-          {{ props.row.job.frequency.value + props.row.job.frequency.unit }}
+          {{ props.row.frequency.value + props.row.frequency.unit }}
         </q-td>
         <q-td auto-width>
           <q-chip
-            v-for="(label, key) in props.row.job.keywords"
+            v-for="(label, key) in props.row.keywords"
             :key="key"
             :label="label"
             color="primary"
@@ -114,18 +113,18 @@ onMounted(store.fetch);
               color="primary"
               size="xs"
             />
-            <span style="font-size: 13px; padding-right: 5px">{{ props.row.items.length }}</span>
+            <span style="font-size: 13px; padding-right: 5px">{{ props.row.items?.length }}</span>
           </q-btn>
         </q-td>
         <q-td auto-width style="direction: rtl">
-          <DeleteBtn style="margin-right: 5px" @delete="store.remove(props.row.job.id)" />
+          <DeleteBtn style="margin-right: 5px" @delete="store.remove(props.row.id)" />
           <q-btn
             size="sm"
             flat
             round
             color="warning"
             icon="mdi-pencil"
-            @click="showDialog(props.row.job)"
+            @click="showDialog(props.row)"
           />
         </q-td>
       </q-tr>

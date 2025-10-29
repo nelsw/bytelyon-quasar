@@ -2,12 +2,6 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 
-interface State {
-  items: Item[];
-  size: number;
-  total: number;
-}
-
 interface Item {
   domain: string;
   end: string;
@@ -17,7 +11,8 @@ interface Item {
   visited: string[];
 }
 
-export const useSitemapStore = defineStore('sitemap-store', () => {
+export const useSitemapStore = defineStore('sitemaps', () => {
+
   const loading = ref<boolean>(true);
   const items = ref<Item[]>([]);
   const url = ref<string>('');
@@ -25,32 +20,36 @@ export const useSitemapStore = defineStore('sitemap-store', () => {
   const fetch = async () => {
     loading.value = true;
     return await api
-      .get(process.env.API_USER, { params: { delimiter: 'sitemap' } })
-      .then((res: AxiosResponse<State>) => (items.value = res.data.items))
-      .catch((err: AxiosError) => console.error(err))
-      .finally(() => (loading.value = false));
+      .get('/sitemaps')
+      .then((res: AxiosResponse<Item[]>) => (items.value = res.data ?? []))
+      .catch(handleError)
+      .finally(handleFinally);
   };
 
   const create = async () => {
     loading.value = true;
     return await api
-      .post(process.env.API_SITEMAP, { url: url.value })
+      .post('/sitemaps', {}, {params: { url: btoa(url.value) } })
       .then((res: AxiosResponse<Item>) => items.value.push(res.data))
-      .catch((err: AxiosError) => console.error(err))
-      .finally(() => {
-        loading.value = false;
-        url.value = '';
-      });
+      .catch(handleError)
+      .finally(handleFinally);
   };
 
   const remove = async (url: string) => {
     loading.value = true;
+    console.log(btoa(url));
     return await api
-      .delete(process.env.API_USER, { params: { delimiter: 'sitemap' }, data: { url: url } })
+      .delete('/sitemaps', { params: { url: btoa(url) } })
       .then(() => (items.value = items.value.filter((item) => item.url !== url)))
-      .catch((err: AxiosError) => console.error(err))
-      .finally(() => (loading.value = false));
+      .catch(handleError)
+      .finally(handleFinally);
   };
+
+  const handleError = (err: AxiosError) => console.error(err)
+  const handleFinally = () => {
+    loading.value = false;
+    url.value = '';
+  }
 
   return { loading, items, url, fetch, create, remove };
 });

@@ -14,7 +14,9 @@ declare module 'vue' {
   }
 }
 
-const api = axios.create({});
+const api = axios.create({
+  baseURL: process.env.API,
+});
 
 export default defineBoot(({ app, router, store }) => {
   // for use inside Vue files through this.$axios and this.$api
@@ -30,7 +32,7 @@ export default defineBoot(({ app, router, store }) => {
   // handle expired token
   api.interceptors.response.use(null, async (e: AxiosError) => {
     console.error(e);
-    if (e.status === 401) {
+    if (e.status === 401 || e.status === 403) {
       api.defaults.headers.common.Authorization = null;
       return router.replace({
         path: '/login',

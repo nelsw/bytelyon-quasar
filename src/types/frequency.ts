@@ -1,4 +1,4 @@
-import { Option, type OptionProps, type OptionsProps } from 'src/models/base';
+import { Option, type OptionProps, type OptionsProps } from 'src/types/base';
 
 const minuteOptions: OptionsProps = [
   { label: '5', value: 5 },

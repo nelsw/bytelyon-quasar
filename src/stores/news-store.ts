@@ -1,21 +1,19 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
-import { type PageProps } from 'src/models/page';
-import type { JobItemsProps } from 'src/models/data';
-import { type Job, type JobProps } from 'src/models/job';
+import { type Job, type JobProps } from 'src/types/job';
 
-export const useNewsStore = defineStore('news-store', () => {
+export const useNewsStore = defineStore('news', () => {
   const loading = ref<boolean>(true);
-  const items = ref<Array<JobItemsProps>>([]);
+  const items = ref<Array<JobProps>>([]);
 
   const fetch = async () => {
     loading.value = true;
     return await api
-      .get(process.env.API_JOB)
-      .then((res: AxiosResponse<PageProps<JobItemsProps>>) => (items.value = res.data.items))
-      .catch((err: AxiosError) => console.error(err))
-      .finally(() => (loading.value = false));
+      .get('/jobs')
+      .then((res: AxiosResponse<Array<JobProps>>) => items.value = res.data)
+      .catch(handleError)
+      .finally(handleFinally);
   };
 
   const voidSave = (job: Job): void => void save(job);
@@ -35,31 +33,34 @@ export const useNewsStore = defineStore('news-store', () => {
 
     loading.value = true;
     return await api
-      .post(process.env.API_JOB, data)
+      .post('/jobs', data)
       .then(async (res: AxiosResponse<JobProps>) => {
         if (job.id === '') {
           await fetch();
           return;
         }
         items.value = items.value.map((item) => {
-          if (item.job.id === job.id) {
-            item.job = res.data;
+          if (item.id === job.id) {
+            item = res.data;
           }
           return item;
         });
       })
-      .catch((err: AxiosError) => console.error(err))
-      .finally(() => (loading.value = false));
+      .catch(handleError)
+      .finally(handleFinally);
   };
 
   const remove = async (id: string) => {
     loading.value = true;
     return await api
-      .delete(process.env.API_JOB, { params: { id: id } })
-      .then(() => (items.value = items.value.filter((item) => item.job.id !== id)))
-      .catch((err: AxiosError) => console.error(err))
-      .finally(() => (loading.value = false));
+      .delete('/jobs', { params: { id: id } })
+      .then(() => (items.value = items.value.filter((item) => item.id !== id)))
+      .catch(handleError)
+      .finally(handleFinally);
   };
+
+  const handleError = (err: AxiosError) => console.error(err)
+  const handleFinally = () => loading.value = false;
 
   return { loading, items, fetch, save, voidSave, remove };
 });
