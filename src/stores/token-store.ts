@@ -16,7 +16,7 @@ interface Auth {
 }
 
 export const useTokenStore = defineStore(
-  'token',
+  'token-store',
   () => {
     const token = ref<Token>();
 

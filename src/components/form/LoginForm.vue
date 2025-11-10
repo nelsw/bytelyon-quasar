@@ -17,7 +17,7 @@ const loginAsGuest = async () => {
 
 const login = async () => {
   if (await store.login(auth)) {
-    await router.push({ path: '/dashboard' });
+    await router.push({ name: 'Profile' });
   }
 };
 </script>
