@@ -114,7 +114,7 @@ onMounted(store.fetch);
             </q-btn>
           </span>
           <span v-else-if="col.name === 'delete'">
-            <DeleteBtn id="" name=""/>
+            <DeleteBtn id=""/>
           </span>
           <span v-else>
             {{ col.value }}

@@ -1,9 +1,18 @@
-import { type FrequencyProps, Unit, unitLabel } from 'src/types/frequency';
+import { type Frequency, Unit, unitLabel } from 'src/types/frequency';
 import { type ItemProps } from 'src/types/item';
+
+export const enum JobType {
+  NEWS = 'news',
+  SEARCH = 'search',
+  SITEMAP = 'sitemap',
+  PLUNDER = 'plunder',
+}
+
+export type JobResults = Map<string, string>
 
 export interface JobProps {
   description: string;
-  frequency: FrequencyProps;
+  frequency: Frequency;
   id: string;
   keywords: string[];
   name: string;
@@ -16,7 +25,7 @@ export interface JobProps {
 
 export class Job implements JobProps {
   description: string;
-  frequency: FrequencyProps;
+  frequency: Frequency;
   id: string;
   keywords: string[];
   name: string;

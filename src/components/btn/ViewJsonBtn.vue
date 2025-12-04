@@ -3,8 +3,8 @@ import MaxDialog from 'components/dialog/MaxDialog.vue';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
-  title: string;
-  content: string;
+  title?: string;
+  content?: object;
 }>();
 
 const model = defineModel<boolean>({ default: false });

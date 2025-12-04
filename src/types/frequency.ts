@@ -16,7 +16,19 @@ const dayOptions: OptionsProps = Array(13)
   .fill(0)
   .map((_, i): OptionProps => new Option(i));
 
-export interface FrequencyProps {
+export const FrequencyValueOptions = (u?: Unit): Option[] => {
+  if (u === Unit.MINUTE) {
+    return minuteOptions;
+  } else if (u === Unit.HOUR) {
+    return hourOptions
+  } else if (u === Unit.DAY) {
+    return dayOptions
+  } else {
+    return []
+  }
+}
+
+export interface Frequency {
   unit: Unit;
   value: number;
 }
@@ -33,8 +45,8 @@ export const UnitOptions: OptionsProps = [
   { label: 'Day', value: Unit.DAY },
 ];
 
-const frequencyLabel = (f: FrequencyProps): string => `${f.unit}${f.value}`;
-const unitLabel = (f: FrequencyProps): string => {
+const frequencyLabel = (f: Frequency): string => `${f.unit}${f.value}`;
+const unitLabel = (f: Frequency): string => {
   switch (f.unit) {
     case Unit.DAY:
       return 'Day';
@@ -44,7 +56,7 @@ const unitLabel = (f: FrequencyProps): string => {
       return 'Minute';
   }
 };
-const unitOptions = (f: FrequencyProps): OptionsProps => {
+const unitOptions = (f: Frequency): OptionsProps => {
   switch (f.unit) {
     case Unit.DAY:
       return dayOptions;

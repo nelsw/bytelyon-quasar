@@ -12,10 +12,12 @@ import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import MenuList from 'components/list/MenuList.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import JobBtn from 'components/btn/JobBtn.vue';
+import { JobType } from 'src/types/job';
 
 const store = usePlunderStore();
 const rowToDelete = ref<string>('');
-const rowStyleFn = (id:Plunder): string => rowToDelete.value === id.id ? 'background-color:#f23d4c;' : ''
+const rowStyleFn = (id: Plunder): string =>
+  rowToDelete.value === id.id ? 'background-color:#f23d4c;' : '';
 const columns: Array<QTableColumn<Plunder>> = [
   {
     name: 'id',
@@ -62,6 +64,7 @@ const columns: Array<QTableColumn<Plunder>> = [
     name: 'delete',
     label: 'Delete',
     field: 'id',
+    align: 'center',
     style: 'width: 0',
   },
 ];
@@ -71,7 +74,7 @@ onMounted(async () => {
   for (const column of columns) {
     visibleCols.value.push(column.name);
   }
-  await store.load()
+  await store.load();
 });
 </script>
 
@@ -93,18 +96,22 @@ onMounted(async () => {
     <template v-slot:top-left>
       <div class="flex justify-center q-gutter-sm">
         <q-icon name="mdi-search-web" size="md" />
-        <div class="text-h5 "> Search </div>
+        <div class="text-h5">Search</div>
       </div>
     </template>
     <template v-slot:top-right="props">
       <MenuBtn icon="mdi-view-column-outline">
         <MenuList v-model="visibleCols" />
       </MenuBtn>
-      <FullScreenBtn class="q-ml-sm" :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
+      <FullScreenBtn
+        class="q-ml-sm"
+        :fullscreen="props.inFullscreen"
+        @click="props.toggleFullscreen"
+      />
     </template>
     <template v-slot:body="props">
       <q-tr :props="props" no-hover>
-        <q-td v-for="col in props.cols" :key="col.name" :props="props" >
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <span v-if="col.name === 'loot'">
             <RowToggle
               size="sm"
@@ -114,14 +121,17 @@ onMounted(async () => {
             />
           </span>
           <span v-else-if="col.name === 'schedule'">
-            <JobBtn />
+            <JobBtn
+              :id="props.row.id"
+              :type="JobType.PLUNDER"
+            />
           </span>
           <span v-else-if="col.name === 'delete'">
             <DeleteBtn
               :id="props.row.id"
-              @select="(s:string) => rowToDelete=s"
-              @cancel="rowToDelete=''"
-              @delete="rowToDelete=''"
+              @select="(s: string) => (rowToDelete = s)"
+              @cancel="rowToDelete = ''"
+              @delete="rowToDelete = ''"
             />
           </span>
           <span v-else>
@@ -131,11 +141,9 @@ onMounted(async () => {
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
         <q-td colspan="100%" style="padding: 0">
-          <LootTable :rows="props.row?.loot" class="q-ma-md"/>
+          <LootTable :rows="props.row?.loot" class="q-ma-md" />
         </q-td>
       </q-tr>
     </template>
   </q-table>
 </template>
-
-<style scoped lang="scss"></style>
