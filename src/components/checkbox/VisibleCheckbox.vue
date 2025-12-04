@@ -6,6 +6,7 @@ const model = defineModel<boolean | string[]>({
 
 <template>
   <q-checkbox
+    color="light-blue"
     v-model="model"
     checked-icon="mdi-eye-outline"
     unchecked-icon="mdi-eye-off-outline"

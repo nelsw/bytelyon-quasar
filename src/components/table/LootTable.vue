@@ -122,7 +122,7 @@ onMounted(() => visibleCols.value = columns.map((col) => col.name));
 <template>
   <q-table
     :columns="columns"
-    :pagination="{ sortBy: 'id', descending: true }"
+    :pagination="{ sortBy: 'id', descending: true, rowsPerPage: -1 }"
     :rows="rows"
     :visible-columns="visibleCols"
     hide-pagination

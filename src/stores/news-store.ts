@@ -2,9 +2,23 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
 import { type Job, type JobProps } from 'src/types/job';
+import { type News } from 'src/types/news';
 
 export const useNewsStore = defineStore('news', () => {
   const loading = ref<boolean>(true);
+
+  const model = ref<News[]>([])
+
+  const load = async () => {
+    loading.value = true;
+    return await api
+      .get('/news')
+      .then((res: AxiosResponse<News[]>) => model.value = res.data)
+      .catch(handleError)
+      .finally(handleFinally);
+  };
+
+
   const items = ref<Array<JobProps>>([]);
 
   const fetch = async () => {
@@ -102,7 +116,7 @@ export const useNewsStore = defineStore('news', () => {
   const handleError = (err: AxiosError) => console.error(err)
   const handleFinally = () => loading.value = false;
 
-  return { loading, items, fetch, save, remove };
+  return { loading, items, fetch, save, remove, model, load };
 });
 
 if (import.meta.hot) {

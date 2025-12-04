@@ -28,7 +28,7 @@ const dialog = ref<boolean>(false);
 const isNew = ref<boolean>(false);
 
 const store = useJobStore();
-const color = computed(() => `${isNew.value ? 'amber' : 'light-green'}-14`);
+const color = computed(() => `${isNew.value ? 'amber-14' : 'cyan-13'}`);
 const icon = computed(() => `mdi-clock-${isNew.value ? 'remove' : 'check'}-outline`);
 const frequencyOptions = computed(() => FrequencyValueOptions(job.value?.frequency?.unit));
 

@@ -22,5 +22,5 @@ onMounted(() => option.value = router.currentRoute.value.name?.toString() ?? 'Pr
 </script>
 
 <template>
-  <q-btn-toggle v-model="option" :options="options" class="q-mx-sm" toggle-color="primary" flat />
+  <q-btn-toggle v-model="option" :options="options" class="q-mx-sm" toggle-color="deep-purple-12" flat />
 </template>

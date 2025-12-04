@@ -13,6 +13,7 @@ import MenuList from 'components/list/MenuList.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import JobBtn from 'components/btn/JobBtn.vue';
 import { JobType } from 'src/types/job';
+import PlusButton from 'components/btn/PlusButton.vue';
 
 const store = usePlunderStore();
 const rowToDelete = ref<string>('');
@@ -94,20 +95,27 @@ onMounted(async () => {
       <q-inner-loading showing color="primary" />
     </template>
     <template v-slot:top-left>
-      <div class="flex justify-center q-gutter-sm">
-        <q-icon name="mdi-search-web" size="md" />
-        <div class="text-h5">Search</div>
+      <div class="flex justify-center items-center">
+        <q-icon name="mdi-search-web" size="lg" @click="store.load()"/>
+        <span class="q-mx-sm text-h5">Search</span>
       </div>
     </template>
     <template v-slot:top-right="props">
+      <div class="flex justify-center items-center q-gutter-xs">
+      <PlusButton name="Search" />
       <MenuBtn icon="mdi-view-column-outline">
-        <MenuList v-model="visibleCols" />
+        <template #tooltip>
+          <q-tooltip class="bg-white text-black">Columns</q-tooltip>
+        </template>
+        <template #menu-content>
+          <MenuList v-model="visibleCols" />
+        </template>
       </MenuBtn>
       <FullScreenBtn
-        class="q-ml-sm"
         :fullscreen="props.inFullscreen"
         @click="props.toggleFullscreen"
       />
+      </div>
     </template>
     <template v-slot:body="props">
       <q-tr :props="props" no-hover>

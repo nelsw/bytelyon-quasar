@@ -5,6 +5,7 @@ import { defineConfig } from '#q-app/wrappers';
 
 export default defineConfig(() => {
   return {
+    animations: 'all',
     boot: ['axios', 'quasar-icon-set'],
     extras: ['mdi-v7'],
     build: {

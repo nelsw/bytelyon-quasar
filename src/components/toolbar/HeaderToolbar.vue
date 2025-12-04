@@ -16,7 +16,7 @@ const store = useTokenStore();
     <q-separator vertical />
     <q-btn
       @click="store.logout()"
-      color="accent"
+      color="pink-4"
       class="q-ml-sm"
       dense
       flat
