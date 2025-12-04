@@ -117,7 +117,7 @@ onMounted(store.fetch);
           </q-btn>
         </q-td>
         <q-td auto-width style="direction: rtl">
-          <DeleteBtn style="margin-right: 5px" @delete="store.remove(props.row.id)" />
+          <DeleteBtn id="" name=""/>
           <q-btn
             size="sm"
             flat

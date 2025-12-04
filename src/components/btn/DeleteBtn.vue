@@ -1,27 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 
-const softDelete = ref<boolean>(true);
-const emit = defineEmits<{ delete: [void] }>();
+const emit = defineEmits<{
+  select: [string];
+  cancel: [void];
+  delete: [string];
+}>();
+
+const props = defineProps<{
+  id: string;
+}>()
+
+const model = defineModel<boolean>({
+  default: false,
+});
 
 const handleClick = () => {
-  if (softDelete.value) {
-    softDelete.value = false;
-    setTimeout(() => (softDelete.value = true), 5000);
-  } else {
-    emit('delete');
-    softDelete.value = true;
-  }
-};
+  emit('select', props.id);
+  model.value = true;
+}
 </script>
 
 <template>
-  <q-btn
-    @click="handleClick"
-    :color="softDelete ? 'grey' : 'negative'"
-    :icon="`mdi-close-circle${softDelete ? '-outline' : ''}`"
-    size="sm"
-    flat
-    round
-  />
+  <q-btn color="negative" icon="mdi-delete-outline" flat dense @click="handleClick" />
+  <q-dialog v-model="model" persistent>
+    <q-card>
+      <q-card-section class="row items-center text-h6"> Delete this record? </q-card-section>
+      <q-card-actions>
+        <q-btn class="full-width q-my-sm" label="Delete" color="negative" v-close-popup @click="emit('delete', props.id)"/>
+        <q-btn class="full-width" flat label="Cancel" color="negative" v-close-popup @click="emit('cancel')"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>

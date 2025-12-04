@@ -1,0 +1,27 @@
+<script setup lang="ts">
+import MaxDialog from 'components/dialog/MaxDialog.vue';
+
+defineProps<{
+  title: string;
+  url: string;
+}>()
+
+const model = defineModel<boolean>({ default: false });
+</script>
+
+<template>
+  <q-btn dense flat target="_blank" no-caps size="sm" @click="model=true">
+    <q-icon name="mdi-image-outline" color="teal-14" size="xs" />
+    <q-tooltip class="bg">View Image</q-tooltip>
+  </q-btn>
+  <MaxDialog v-model="model">
+    <template v-slot:title>
+      <div class="text-h5">
+        {{title}}
+      </div>
+    </template>
+    <template v-slot:content>
+      <q-img :src="url" />
+    </template>
+  </MaxDialog>
+</template>

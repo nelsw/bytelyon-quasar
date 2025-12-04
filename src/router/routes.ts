@@ -18,6 +18,7 @@ const routes: RouteRecordRaw[] = [
       { path: '/profile', name: 'Profile', component: () => import('pages/ProfilePage.vue') },
       { path: '/sitemaps', name: 'Sitemaps', component: () => import('pages/SitemapsPage.vue') },
       { path: '/news', name: 'News', component: () => import('pages/NewsPage.vue') },
+      { path: '/search', name: 'Search', component: () => import('pages/SearchPage.vue') },
     ],
     meta: { requiresAuth: true },
   },
