@@ -42,7 +42,7 @@ export default defineConfig(() => {
     },
     framework: {
       config: {
-        dark: 'auto',
+        dark: true,
       },
       iconSet: 'svg-mdi-v7',
       // lang: 'en-US', // todo - language pack
