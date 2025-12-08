@@ -10,6 +10,7 @@ import MenuList from 'components/list/MenuList.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import DownloadHtmlBtn from 'components/btn/DownloadHtmlBtn.vue';
 import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
+import { truncateString } from 'src/types/base';
 
 defineProps<{
   rows: Loot[];
@@ -36,7 +37,6 @@ const columns: Array<QTableColumn<Loot>> = [
     field: 'idx',
     align: 'left',
     format: (value) => new Date(decodeTime(value)).toLocaleString(),
-    sort: (a, b) => decodeTime(a) - decodeTime(b),
     style: 'width: 0',
   },
   {
@@ -44,6 +44,7 @@ const columns: Array<QTableColumn<Loot>> = [
     label: 'Title',
     field: 'name',
     align: 'left',
+    format: (value: string) => truncateString(value, 50),
   },
   {
     name: 'organic',
@@ -122,7 +123,7 @@ onMounted(() => visibleCols.value = columns.map((col) => col.name));
 <template>
   <q-table
     :columns="columns"
-    :pagination="{ sortBy: 'id', descending: true, rowsPerPage: -1 }"
+    :pagination="{ sortBy: 'created', descending: true, rowsPerPage: -1 }"
     :rows="rows"
     :visible-columns="visibleCols"
     hide-pagination
