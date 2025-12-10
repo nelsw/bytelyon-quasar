@@ -29,9 +29,7 @@ const columns: QTableColumn<News>[] = [
 ];
 
 onMounted(async () => {
-  for (const column of columns) {
-    visibleCols.value.push(column.name);
-  }
+  visibleCols.value = columns.map((col) => col.name)
   await store.load();
 });
 </script>
@@ -87,4 +85,5 @@ onMounted(async () => {
       </q-tr>
     </template>
   </q-table>
+  <pre>{{store.model}}</pre>
 </template>

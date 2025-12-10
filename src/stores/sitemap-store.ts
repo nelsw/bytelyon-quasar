@@ -11,17 +11,17 @@ interface Item {
   visited: string[];
 }
 
-export const useSitemapStore = defineStore('sitemaps', () => {
+export const useSitemapStore = defineStore('sitemaps-store', () => {
 
   const loading = ref<boolean>(true);
-  const items = ref<Item[]>([]);
+  const model = ref<Item[]>([]);
   const url = ref<string>('');
 
-  const fetch = async () => {
+  const load = async () => {
     loading.value = true;
     return await api
       .get('/sitemaps')
-      .then((res: AxiosResponse<Item[]>) => (items.value = res.data ?? []))
+      .then((res: AxiosResponse<Item[]>) => (model.value = res.data ?? []))
       .catch(handleError)
       .finally(handleFinally);
   };
@@ -30,7 +30,7 @@ export const useSitemapStore = defineStore('sitemaps', () => {
     loading.value = true;
     return await api
       .post('/sitemaps', {}, {params: { url: btoa(url.value) } })
-      .then((res: AxiosResponse<Item>) => items.value.push(res.data))
+      .then((res: AxiosResponse<Item>) => model.value.push(res.data))
       .catch(handleError)
       .finally(handleFinally);
   };
@@ -40,7 +40,7 @@ export const useSitemapStore = defineStore('sitemaps', () => {
     console.log(btoa(url));
     return await api
       .delete('/sitemaps', { params: { url: btoa(url) } })
-      .then(() => (items.value = items.value.filter((item) => item.url !== url)))
+      .then(() => (model.value = model.value.filter((item) => item.url !== url)))
       .catch(handleError)
       .finally(handleFinally);
   };
@@ -51,7 +51,7 @@ export const useSitemapStore = defineStore('sitemaps', () => {
     url.value = '';
   }
 
-  return { loading, items, url, fetch, create, remove };
+  return { loading, model, url, load, create, remove };
 });
 
 if (import.meta.hot) {

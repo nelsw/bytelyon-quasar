@@ -22,7 +22,6 @@ const columns: QTableColumn<Page>[] = [
     label: 'ID',
     field: 'id',
     align: 'left',
-
   },
   {
     name: 'created',

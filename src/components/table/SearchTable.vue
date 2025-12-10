@@ -125,7 +125,7 @@ onMounted(async () => {
     </template>
     <template v-slot:top-right="props">
       <div class="flex justify-center items-center q-gutter-xs">
-        <PlusButton name="Search" hint="New<br>Search" />
+        <PlusButton hint="New<br>Search" />
         <MenuBtn icon="mdi-view-column-outline">
           <template #tooltip>
             <x-tooltip text="Columns" />

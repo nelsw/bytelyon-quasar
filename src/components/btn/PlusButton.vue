@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import XTooltip from 'components/tooltip/XTooltip.vue';
-
 defineProps<{
-  name: string
   hint?: string
 }>()
 </script>

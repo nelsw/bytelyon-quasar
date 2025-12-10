@@ -4,12 +4,26 @@ import { useSitemapStore } from 'stores/sitemap-store';
 import { type QTableColumn } from 'quasar';
 import { type Sitemap } from 'src/types/sitemap';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
+import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
+import UrlTabs from 'components/tabs/UrlTabs.vue';
+import PlusButton from 'components/btn/PlusButton.vue';
+import XTooltip from 'components/tooltip/XTooltip.vue';
+import MenuList from 'components/list/MenuList.vue';
+import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
+import MenuBtn from 'components/btn/MenuBtn.vue';
+import SitemapDialog from 'components/dialog/SitemapDialog.vue';
 
+const rowToDelete = ref<string>('');
 const store = useSitemapStore();
-const filter = ref<string>('');
-const columns: Array<QTableColumn<Sitemap>> = [
+const columns: QTableColumn<Sitemap>[] = [
   {
-    name: 'start',
+    name: 'id',
+    label: 'ID',
+    field: 'id',
+    align: 'left',
+  },
+  {
+    name: 'created',
     label: 'Created',
     field: 'start',
     align: 'left',
@@ -17,149 +31,125 @@ const columns: Array<QTableColumn<Sitemap>> = [
     sort: (a, b) => Date.parse(a) - Date.parse(b),
   },
   {
-    name: 'duration',
-    label: 'Duration',
-    field: 'duration',
-    align: 'left',
-    format: (value) => `${value}s`,
-  },
-  {
-    name: 'url',
-    label: 'URL',
-    field: 'url',
-    align: 'left',
-    sort: (a, b) => a.localeCompare(b),
+    name: '$',
+    label: '',
+    field: 'id',
+    style: 'width: 20%;',
   },
   {
     name: 'domain',
-    label: 'Domain',
+    label: 'Site',
     field: 'domain',
     align: 'left',
     sort: (a, b) => a.localeCompare(b),
   },
-
+  {
+    name: '$',
+    label: '',
+    field: 'id',
+    style: 'width: 20%;',
+  },
   {
     name: 'relative',
-    label: 'Relative',
+    label: 'Pages',
     field: 'relative',
-    align: 'left',
+    align: 'center',
     format: (value) => value?.length,
   },
   {
     name: 'remote',
-    label: 'Remote',
+    label: 'Links',
     field: 'remote',
-    align: 'left',
+    align: 'center',
     format: (value) => value?.length,
   },
   {
-    name: 'delete',
-    label: 'Delete',
+    name: '$',
+    label: '',
     field: 'id',
+    style: 'width: 20%;',
+  },
+  {
+    name: 'duration',
+    label: 'Duration',
+    field: 'duration',
+    align: 'center',
+    format: (value) => `${value}s`,
+  },
+  {
+    name: '$',
+    label: '',
+    field: 'id',
+    style: 'width: 20%;',
+  },
+  {
+    name: 'actions',
+    label: 'Actions',
+    field: 'id',
+    style: 'width: 0;',
+    align: 'center',
   },
 ];
-
-const expanded = ref<string[]>([]);
-
-onMounted(store.fetch);
+const visibleCols = ref<string[]>([]);
+const dialog = ref<boolean>(false);
+onMounted(async () => {
+  visibleCols.value = columns.map((col) => col.name)
+  await store.load();
+});
 </script>
 
 <template>
+  <SitemapDialog v-model="dialog"/>
   <q-table
     :columns="columns"
-    :fullscreen="false"
+    :visible-columns="visibleCols"
     :loading="store.loading"
-    :pagination="{ sortBy: 'start' }"
-    :rows="store.items"
-    bordered
-    color="primary"
-    row-key="start"
+    :pagination="{ sortBy: 'id' }"
+    :rows="store.model"
+    :table-row-style-fn="() => 'cursor: pointer;'"
+    row-key="id"
     flat
+    dense
   >
-    <template v-slot:loading>
+    <template #loading>
       <q-inner-loading showing color="primary" />
     </template>
-    <template v-slot:top-left>
-      <q-icon name="mdi-web" size="md" />
-      <span class="text-h5 q-ml-sm q-mt-xs"> Sitemaps </span>
+    <template #top-left>
+      <div class="flex justify-center items-center">
+        <q-icon name="mdi-web" size="lg" @click="store.load()" />
+        <span class="q-mx-sm text-h5">Sitemaps</span>
+      </div>
     </template>
-    <template v-slot:top-right>
-      <q-form @submit.prevent="store.create()" class="row">
-        <q-input v-model="store.url" color="positive" label="URL" name="url" type="url" dense>
-          <template v-slot:prepend>
-            <q-icon name="mdi-web-box" size="sm" />
-          </template>
-        </q-input>
-        <q-btn icon="mdi-plus" color="positive" flat dense type="submit" />
-      </q-form>
+    <template #top-right="props">
+      <PlusButton hint="New<br>Sitemap" @click="dialog = true"/>
+      <MenuBtn icon="mdi-view-column-outline">
+        <template #tooltip>
+          <x-tooltip text="Columns" />
+        </template>
+        <template #menu-content>
+          <MenuList v-model="visibleCols" />
+        </template>
+      </MenuBtn>
+      <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
     </template>
-    <template v-slot:body="props">
-      <q-tr :props="props">
+    <template #body="props">
+      <q-tr :props="props" @click="props.expand = !props.expand">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <span v-if="col.name.match(/relative|remote/)">
-            <q-btn
-              dense
-              flat
-              @click="
-                expanded = col.name === 'relative' ? props.row.relative : props.row.remote;
-                props.expand = !props.expand;
-              "
-            >
-              <q-icon
-                :name="props.expand ? 'mdi-chevron-down' : 'mdi-chevron-up'"
-                color="primary"
-                size="xs"
-              />
-              <span style="font-size: 13px; padding-right: 5px">{{ col.value }}</span>
-            </q-btn>
-          </span>
-          <span v-else-if="col.name === 'delete'">
-            <DeleteBtn id=""/>
-          </span>
-          <span v-else>
-            {{ col.value }}
-          </span>
+          <div v-if="col.name === 'actions'">
+            <OpenInNewBtn :url="props.row.url" />
+            <DeleteBtn
+              :id="props.row.id"
+              @select="(s: string) => (rowToDelete = s)"
+              @cancel="rowToDelete = ''"
+              @delete="store.remove(props.row.url)"
+            />
+          </div>
+          <span v-else-if="col.name !== '$'" v-html="col.value" />
         </q-td>
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
-        <q-td colspan="100%">
-          <q-table
-            :fullscreen="false"
-            :rows="expanded"
-            dense
-            flat
-            hide-header
-            :rows-per-page-options="[10, 50, 100, 1000]"
-            :filter="filter"
-            :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
-          >
-            <template v-slot:top-left>
-              <q-input
-                v-model="filter"
-                debounce="300"
-                color="primary"
-                label="Filter Links"
-                name="filter"
-                dense
-              >
-                <template v-slot:prepend>
-                  <q-icon name="mdi-filter" size="sm" />
-                </template>
-              </q-input>
-            </template>
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td colspan="100%">
-                  <q-btn dense flat target="_blank" :href="props.row.url" no-caps size="sm">
-                    <q-icon name="mdi-open-in-new" color="primary" size="xs" class="q-mr-xs" />
-                    <span style="font-size: 12px; margin-left: 2px">
-                      {{ props.row }}
-                    </span>
-                  </q-btn>
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
+        <q-td colspan="100%" style="padding: 0">
+          <UrlTabs :pages="props.row.relative" :links="props.row.remote" />
         </q-td>
       </q-tr>
     </template>
