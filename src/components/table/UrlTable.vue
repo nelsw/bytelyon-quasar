@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import type { Result } from 'src/types/result';
 import { truncateString } from 'src/types/base';
+import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 defineProps<{
   rows: string[];
 }>();
@@ -15,12 +16,12 @@ const handleClick = (r: Result) => window.open(r.link, '_blank');
     :rows="rows"
     :filter="filter"
     :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
-    :rows-per-page-options="[100]"
+    :rows-per-page-options="[1000]"
     dense
     flat
     hide-pagination
   >
-    <template #top-left>
+    <template #top="props">
       <q-input
         v-model="filter"
         debounce="300"
@@ -33,15 +34,59 @@ const handleClick = (r: Result) => window.open(r.link, '_blank');
           <q-icon name="mdi-filter" size="sm" />
         </template>
       </q-input>
-    </template>
-    <template #top-right="props">
-      <div class="q-gutter-x-xs">
-        <q-pagination
-          v-model="props.pagination.page"
-          color="primary"
-          :max="props.pagesNumber"
+      <q-space />
+      <div class="q-gutter-x-xs" v-if="rows.length > 1000">
+        <q-btn
+          v-if="props.pagesNumber > 2"
+          icon="mdi-page-first"
+          color="grey-8"
           size="sm"
+          dense
+          flat
+          :disable="props.isFirstPage"
+          @click="props.firstPage"
         />
+        <q-btn
+          icon="mdi-chevron-left"
+          color="grey-8"
+          size="sm"
+          dense
+          flat
+          :disable="props.isFirstPage"
+          @click="props.prevPage"
+        />
+        <q-badge color="primary" class="q-mx-xs" dense >
+          <span>
+            {{props.pagination.page}}
+          </span>
+        </q-badge>
+        /
+        <q-badge color="primary" class="q-mx-xs" dense outline>
+          <span class="text-white">{{props.pagesNumber}}</span>
+        </q-badge>
+        <q-btn
+          icon="mdi-chevron-right"
+          color="grey-8"
+          size="sm"
+          dense
+          flat
+          :disable="props.isLastPage"
+          @click="props.nextPage"
+        />
+        <q-btn
+          v-if="props.pagesNumber > 2"
+          icon="mdi-page-last"
+          color="grey-8"
+          size="sm"
+          dense
+          flat
+          :disable="props.isLastPage"
+          @click="props.lastPage"
+        />
+      </div>
+      <q-space />
+      <div>
+        <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
       </div>
     </template>
     <template #header>
