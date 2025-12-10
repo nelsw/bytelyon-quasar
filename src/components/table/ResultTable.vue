@@ -1,65 +1,116 @@
 <script setup lang="ts">
 import type { QTableColumn } from 'quasar';
-import type { Result } from 'src/types/loot';
-import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { computed } from 'vue';
-import { titleCase, truncateString } from 'src/types/base';
+import { truncateString } from 'src/types/base';
+import { type Result } from 'src/types/result';
 
 const props = defineProps<{
   name: string;
   rows: Result[];
 }>();
 
-const tableName = computed(() => `${titleCase(props.name)} Results`)
-const tableIcon = computed(() => {
-  switch (props.name) {
-    case 'organic':
-      return 'mdi-leaf-circle-outline'
-    case 'sponsored':
-      return 'mdi-credit-card-search-outline'
-    case 'videos':
-      return 'mdi-movie-search-outline'
-    case 'forums':
-      return 'mdi-comment-search-outline'
-    case 'articles':
-      return 'mdi-book-search-outline'
-    default:
-      return 'mdi-file-search-outline'
+const columns = computed((): QTableColumn<Result>[] => {
+  if (props.name === 'Articles') {
+    return [
+      {
+        name: 'position',
+        label: 'Pos.',
+        field: 'position',
+        align: 'center',
+        format: (value: number) => (value + 1).toString(),
+        style: 'width: 0;',
+      },
+      {
+        name: 'title',
+        label: 'Title',
+        field: 'title',
+        align: 'left',
+        style: 'width: 0;',
+      },
+
+    ];
+  } else if (props.name === 'Forums') {
+    return [
+      {
+        name: 'position',
+        label: 'Pos.',
+        field: 'position',
+        align: 'center',
+        format: (value: number) => (value + 1).toString(),
+        style: 'width: 0;',
+      },
+      {
+        name: 'snippet',
+        label: 'Source',
+        field: 'snippet',
+        align: 'left',
+        style: 'width: 0;',
+      },
+      {
+        name: 'title',
+        label: 'Title',
+        field: 'title',
+        align: 'left',
+      },
+
+    ];
+  } else if (props.name === 'Sponsored') {
+    return [
+      {
+        name: 'position',
+        label: 'Pos.',
+        field: 'position',
+        align: 'center',
+        format: (value: number) => (value + 1).toString(),
+        style: 'width: 0;',
+      },
+      {
+        name: 'source',
+        label: 'Source',
+        field: 'source',
+        align: 'left',
+        style: 'width: 0;',
+      },
+      {
+        name: 'title',
+        label: 'Title',
+        field: 'title',
+        align: 'left',
+      },
+    ];
   }
+  return [
+    {
+      name: 'position',
+      label: 'Pos.',
+      field: 'position',
+      align: 'center',
+      format: (value: number) => (value + 1).toString(),
+      style: 'width: 0;',
+    },
+    {
+      name: 'source',
+      label: 'Source',
+      field: 'source',
+      align: 'left',
+      style: 'width: 0;',
+    },
+    {
+      name: 'title',
+      label: 'Title',
+      field: 'title',
+      align: 'left',
+      style: 'width: 0;',
+    },
+    {
+      name: 'snippet',
+      label: 'Snippet',
+      field: 'snippet',
+      align: 'left',
+    },
+  ];
 })
-const columns: Array<QTableColumn<Result>> = [
-  {
-    name: 'position',
-    label: '#',
-    field: 'position',
-    align: 'center',
-    format: (value: number) => (value + 1).toString(),
-  },
-  {
-    name: 'source',
-    label: 'Source',
-    field: 'source',
-    align: 'left',
-  },
-  {
-    name: 'title',
-    label: 'Title',
-    field: 'title',
-    align: 'left',
-  },
-  {
-    name: 'snippet',
-    label: 'Snippet',
-    field: 'snippet',
-    align: 'left',
-  },
-  {
-    name: 'link',
-    label: 'Link',
-    field: 'link',
-    align: 'center',
-  },
-];
+const handleClick = (r: Result) => window.open(r.link, '_blank');
 </script>
 
 <template>
@@ -71,23 +122,21 @@ const columns: Array<QTableColumn<Result>> = [
     row-key="position"
     dense
     flat
-    wrap-cells
   >
-    <template v-slot:top-left>
-      <q-icon :name="tableIcon" size="xs" />
-      <span > {{tableName}} </span>
-    </template>
     <template v-slot:body="props">
-      <q-tr :props="props">
-        <q-td v-for="col in props.cols" :key="col.name" :props="props" auto-width>
-          <span v-if="col.name === 'link'">
-            <OpenInNewBtn :url="col.value" />
+      <q-tr :props="props" @click="handleClick(props.row)">
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+          <span v-if="col.name === 'position'">
+            <q-badge color="indigo" :label="col.value" />
           </span>
           <span v-else-if="col.name === 'title'">
-            {{ truncateString(col.value, 75) }}
+            {{ truncateString(col.value, 150) }}
+          </span>
+          <span v-else-if="col.name === 'snippet'">
+            {{ truncateString(col.value, 150) }}
           </span>
           <span v-else>
-            {{ truncateString(col.value, 100) }}
+            {{col.value}}
           </span>
         </q-td>
       </q-tr>

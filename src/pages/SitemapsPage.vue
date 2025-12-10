@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import SitemapTable from 'components/table/SitemapTable.vue';
+import SitemapsTable from 'components/table/SitemapsTable.vue';
 </script>
 
 <template>
-  <div class="row q-pa-md">
-    <div class="col-12">
-      <SitemapTable />
-    </div>
-  </div>
+  <q-page padding>
+    <SitemapsTable />
+  </q-page>
 </template>

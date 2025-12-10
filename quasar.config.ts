@@ -5,6 +5,9 @@ import { defineConfig } from '#q-app/wrappers';
 
 export default defineConfig(() => {
   return {
+    sourceFiles: {
+      electronMain: './src-electron/electron-main',
+    },
     animations: 'all',
     boot: ['axios', 'quasar-icon-set'],
     extras: ['mdi-v7'],
@@ -66,7 +69,7 @@ export default defineConfig(() => {
       // wip
       preloadScripts: ['electron-preload'],
       inspectPort: 5858,
-      bundler: 'packager', // 'packager' or 'builder'
+      bundler: 'builder', // 'packager' or 'builder'
       packager: {},
       builder: {
         appId: 'bytelyon-quasar',

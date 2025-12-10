@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import { usePlunderStore } from 'stores/plunder-store';
 import { onMounted, ref } from 'vue';
 import { type QTableColumn } from 'quasar';
-import { type Plunder } from 'src/types/plunder';
 import { decodeTime } from 'ulid';
-import { type Loot } from 'src/types/loot';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
-import RowToggle from 'components/btn/toggle/RowToggle.vue';
-import LootTable from 'components/table/LootTable.vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import MenuList from 'components/list/MenuList.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import JobBtn from 'components/btn/JobBtn.vue';
 import { JobType } from 'src/types/job';
 import PlusButton from 'components/btn/PlusButton.vue';
+import { FollowTargetsCsv, IgnoreTargetsCsv } from 'src/types/targets';
+import { useSearchStore } from 'stores/search-store';
+import { type Search } from 'src/types/search';
+import { type Page } from 'src/types/page';
+import PageTable from 'components/table/PageTable.vue';
+import XTooltip from 'components/tooltip/XTooltip.vue';
 
-const store = usePlunderStore();
+const store = useSearchStore();
 const rowToDelete = ref<string>('');
-const rowStyleFn = (id: Plunder): string =>
-  rowToDelete.value === id.id ? 'background-color:#f23d4c;' : '';
-const columns: Array<QTableColumn<Plunder>> = [
+const rowStyleFn = (id: Search): string =>
+  rowToDelete.value === id.id ? 'background-color:#f23d4c;' : 'cursor: pointer;';
+const columns: QTableColumn<Search>[] = [
   {
     name: 'id',
     label: 'ID',
@@ -35,48 +36,70 @@ const columns: Array<QTableColumn<Plunder>> = [
     sort: (a, b) => decodeTime(a) - decodeTime(b),
   },
   {
+    name: '$',
+    label: '',
+    field: 'id',
+    style: 'width: 20%;',
+  },
+  {
     name: 'query',
     label: 'Query',
-    field: 'target',
+    field: 'query',
     align: 'left',
+  },
+  {
+    name: '$',
+    label: '',
+    field: 'id',
+    style: 'width: 20%;',
   },
   {
     name: 'follow',
     label: 'Follow',
-    field: 'follow',
+    field: 'targets',
     align: 'left',
-    format: (value) => value.join(','),
+    format: FollowTargetsCsv,
   },
   {
-    name: 'loot',
+    name: 'ignore',
+    label: 'Ignore',
+    field: 'targets',
+    align: 'center',
+    format: IgnoreTargetsCsv,
+  },
+  {
+    name: '$',
+    label: '',
+    field: 'id',
+    style: 'width: 20%;',
+  },
+  {
+    name: 'pages',
     label: 'Pages',
-    field: 'loot',
+    field: 'pages',
     align: 'center',
-    format: (value: Loot[]) => value.length.toString(),
+    format: (value: Page[]) => value.length.toString(),
   },
   {
-    name: 'schedule',
-    label: 'Schedule',
+    name: '$',
+    label: '',
     field: 'id',
-    align: 'center',
-    style: 'width: 0',
+    style: 'width: 20%;',
   },
   {
-    name: 'delete',
-    label: 'Delete',
+    name: 'actions',
+    label: 'Actions',
     field: 'id',
-    align: 'center',
-    style: 'width: 0',
+    style: 'width: 0;',
   },
 ];
 const visibleCols = ref<string[]>([]);
 
 onMounted(async () => {
-  for (const column of columns) {
-    visibleCols.value.push(column.name);
-  }
+  visibleCols.value = columns.map((col) => col.name)
   await store.load();
 });
+
 </script>
 
 <template>
@@ -87,6 +110,7 @@ onMounted(async () => {
     :rows="store.model"
     :visible-columns="visibleCols"
     :table-row-style-fn="rowStyleFn"
+    :hide-pagination="store.model.length <= 5"
     row-key="id"
     flat
     dense
@@ -96,62 +120,61 @@ onMounted(async () => {
     </template>
     <template v-slot:top-left>
       <div class="flex justify-center items-center">
-        <q-icon name="mdi-search-web" size="lg" @click="store.load()"/>
+        <q-icon name="mdi-search-web" size="lg" @click="store.load()" />
         <span class="q-mx-sm text-h5">Search</span>
       </div>
     </template>
     <template v-slot:top-right="props">
       <div class="flex justify-center items-center q-gutter-xs">
-      <PlusButton name="Search" />
-      <MenuBtn icon="mdi-view-column-outline">
-        <template #tooltip>
-          <q-tooltip class="bg-white text-black">Columns</q-tooltip>
-        </template>
-        <template #menu-content>
-          <MenuList v-model="visibleCols" />
-        </template>
-      </MenuBtn>
-      <FullScreenBtn
-        :fullscreen="props.inFullscreen"
-        @click="props.toggleFullscreen"
-      />
+        <PlusButton hint="New<br>Search" />
+        <MenuBtn icon="mdi-view-column-outline">
+          <template #tooltip>
+            <x-tooltip text="Columns" />
+          </template>
+          <template #menu-content>
+            <MenuList v-model="visibleCols" />
+          </template>
+        </MenuBtn>
+        <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
       </div>
     </template>
     <template v-slot:body="props">
-      <q-tr :props="props" no-hover>
-        <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <span v-if="col.name === 'loot'">
-            <RowToggle
-              size="sm"
-              :value="col.value"
-              :expand="props.expand"
-              @click="props.expand = !props.expand"
-            />
-          </span>
-          <span v-else-if="col.name === 'schedule'">
-            <JobBtn
-              :id="props.row.id"
-              :type="JobType.PLUNDER"
-            />
-          </span>
-          <span v-else-if="col.name === 'delete'">
+      <q-tr :props="props">
+        <q-td
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          @click="col.name === 'actions' ? ()=>{} : props.expand = !props.expand"
+        >
+          <div v-if="col.name === 'actions'">
+            <JobBtn :id="props.row.id" :type="JobType.SEARCH" />
             <DeleteBtn
               :id="props.row.id"
               @select="(s: string) => (rowToDelete = s)"
               @cancel="rowToDelete = ''"
               @delete="rowToDelete = ''"
             />
-          </span>
-          <span v-else>
-            {{ col.value }}
-          </span>
+          </div>
+          <q-badge v-else-if="col.name ==='pages'" color="purple" :label="col.value" />
+          <span v-else-if="col.name !== '$'" v-html="col.value" />
         </q-td>
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
         <q-td colspan="100%" style="padding: 0">
-          <LootTable :rows="props.row?.loot" class="q-ma-md" />
+          <PageTable :rows="props.row?.pages" class="q-ma-xs" />
         </q-td>
       </q-tr>
     </template>
   </q-table>
 </template>
+<style lang="scss" scoped>
+.q-table tbody tr:hover {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+  transition-delay: 0s;
+}
+.q-table tbody tr:hover {
+  background-color: #37474f  !important;
+}
+</style>

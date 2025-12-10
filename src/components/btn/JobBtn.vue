@@ -5,6 +5,7 @@ import { type Jerb, useJobStore } from 'stores/job-store';
 import { clone, titleCase } from 'src/types/base';
 import { FrequencyValueOptions, Unit, UnitOptions } from 'src/types/frequency';
 import { QInput } from 'quasar';
+import XTooltip from 'components/tooltip/XTooltip.vue';
 
 const props = defineProps<{
   id: string;
@@ -52,7 +53,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <q-btn :color="color" :icon="icon" flat dense @click="dialog = true" />
+  <q-btn :color="color" :icon="icon" size="sm" flat dense @click="dialog = true" >
+    <x-tooltip text="Schedule" />
+  </q-btn>
   <q-dialog v-model="dialog" persistent>
     <q-card v-if="job" style="width: 250px; max-width: 25vw">
       <q-inner-loading :showing="store.loading" />
