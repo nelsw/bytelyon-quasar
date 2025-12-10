@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import XTooltip from 'components/tooltip/XTooltip.vue';
 
 defineProps<{ url: string }>();
 
@@ -13,8 +14,8 @@ const handleClick = () => {
 
 <template>
   <q-btn dense flat no-caps size="sm" @click="handleClick">
-    <q-icon name="mdi-download-box-outline" color="teal-14" size="xs" />
-    <q-tooltip class="bg">Download HTML</q-tooltip>
+    <q-icon name="mdi-download-box-outline" color="light-blue-14" size="xs" />
+    <x-tooltip text="Download<br>HTML" />
   </q-btn>
   <iframe v-if="model" :src="url" style="display: none" />
 </template>

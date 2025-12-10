@@ -10,14 +10,22 @@ const props = defineProps<{
 const ripple = { center: true };
 const disabled = computed(() => props.value === '' || props.value === '0');
 const iconName = computed(() => `mdi-chevron-${props.expand ? 'down' : 'up'}`);
-const btnSize = computed(() => props.size ? props.size : 'xs' );
-const color = computed(() => disabled.value ? 'grey' : 'primary');
+const btnSize = computed(() => (props.size ? props.size : 'xs'));
+const color = computed(() => (disabled.value ? 'grey' : 'purple'));
 </script>
 
 <template>
-  <q-btn dense flat :ripple="ripple" :disabled="disabled" :size="btnSize">
+  <q-btn
+    :color="color"
+    :disabled="disabled"
+    :flat="!expand"
+    :outline="expand"
+    :ripple="ripple"
+    :size="btnSize"
+    dense
+  >
     <q-icon v-if="!disabled" :name="iconName" :color="color" size="xs" />
-    <span class="my-span">{{ value }}</span>
+    <span class="my-span" v-html="value" />
   </q-btn>
 </template>
 
@@ -25,5 +33,6 @@ const color = computed(() => disabled.value ? 'grey' : 'primary');
 .my-span {
   font-size: 13px;
   padding-right: 5px;
+  color: white;
 }
 </style>

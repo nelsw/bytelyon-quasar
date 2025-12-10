@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import XTooltip from 'components/tooltip/XTooltip.vue';
+
 const emit = defineEmits<{
   select: [string];
   cancel: [void];
@@ -21,7 +23,9 @@ const handleClick = () => {
 </script>
 
 <template>
-  <q-btn color="negative" icon="mdi-delete-outline" flat dense @click="handleClick" />
+  <q-btn color="negative" icon="mdi-delete-outline" size="sm" flat dense @click="handleClick">
+    <x-tooltip text="Delete" />
+  </q-btn>
   <q-dialog v-model="model" persistent>
     <q-card>
       <q-card-section class="row items-center text-h6"> Delete this record? </q-card-section>

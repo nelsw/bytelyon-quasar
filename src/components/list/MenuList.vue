@@ -13,7 +13,7 @@ onMounted(() => keys.value = model.value);
 
 <template>
   <q-list class="my-list" v-for="k in keys" :key="k">
-    <q-item clickable v-close-popup dense>
+    <q-item v-if="k !== '$'" clickable v-close-popup dense>
       <q-item-section>
         <VisibleCheckbox v-model="model" :val="k" :label="titleCase(k)" dense size="xs" />
       </q-item-section>
