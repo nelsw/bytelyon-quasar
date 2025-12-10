@@ -19,7 +19,7 @@ const model = defineModel<boolean>({
       <q-card-section class="row items-center text-h6"> Delete this record? </q-card-section>
       <q-card-actions>
         <q-form @submit="emit('delete')" style="width: 100%">
-          <q-btn class="full-width q-my-sm" label="Delete" color="negative" v-close-popup type="submit"/>
+          <q-btn class="full-width q-my-sm" label="Delete" color="negative" v-close-popup type="submit" autofocus/>
           <q-btn class="full-width" flat label="Cancel" color="negative" v-close-popup />
         </q-form>
       </q-card-actions>

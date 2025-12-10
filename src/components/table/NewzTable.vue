@@ -12,6 +12,9 @@ import XTooltip from 'components/tooltip/XTooltip.vue';
 import MenuList from 'components/list/MenuList.vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
+import NewsDialog from 'components/dialog/NewsDialog.vue';
+import { JobType } from 'src/types/job';
+import JobBtn from 'components/btn/JobBtn.vue';
 
 const store = useNewsStore();
 const visibleCols = ref<string[]>([]);
@@ -41,6 +44,7 @@ const columns: QTableColumn<News>[] = [
     label: 'Name',
     field: 'name',
     align: 'left',
+    format: (value: string) => (value === '' ? '(nameless)' : value),
   },
   {
     name: '$',
@@ -81,14 +85,21 @@ const columns: QTableColumn<News>[] = [
     style: 'width: 0;',
   },
 ];
-
+const dialog = ref<boolean>(false);
 onMounted(async () => {
   visibleCols.value = columns.map((col) => col.name);
   await store.load();
 });
+const handleSave = async (data: News, newName: string, oldName: string) => {
+  if (oldName !== newName) {
+    data.name = newName;
+    await store.update(data)
+  }
+}
 </script>
 
 <template>
+  <NewsDialog v-model="dialog"/>
   <q-table
     :columns="columns"
     :loading="store.loading"
@@ -99,6 +110,7 @@ onMounted(async () => {
     flat
     dense
     :table-row-style-fn="() => `cursor: pointer;`"
+    :hide-pagination="store.model.length <= 5"
   >
     <template #loading>
       <q-inner-loading showing color="primary" />
@@ -111,7 +123,7 @@ onMounted(async () => {
     </template>
     <template #top-right="props">
       <div class="flex justify-center items-center q-gutter-xs">
-        <PlusButton hint="New Feed" />
+        <PlusButton hint="New Feed" @click="dialog = true"/>
         <MenuBtn icon="mdi-view-column-outline">
           <template #tooltip>
             <x-tooltip text="Columns" />
@@ -129,10 +141,15 @@ onMounted(async () => {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          @click="col.name === 'actions' ? () => {} : (props.expand = !props.expand)"
+          @click="
+            col.name === 'actions' || col.name === 'name'
+              ? () => {}
+              : (props.expand = !props.expand)
+          "
         >
           <div v-if="col.name === 'actions'">
-            <DeleteBtn :id="props.row.id" />
+            <JobBtn :id="props.row.id" :type="JobType.NEWS" />
+            <DeleteBtn @delete="store.remove(props.row.id)" />
           </div>
           <span v-else-if="col.name === 'keywords'">
             <q-chip
@@ -146,18 +163,33 @@ onMounted(async () => {
               size="sm"
             />
           </span>
-
+          <span v-else-if="col.name === 'name'">
+            {{ col.value }}
+            <q-popup-edit
+              v-model="props.row.name"
+              v-slot="scope"
+              buttons
+              persistent
+              label-set="update"
+              @save="(newValue, oldValue) => handleSave(props.row, newValue, oldValue)"
+            >
+              <q-input v-model="scope.value" dense autofocus @keyup.enter="scope.set" />
+            </q-popup-edit>
+          </span>
           <span v-else-if="col.name !== '$'" v-html="col.value" />
         </q-td>
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
         <q-td colspan="100%" style="padding: 0">
-          <ArticleTable :rows="props.row.articles ?? []" />
+          <ArticleTable
+            :news="props.row.id"
+            :rows="props.row.articles ?? []"
+            @load="store.load()"
+          />
         </q-td>
       </q-tr>
     </template>
   </q-table>
-  <pre>{{ store.model }}</pre>
 </template>
 <style lang="scss" scoped>
 .q-table tbody tr:hover {
@@ -167,6 +199,6 @@ onMounted(async () => {
   transition-delay: 0s;
 }
 .q-table tbody tr:hover {
-  background-color: #37474f  !important;
+  background-color: #37474f !important;
 }
 </style>

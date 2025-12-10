@@ -110,6 +110,7 @@ onMounted(async () => {
     :rows="store.model"
     :visible-columns="visibleCols"
     :table-row-style-fn="rowStyleFn"
+    :hide-pagination="store.model.length <= 5"
     row-key="id"
     flat
     dense
@@ -146,7 +147,7 @@ onMounted(async () => {
           @click="col.name === 'actions' ? ()=>{} : props.expand = !props.expand"
         >
           <div v-if="col.name === 'actions'">
-            <JobBtn :id="props.row.id" :type="JobType.PLUNDER" />
+            <JobBtn :id="props.row.id" :type="JobType.SEARCH" />
             <DeleteBtn
               :id="props.row.id"
               @select="(s: string) => (rowToDelete = s)"

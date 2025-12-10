@@ -13,7 +13,7 @@ export const useSitemapStore = defineStore('sitemaps-store', () => {
     return await api
       .get('/sitemaps')
       .then((res: AxiosResponse<Sitemaps[]>) => (model.value = res.data))
-      .catch(handleError)
+      .catch((err: AxiosError) => console.error(err))
       .finally(handleFinally);
   };
 
@@ -22,7 +22,7 @@ export const useSitemapStore = defineStore('sitemaps-store', () => {
     return await api
       .post('/sitemaps', {url: url})
       .then(load)
-      .catch(handleError)
+      .catch((err: AxiosError) => console.error(err))
       .finally(handleFinally);
   };
 
@@ -31,11 +31,10 @@ export const useSitemapStore = defineStore('sitemaps-store', () => {
     return await api
       .delete('/sitemaps', { params: { id: id, domain: domain } })
       .then(load)
-      .catch(handleError)
+      .catch((err: AxiosError) => console.error(err))
       .finally(handleFinally);
   };
 
-  const handleError = (err: AxiosError) => console.error(err)
   const handleFinally = () => {
     loading.value = false;
   }

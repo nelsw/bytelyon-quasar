@@ -112,7 +112,11 @@ onMounted(() => {
     flat
     dense
     class="bg-grey-10 q-ma-sm"
+    :loading="store.loading"
   >
+    <template #loading>
+      <q-inner-loading showing color="primary" />
+    </template>
     <template #top-left>
       <div class="flex justify-center items-center">
         <q-icon name="mdi-application-outline" size="md" @click="store.load()" />

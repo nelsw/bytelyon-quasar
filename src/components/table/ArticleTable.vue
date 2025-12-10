@@ -4,13 +4,17 @@ import { onMounted, ref } from 'vue';
 import type { QTableColumn } from 'quasar';
 import { decodeTime } from 'ulid';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
-
-defineProps<{
-  rows: Article[];
+import { useArticleStore } from 'stores/article-store';
+import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
+const emit = defineEmits<{
+  load: [void];
 }>();
-
+const props = defineProps<{
+  rows: Article[];
+  news: string;
+}>();
+const store = useArticleStore();
 const filter = ref<string>('');
-const handleClick = (a: Article) => window.open(a.url, '_blank');
 const visibleCols = ref<string[]>([]);
 const columns: QTableColumn<Article>[] = [
   {
@@ -77,7 +81,14 @@ const columns: QTableColumn<Article>[] = [
 ];
 onMounted(() => {
   visibleCols.value = columns.filter(col => col.name !== 'url').map((col) => col.name)
+  store.loading = false;
 });
+const handleDelete = async (id: string) => {
+  const ok = await store.remove(props.news, id)
+  if (ok) {
+    emit('load')
+  }
+}
 </script>
 
 <template>
@@ -88,24 +99,40 @@ onMounted(() => {
     :rows="rows"
     :filter="filter"
     :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
+    :loading="store.loading"
     row-key="id"
     dense
     flat
     class="q-ma-sm"
   >
+    <template #loading>
+      <q-inner-loading showing color="primary" />
+    </template>
+    <template #top>
+      <q-input
+        v-model="filter"
+        debounce="300"
+        color="primary"
+        label="Filter Articles"
+        name="filter"
+        dense
+      >
+        <template #prepend>
+          <q-icon name="mdi-filter" size="sm" />
+        </template>
+      </q-input>
+    </template>
     <template #body="props">
       <q-tr :props="props">
         <q-td
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          @click="handleClick(props.row)"
         >
           <div v-if="col.name === 'actions'">
-            <DeleteBtn :id="props.row.id" />
+            <OpenInNewBtn :url="props.row.url" />
+            <DeleteBtn @delete="handleDelete(props.row.id)" />
           </div>
-
-
           <span v-else-if="col.name !== '$'" v-html="col.value" />
         </q-td>
       </q-tr>
