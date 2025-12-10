@@ -149,9 +149,6 @@ onMounted(async () => {
           <div v-if="col.name === 'actions'">
             <JobBtn :id="props.row.id" :type="JobType.SEARCH" />
             <DeleteBtn
-              :id="props.row.id"
-              @select="(s: string) => (rowToDelete = s)"
-              @cancel="rowToDelete = ''"
               @delete="rowToDelete = ''"
             />
           </div>

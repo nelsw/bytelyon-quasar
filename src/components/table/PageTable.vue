@@ -137,9 +137,9 @@ onMounted(() => visibleCols.value = columns.map((col) => col.name));
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props" @click="props.expand = !props.expand">
           <div v-if="col.name === 'actions'">
-            <ViewJsonBtn :title="props.row?.title" :content="col.value" />
-            <ViewImgBtn :title="props.row?.title" :url="col.value" />
-            <DownloadHtmlBtn :url="col.value" />
+            <ViewJsonBtn :title="props.row?.title" :content="props.row.results" />
+            <ViewImgBtn :title="props.row?.title" :url="props.row.screenshot" />
+            <DownloadHtmlBtn :url="props.row.content" />
           </div>
           <q-badge v-else-if="col.name.match(/organic|sponsored|videos|forums|articles/)" color="purple" :label="col.value" />
 

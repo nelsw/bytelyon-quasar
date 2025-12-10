@@ -22,7 +22,6 @@ export const useJobStore = defineStore('job-store', () => {
       .get('/jobs')
       .then((res: AxiosResponse<Jerb[]>) => {
         model.value = res.data
-        console.log(res)
       })
       .catch(handleError)
       .finally(handleFinally);
