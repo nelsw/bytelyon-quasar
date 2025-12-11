@@ -1,25 +1,28 @@
 <script setup lang="ts">
-
-
 import { ref } from 'vue';
 import { useNewsStore } from 'stores/news-store';
 import { ulid } from 'ulid';
+import { type News } from 'src/types/news';
 
 const store = useNewsStore();
 const model = defineModel<boolean>({ default: false });
-const name =ref<string>('');
+const name = ref<string>('');
 const keys = ref<string[]>([]);
 
 const handleSubmit = async () => {
-  await store.create({
+  const data: News = {
     id: ulid(),
     name: name.value,
     keywords: keys.value,
-  })
-  model.value=false;
-  name.value='';
-  keys.value=[];
-}
+  };
+  onCancel();
+  await store.create(data);
+};
+const onCancel = () => {
+  model.value = false;
+  name.value = '';
+  keys.value = [];
+};
 </script>
 
 <template>
@@ -65,7 +68,7 @@ const handleSubmit = async () => {
             color="positive"
             size="lg"
             label="Cancel"
-            @click="model=false;name='';keys=[];"
+            @click="onCancel"
           />
         </q-card-actions>
       </q-form>

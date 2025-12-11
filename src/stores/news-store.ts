@@ -29,7 +29,7 @@ export const useNewsStore = defineStore('news-store', () => {
     loading.value = true;
     return await api
       .post(`/news`, data)
-      .then((res: AxiosResponse) => console.log(res))
+      .then(async () => await load())
       .catch((err: AxiosError) => console.error(err))
       .finally(() => loading.value = false);
   }
