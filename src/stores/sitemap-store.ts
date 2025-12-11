@@ -2,9 +2,9 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { type Sitemaps } from 'src/types/sitemaps';
+import { Notify } from 'quasar';
 
 export const useSitemapStore = defineStore('sitemaps-store', () => {
-
   const loading = ref<boolean>(true);
   const model = ref<Sitemaps[]>([]);
 
@@ -20,13 +20,50 @@ export const useSitemapStore = defineStore('sitemaps-store', () => {
   const create = async (url: string) => {
     loading.value = true;
     return await api
-      .post('/sitemaps', {url: url})
-      .then(load)
-      .catch((err: AxiosError) => console.error(err))
-      .finally(handleFinally);
+      .post('/sitemaps', { url: url })
+      .then(() => {
+        loading.value = false;
+        Notify.create({
+          timeout: 2000,
+          position: 'bottom',
+          message:
+            '<div class="text-center">Roar!<br>Sitemap is building,<br>and will appear shortly.</div>',
+          avatar: 'https://bytelyon-public.s3.amazonaws.com/logo-alt.png',
+          multiLine: true,
+          html: true,
+        });
+      })
+      .catch((err: AxiosError) => {
+        loading.value = false;
+        console.error(err);
+        Notify.create({
+          timeout: 2000,
+          position: 'bottom',
+          message: `<div class="text-center">There was an issue building your Sitemap;<br>We've been notified and fixing it now.</div>`,
+          avatar: 'https://bytelyon-public.s3.amazonaws.com/logo-alt.png',
+          multiLine: true,
+          html: true,
+        });
+      })
+      .finally(() => {
+        setTimeout(() => {
+          load()
+            .then(() =>
+              Notify.create({
+                timeout: 2000,
+                position: 'bottom',
+                message: `<div class="text-center">Meow ...<br>Your Sitemap is ready.</div>`,
+                avatar: 'https://bytelyon-public.s3.amazonaws.com/logo-alt.png',
+                multiLine: true,
+                html: true,
+              }),
+            )
+            .catch((err: AxiosError) => console.error(err));
+        }, 90_000);
+      });
   };
 
-  const remove = async (domain:string, id: string) => {
+  const remove = async (domain: string, id: string) => {
     loading.value = true;
     return await api
       .delete('/sitemaps', { params: { id: id, domain: domain } })
@@ -37,7 +74,7 @@ export const useSitemapStore = defineStore('sitemaps-store', () => {
 
   const handleFinally = () => {
     loading.value = false;
-  }
+  };
 
   return { loading, model, load, create, remove };
 });

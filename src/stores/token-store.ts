@@ -28,6 +28,13 @@ export const useTokenStore = defineStore(
         .then((res: AxiosResponse<Auth>): boolean => {
           token.value = res.data.context.token;
           api.defaults.headers.common.Authorization = `Bearer ${token.value}`;
+          Notify.create({
+            timeout: 2000,
+            position: 'bottom',
+            message: '<div class="text-center">Welcome</div>',
+            avatar: 'https://bytelyon-public.s3.amazonaws.com/logo-alt.png',
+            html: true,
+          });
           return true;
         })
         .catch((err: AxiosError<Auth>): boolean => {

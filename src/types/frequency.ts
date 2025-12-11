@@ -1,6 +1,6 @@
 import { Option, type OptionProps, type OptionsProps } from 'src/types/base';
 
-const minuteOptions: OptionsProps = [
+const MinuteOptions: OptionsProps = [
   { label: '5', value: 5 },
   { label: '10', value: 10 },
   { label: '15', value: 15 },
@@ -8,21 +8,21 @@ const minuteOptions: OptionsProps = [
   { label: '30', value: 30 },
 ];
 
-const hourOptions: OptionsProps = Array(11)
+const HourOptions: OptionsProps = Array(11)
   .fill(0)
   .map((_, i): OptionProps => new Option(i));
 
-const dayOptions: OptionsProps = Array(13)
+const DayOptions: OptionsProps = Array(13)
   .fill(0)
   .map((_, i): OptionProps => new Option(i));
 
 export const FrequencyValueOptions = (u?: Unit): Option[] => {
   if (u === Unit.MINUTE) {
-    return minuteOptions;
+    return MinuteOptions;
   } else if (u === Unit.HOUR) {
-    return hourOptions
+    return HourOptions
   } else if (u === Unit.DAY) {
-    return dayOptions
+    return DayOptions
   } else {
     return []
   }
@@ -59,11 +59,11 @@ const unitLabel = (f: Frequency): string => {
 const unitOptions = (f: Frequency): OptionsProps => {
   switch (f.unit) {
     case Unit.DAY:
-      return dayOptions;
+      return DayOptions;
     case Unit.HOUR:
-      return hourOptions;
+      return HourOptions;
     case Unit.MINUTE:
-      return minuteOptions;
+      return MinuteOptions;
   }
 };
 export { frequencyLabel, unitLabel, unitOptions };

@@ -5,7 +5,14 @@ export const enum JobType {
   NEWS = 'news',
   SEARCH = 'search',
   SITEMAP = 'sitemap',
-  PLUNDER = 'plunder',
+}
+
+export interface Jerb {
+  id: string;
+  name: string;
+  type: JobType;
+  frequency: Frequency;
+  results: JobResults;
 }
 
 export type JobResults = Map<string, string>

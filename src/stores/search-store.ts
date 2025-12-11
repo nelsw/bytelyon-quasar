@@ -16,9 +16,32 @@ export const useSearchStore = defineStore('search-store', () => {
       .finally(() => loading.value = false);
   };
 
+  const create = async (data: Search) => {
+    loading.value = true;
+    return await api
+      .post(`/search`, data)
+      .then((res: AxiosResponse<Search>) => {
+        console.log(res);
+        model.value.push(res.data);
+      })
+      .catch((err: AxiosError) => console.error(err))
+      .finally(() => (loading.value = false));
+  };
+
+  const remove = async (id: string) => {
+    loading.value = true;
+    return await api
+      .delete('/search', { params: { id: id } })
+      .then(() => (model.value = model.value.filter((m) => m.id !== id)))
+      .catch((err: AxiosError) => console.error(err))
+      .finally(() => (loading.value = false));
+  };
+
   return {
     loading,
     model,
     load,
+    create,
+    remove,
   }
 })

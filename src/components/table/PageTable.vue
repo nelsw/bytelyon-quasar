@@ -30,7 +30,6 @@ const columns: QTableColumn<Page>[] = [
     align: 'left',
     format: (value) => new Date(decodeTime(value)).toLocaleString(),
     sort: (a, b) => decodeTime(a) - decodeTime(b),
-
   },
   {
     name: '$',
@@ -99,11 +98,13 @@ const columns: QTableColumn<Page>[] = [
     style: 'width: 0;',
   },
 ];
+
+const columnNames = ref<string[]>([]);
 const visibleCols = ref<string[]>([]);
-
-
-
-onMounted(() => visibleCols.value = columns.map((col) => col.name));
+onMounted(() => {
+  columnNames.value = columns.map((col) => col.name);
+  visibleCols.value = columnNames.value.filter((s) => s !== 'url');
+});
 </script>
 
 <template>
@@ -129,31 +130,38 @@ onMounted(() => visibleCols.value = columns.map((col) => col.name));
           <x-tooltip text="Columns" />
         </template>
         <template #menu-content>
-          <MenuList v-model="visibleCols" />
+          <MenuList v-model="visibleCols" :names="columnNames" />
         </template>
       </MenuBtn>
     </template>
     <template v-slot:body="props">
       <q-tr :props="props">
-        <q-td v-for="col in props.cols" :key="col.name" :props="props" @click="props.expand = !props.expand">
+        <q-td
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          @click="props.expand = !props.expand"
+        >
           <div v-if="col.name === 'actions'">
             <ViewJsonBtn :title="props.row?.title" :content="props.row.results" />
             <ViewImgBtn :title="props.row?.title" :url="props.row.screenshot" />
             <DownloadHtmlBtn :url="props.row.content" />
           </div>
-          <q-badge v-else-if="col.name.match(/organic|sponsored|videos|forums|articles/)" color="purple" :label="col.value" />
+          <q-badge
+            v-else-if="col.name.match(/organic|sponsored|videos|forums|articles/)"
+            color="purple"
+            :label="col.value"
+          />
 
           <span v-else-if="col.name !== '$'" v-html="col.value" />
         </q-td>
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
-        <q-td colspan="100%" style="padding: 0;">
+        <q-td colspan="100%" style="padding: 0">
           <ResultTabs :results="props.row.results" />
         </q-td>
       </q-tr>
     </template>
   </q-table>
 </template>
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

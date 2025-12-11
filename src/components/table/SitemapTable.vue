@@ -15,7 +15,7 @@ import { decodeTime } from 'ulid';
 defineProps<{
   rows: Sitemap[];
   domain: string;
-}>()
+}>();
 
 const store = useSitemapStore();
 const columns: QTableColumn<Sitemap>[] = [
@@ -93,9 +93,11 @@ const columns: QTableColumn<Sitemap>[] = [
     align: 'center',
   },
 ];
+const columnNames = ref<string[]>([]);
 const visibleCols = ref<string[]>([]);
 onMounted(() => {
-  visibleCols.value = columns.map((col) => col.name)
+  columnNames.value = columns.map((col) => col.name);
+  visibleCols.value = columnNames.value.filter((s) => s !== 'url');
 });
 </script>
 
@@ -112,15 +114,11 @@ onMounted(() => {
     flat
     dense
     class="bg-grey-10 q-ma-sm"
-    :loading="store.loading"
   >
-    <template #loading>
-      <q-inner-loading showing color="primary" />
-    </template>
     <template #top-left>
       <div class="flex justify-center items-center">
         <q-icon name="mdi-application-outline" size="md" @click="store.load()" />
-        <span class="q-mx-sm text-h6">{{domain}}</span>
+        <span class="q-mx-sm text-h6">{{ domain }}</span>
       </div>
     </template>
     <template #top-right="props">
@@ -129,7 +127,7 @@ onMounted(() => {
           <x-tooltip text="Columns" />
         </template>
         <template #menu-content>
-          <MenuList v-model="visibleCols" />
+          <MenuList v-model="visibleCols" :names="columnNames" />
         </template>
       </MenuBtn>
       <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />

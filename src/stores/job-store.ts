@@ -1,16 +1,8 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
-import { type Job, type JobResults, type JobProps, type JobType } from 'src/types/job';
-import { type Frequency } from 'src/types/frequency';
-
-export interface Jerb {
-  id: string;
-  name: string;
-  type: JobType;
-  frequency: Frequency;
-  results: JobResults;
-}
+import type { Jerb } from 'src/types/job';
+import { type Job, type JobProps, type JobType } from 'src/types/job';
 
 export const useJobStore = defineStore('job-store', () => {
   const loading = ref<boolean>(true);
@@ -21,14 +13,25 @@ export const useJobStore = defineStore('job-store', () => {
     return await api
       .get('/jobs')
       .then((res: AxiosResponse<Jerb[]>) => {
-        model.value = res.data
+        model.value = res.data;
       })
       .catch(handleError)
       .finally(handleFinally);
   };
 
-  const find = async (id: string, type: JobType, force?: boolean): Promise<Jerb | null> => {
+  const Create = async (data: Jerb) => {
+    loading.value = true;
+    return await api
+      .post(`/jobs`, data)
+      .then((res: AxiosResponse<Jerb>) => {
+        console.log(res);
+        model.value.push(res.data);
+      })
+      .catch((err: AxiosError) => console.error(err))
+      .finally(() => (loading.value = false));
+  };
 
+  const find = async (id: string, type: JobType, force?: boolean): Promise<Jerb | null> => {
     loading.value = true;
 
     for (const job of model.value) {
@@ -39,29 +42,23 @@ export const useJobStore = defineStore('job-store', () => {
     }
 
     if (force || model.value.length === 0) {
-      await load()
-      return find(id, type, false)
+      await load();
+      return find(id, type, false);
     }
 
     loading.value = false;
     return null;
-  }
+  };
 
   const Delete = async (job: Jerb) => {
     loading.value = true;
-    return await api
-      .delete(`/jobs`, { data: job })
-      .catch(handleError)
-      .finally(handleFinally);
-  }
+    return await api.delete(`/jobs`, { data: job }).catch(handleError).finally(handleFinally);
+  };
 
   const Save = async (job: Jerb) => {
     loading.value = true;
-    return await api
-      .put(`/jobs`, job)
-      .catch(handleError)
-      .finally(handleFinally);
-  }
+    return await api.put(`/jobs`, job).catch(handleError).finally(handleFinally);
+  };
 
   // deprecated
   const items = ref<Array<JobProps>>([]);
@@ -71,7 +68,7 @@ export const useJobStore = defineStore('job-store', () => {
     loading.value = true;
     return await api
       .get('/jobs')
-      .then((res: AxiosResponse<Array<JobProps>>) => items.value = res.data)
+      .then((res: AxiosResponse<Array<JobProps>>) => (items.value = res.data))
       .catch(handleError)
       .finally(handleFinally);
   };
@@ -149,7 +146,7 @@ export const useJobStore = defineStore('job-store', () => {
       .catch(handleError)
       .finally(handleFinally);
   };
-  // deprecated
+
   const remove = async (id: string) => {
     loading.value = true;
     return await api
@@ -159,10 +156,10 @@ export const useJobStore = defineStore('job-store', () => {
       .finally(handleFinally);
   };
 
-  const handleError = (err: AxiosError) => console.error(err)
-  const handleFinally = () => loading.value = false;
+  const handleError = (err: AxiosError) => console.error(err);
+  const handleFinally = () => (loading.value = false);
 
-  return { loading, items, fetch, save, remove, model, load, find, Delete, Save };
+  return { loading, items, fetch, save, remove, model, load, find, Delete, Save, Create };
 });
 
 if (import.meta.hot) {

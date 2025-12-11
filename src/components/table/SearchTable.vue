@@ -15,6 +15,7 @@ import { type Search } from 'src/types/search';
 import { type Page } from 'src/types/page';
 import PageTable from 'components/table/PageTable.vue';
 import XTooltip from 'components/tooltip/XTooltip.vue';
+import SearchDialog from 'components/dialog/SearchDialog.vue';
 
 const store = useSearchStore();
 const rowToDelete = ref<string>('');
@@ -93,16 +94,21 @@ const columns: QTableColumn<Search>[] = [
     style: 'width: 0;',
   },
 ];
+const columnNames = ref<string[]>([]);
 const visibleCols = ref<string[]>([]);
-
 onMounted(async () => {
-  visibleCols.value = columns.map((col) => col.name)
+  columnNames.value = columns.map((col) => col.name);
+  visibleCols.value = columnNames.value
+    .filter((s) => s !== 'url')
+    .filter((s) => s !== 'follow')
+    .filter((s) => s !== 'ignore');
   await store.load();
 });
-
+const dialog = ref<boolean>(false);
 </script>
 
 <template>
+  <SearchDialog v-model="dialog" />
   <q-table
     :columns="columns"
     :loading="store.loading"
@@ -126,13 +132,13 @@ onMounted(async () => {
     </template>
     <template v-slot:top-right="props">
       <div class="flex justify-center items-center q-gutter-xs">
-        <PlusButton hint="New<br>Search" />
+        <PlusButton hint="New<br>Search" @click="dialog = true" />
         <MenuBtn icon="mdi-view-column-outline">
           <template #tooltip>
             <x-tooltip text="Columns" />
           </template>
           <template #menu-content>
-            <MenuList v-model="visibleCols" />
+            <MenuList v-model="visibleCols" :names="columnNames" />
           </template>
         </MenuBtn>
         <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
@@ -144,15 +150,13 @@ onMounted(async () => {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          @click="col.name === 'actions' ? ()=>{} : props.expand = !props.expand"
+          @click="col.name === 'actions' ? () => {} : (props.expand = !props.expand)"
         >
           <div v-if="col.name === 'actions'">
             <JobBtn :id="props.row.id" :type="JobType.SEARCH" />
-            <DeleteBtn
-              @delete="rowToDelete = ''"
-            />
+            <DeleteBtn @delete="store.remove(props.row.id)" />
           </div>
-          <q-badge v-else-if="col.name ==='pages'" color="purple" :label="col.value" />
+          <q-badge v-else-if="col.name === 'pages'" color="purple" :label="col.value" />
           <span v-else-if="col.name !== '$'" v-html="col.value" />
         </q-td>
       </q-tr>
@@ -172,6 +176,6 @@ onMounted(async () => {
   transition-delay: 0s;
 }
 .q-table tbody tr:hover {
-  background-color: #37474f  !important;
+  background-color: #37474f !important;
 }
 </style>

@@ -43,6 +43,12 @@ const columns: QTableColumn<Sitemaps>[] = [
     style: 'width: 20%;',
   },
   {
+    name: 'url',
+    label: 'URL',
+    field: 'url',
+    align: 'left',
+  },
+  {
     name: 'domain',
     label: 'Site',
     field: 'domain',
@@ -80,7 +86,7 @@ const columns: QTableColumn<Sitemaps>[] = [
     label: 'Duration',
     field: 'duration',
     align: 'center',
-    format: (value:number) => `${value > 60 ? Math.round(value / 60) : 1}m`,
+    format: (value: number) => `${value > 60 ? Math.round(value / 60) : 1}m`,
   },
   {
     name: 'average',
@@ -89,7 +95,6 @@ const columns: QTableColumn<Sitemaps>[] = [
     align: 'center',
     format: (value) => `${value}s`,
   },
-
   {
     name: '$',
     label: '',
@@ -104,16 +109,19 @@ const columns: QTableColumn<Sitemaps>[] = [
     format: (value) => `${value}`,
   },
 ];
-const visibleCols = ref<string[]>([]);
+
 const dialog = ref<boolean>(false);
+const columnNames = ref<string[]>([]);
+const visibleCols = ref<string[]>([]);
 onMounted(async () => {
-  visibleCols.value = columns.map((col) => col.name)
+  columnNames.value = columns.map((col) => col.name);
+  visibleCols.value = columnNames.value.filter((s) => s !== 'url');
   await store.load();
 });
 </script>
 
 <template>
-  <SitemapDialog v-model="dialog"/>
+  <SitemapDialog v-model="dialog" />
   <q-table
     :columns="columns"
     :visible-columns="visibleCols"
@@ -136,13 +144,13 @@ onMounted(async () => {
       </div>
     </template>
     <template #top-right="props">
-      <PlusButton hint="New<br>Sitemap" @click="dialog = true"/>
+      <PlusButton hint="New<br>Sitemap" @click="dialog = true" />
       <MenuBtn icon="mdi-view-column-outline">
         <template #tooltip>
           <x-tooltip text="Columns" />
         </template>
         <template #menu-content>
-          <MenuList v-model="visibleCols" />
+          <MenuList v-model="visibleCols" :names="columnNames" />
         </template>
       </MenuBtn>
       <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
@@ -154,8 +162,8 @@ onMounted(async () => {
         </q-td>
       </q-tr>
       <q-tr v-show="props.expand" :props="props">
-        <q-td colspan="100%" style="padding: 0" class="q-ma-xs" >
-          <SitemapTable :rows="props.row?.sitemaps ?? []" :domain="props.row.domain"/>
+        <q-td colspan="100%" style="padding: 0" class="q-ma-xs">
+          <SitemapTable :rows="props.row?.sitemaps ?? []" :domain="props.row.domain" />
         </q-td>
       </q-tr>
     </template>
@@ -169,6 +177,6 @@ onMounted(async () => {
   transition-delay: 0s;
 }
 .q-table tbody tr:hover {
-  background-color: #37474f  !important;
+  background-color: #37474f !important;
 }
 </style>

@@ -17,7 +17,6 @@ import { JobType } from 'src/types/job';
 import JobBtn from 'components/btn/JobBtn.vue';
 
 const store = useNewsStore();
-const visibleCols = ref<string[]>([]);
 const columns: QTableColumn<News>[] = [
   {
     name: 'id',
@@ -86,20 +85,23 @@ const columns: QTableColumn<News>[] = [
   },
 ];
 const dialog = ref<boolean>(false);
+const columnNames = ref<string[]>([]);
+const visibleCols = ref<string[]>([]);
 onMounted(async () => {
-  visibleCols.value = columns.map((col) => col.name);
+  columnNames.value = columns.map((col) => col.name);
+  visibleCols.value = columnNames.value.filter((s) => s !== 'url');
   await store.load();
 });
 const handleSave = async (data: News, newName: string, oldName: string) => {
   if (oldName !== newName) {
     data.name = newName;
-    await store.update(data)
+    await store.update(data);
   }
-}
+};
 </script>
 
 <template>
-  <NewsDialog v-model="dialog"/>
+  <NewsDialog v-model="dialog" />
   <q-table
     :columns="columns"
     :loading="store.loading"
@@ -123,13 +125,13 @@ const handleSave = async (data: News, newName: string, oldName: string) => {
     </template>
     <template #top-right="props">
       <div class="flex justify-center items-center q-gutter-xs">
-        <PlusButton hint="New Feed" @click="dialog = true"/>
+        <PlusButton hint="New Feed" @click="dialog = true" />
         <MenuBtn icon="mdi-view-column-outline">
           <template #tooltip>
             <x-tooltip text="Columns" />
           </template>
           <template #menu-content>
-            <MenuList v-model="visibleCols" />
+            <MenuList v-model="visibleCols" :names="columnNames" />
           </template>
         </MenuBtn>
         <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
