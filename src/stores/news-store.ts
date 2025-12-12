@@ -3,17 +3,24 @@ import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
 import { type News } from 'src/types/news';
 
-export const useNewsStore = defineStore('news-store', () => {
+const id = 'news-store';
+const options = {
+  persist: {
+    debug: true,
+    storage: sessionStorage,
+  },
+};
+const setup = () => {
   const loading = ref<boolean>(true);
-  const model = ref<News[]>([])
+  const model = ref<News[]>([]);
 
   const load = async () => {
     loading.value = true;
     return await api
       .get('/news')
-      .then((res: AxiosResponse<News[]>) => model.value = res.data)
+      .then((res: AxiosResponse<News[]>) => (model.value = res.data))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
+      .finally(() => (loading.value = false));
   };
 
   const remove = async (id: string) => {
@@ -22,7 +29,7 @@ export const useNewsStore = defineStore('news-store', () => {
       .delete('/news', { params: { id: id } })
       .then(() => (model.value = model.value.filter((m) => m.id !== id)))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
+      .finally(() => (loading.value = false));
   };
 
   const create = async (data: News) => {
@@ -31,19 +38,20 @@ export const useNewsStore = defineStore('news-store', () => {
       .post(`/news`, data)
       .then(async () => await load())
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
-  }
+      .finally(() => (loading.value = false));
+  };
 
   const update = async (data: News) => {
     loading.value = true;
     return await api
-    .put(`/news`, data)
+      .put(`/news`, data)
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
-  }
+      .finally(() => (loading.value = false));
+  };
 
   return { loading, model, remove, load, update, create };
-});
+};
+export const useNewsStore = defineStore(id, setup, options);
 
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useNewsStore, import.meta.hot));
