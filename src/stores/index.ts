@@ -22,6 +22,7 @@ declare module 'pinia' {
  * with the Store instance.
  */
 
+// noinspection JSUnusedGlobalSymbols
 export default defineStore((/* { ssrContext } */) => {
   const pinia = createPinia();
 

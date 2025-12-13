@@ -22,5 +22,3 @@ export const capitalize = (text: string) =>
 export const truncateString = (s: string, l: number) =>
   s.length > l ? s.slice(0, l - 3) + '...' : s;
 
-export const singular = (s: string) =>
-  s.length > 0 && s.charAt(s.length - 1) === 's' ? s.slice(0, -1) : s;

@@ -4,7 +4,14 @@ import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { type Sitemaps } from 'src/types/sitemaps';
 import { Notify } from 'quasar';
 
-export const useSitemapStore = defineStore('sitemaps-store', () => {
+const id = 'sitemap-store';
+const options = {
+  persist: {
+    debug: true,
+    storage: sessionStorage,
+  },
+};
+const setup = () => {
   const loading = ref<boolean>(true);
   const model = ref<Sitemaps[]>([]);
 
@@ -14,7 +21,7 @@ export const useSitemapStore = defineStore('sitemaps-store', () => {
       .get('/sitemaps')
       .then((res: AxiosResponse<Sitemaps[]>) => (model.value = res.data))
       .catch((err: AxiosError) => console.error(err))
-      .finally(handleFinally);
+      .finally(() => (loading.value = false));
   };
 
   const create = async (url: string) => {
@@ -69,15 +76,13 @@ export const useSitemapStore = defineStore('sitemaps-store', () => {
       .delete('/sitemaps', { params: { id: id, domain: domain } })
       .then(load)
       .catch((err: AxiosError) => console.error(err))
-      .finally(handleFinally);
-  };
-
-  const handleFinally = () => {
-    loading.value = false;
+      .finally(() => (loading.value = false));
   };
 
   return { loading, model, load, create, remove };
-});
+};
+
+export const useSitemapStore = defineStore(id, setup, options);
 
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useSitemapStore, import.meta.hot));

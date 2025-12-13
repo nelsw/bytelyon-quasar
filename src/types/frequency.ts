@@ -45,25 +45,3 @@ export const UnitOptions: OptionsProps = [
   { label: 'Day', value: Unit.DAY },
 ];
 
-const frequencyLabel = (f: Frequency): string => `${f.unit}${f.value}`;
-const unitLabel = (f: Frequency): string => {
-  switch (f.unit) {
-    case Unit.DAY:
-      return 'Day';
-    case Unit.HOUR:
-      return 'Hour';
-    case Unit.MINUTE:
-      return 'Minute';
-  }
-};
-const unitOptions = (f: Frequency): OptionsProps => {
-  switch (f.unit) {
-    case Unit.DAY:
-      return DayOptions;
-    case Unit.HOUR:
-      return HourOptions;
-    case Unit.MINUTE:
-      return MinuteOptions;
-  }
-};
-export { frequencyLabel, unitLabel, unitOptions };

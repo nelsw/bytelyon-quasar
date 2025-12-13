@@ -1,19 +1,27 @@
-import { defineStore } from 'pinia';
+import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
 import { type Search } from 'src/types/search';
 import { api, type AxiosResponse, type AxiosError } from 'boot/axios';
+import { useNewsStore } from 'stores/news-store';
 
-export const useSearchStore = defineStore('search-store', () => {
+const id = 'search-store';
+const options = {
+  persist: {
+    debug: true,
+    storage: sessionStorage,
+  },
+};
+const setup = () => {
   const loading = ref<boolean>(true);
-  const model = ref<Search[]>([])
+  const model = ref<Search[]>([]);
 
   const load = async () => {
     loading.value = true;
     return await api
       .get(`/search`)
-      .then((res: AxiosResponse<Search[]>) => model.value = res.data)
+      .then((res: AxiosResponse<Search[]>) => (model.value = res.data))
       .catch((err: AxiosError) => console.error(err))
-      .finally(() => loading.value = false);
+      .finally(() => (loading.value = false));
   };
 
   const create = async (data: Search) => {
@@ -43,5 +51,10 @@ export const useSearchStore = defineStore('search-store', () => {
     load,
     create,
     remove,
-  }
-})
+  };
+};
+export const useSearchStore = defineStore(id, setup, options);
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useNewsStore, import.meta.hot));
+}

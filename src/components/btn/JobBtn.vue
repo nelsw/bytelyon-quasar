@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { JobType } from 'src/types/job';
-import { type Jerb, type JobResults } from 'src/types/job';
+import { type Job, type JobResults } from 'src/types/job';
 import { capitalize } from 'src/types/base';
 import { FrequencyValueOptions, Unit, UnitOptions } from 'src/types/frequency';
 import { QInput } from 'quasar';
@@ -26,7 +26,7 @@ const name = ref<string>('');
 const frequencyOptions = computed(() => FrequencyValueOptions(unit.value));
 
 const onSubmit = async () => {
-  const data: Jerb = {
+  const data: Job = {
     id: props.id,
     name: name.value,
     type: props.type,
@@ -53,7 +53,7 @@ const onDelete = async () => {
 }
 
 onMounted(async () => {
-  const job: Jerb | null = await store.find(props.id, props.type);
+  const job: Job | null = await store.find(props.id, props.type);
   isNew.value = job === null;
   unit.value = job?.frequency?.unit ?? Unit.MINUTE;
   value.value = job?.frequency?.value ?? 15;

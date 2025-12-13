@@ -102,8 +102,8 @@ const columns: QTableColumn<Sitemaps>[] = [
     style: 'width: 20%;',
   },
   {
-    name: 'versions',
-    label: 'Versions',
+    name: 'qty',
+    label: 'Qty',
     field: 'size',
     align: 'center',
     format: (value) => `${value}`,
@@ -139,7 +139,7 @@ onMounted(async () => {
     </template>
     <template #top-left>
       <div class="flex justify-center items-center">
-        <q-icon name="mdi-web" size="lg" @click="store.load()" />
+        <q-icon name="mdi-sitemap" size="lg" @click="store.load()" />
         <span class="q-mx-sm text-h5">Sitemaps</span>
       </div>
     </template>
@@ -158,7 +158,10 @@ onMounted(async () => {
     <template #body="props">
       <q-tr :props="props" @click="props.expand = !props.expand">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <span v-if="col.name !== '$'" v-html="col.value" />
+          <q-badge v-if="col.name === 'qty'" color="purple" outline>
+            <span class="text-white">{{ col.value }}</span>
+          </q-badge>
+          <span v-else-if="col.name !== '$'" v-html="col.value" />
         </q-td>
       </q-tr>
       <q-tr v-show="props.expand" :props="props">

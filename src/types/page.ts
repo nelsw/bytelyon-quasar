@@ -6,5 +6,5 @@ export interface Page {
   title: string;
   content: string;
   screenshot: string;
-  results?: Results;
+  results?: Results | null;
 }
