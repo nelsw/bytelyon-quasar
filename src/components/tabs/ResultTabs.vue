@@ -54,11 +54,11 @@ const icon = (s: string): string => {
         :label="Name(t)"
         style="padding: 0"
       >
-        <ResultTable v-if="t === ResultType.ORGANIC" :name="Name(t)" :rows="results.organic" />
-        <ResultTable v-if="t === ResultType.SPONSORED" :name="Name(t)" :rows="results.sponsored" />
-        <ResultTable v-if="t === ResultType.VIDEOS" :name="Name(t)" :rows="results.videos" />
-        <ResultTable v-if="t === ResultType.FORUMS" :name="Name(t)" :rows="results.forums" />
-        <ResultTable v-if="t === ResultType.ARTICLES" :name="Name(t)" :rows="results.articles" />
+        <ResultTable v-if="t === ResultType.ORGANIC" :name="Name(t)" :rows="results?.organic ?? []" />
+        <ResultTable v-if="t === ResultType.SPONSORED" :name="Name(t)" :rows="results?.sponsored ?? []" />
+        <ResultTable v-if="t === ResultType.VIDEOS" :name="Name(t)" :rows="results?.videos ?? []" />
+        <ResultTable v-if="t === ResultType.FORUMS" :name="Name(t)" :rows="results?.forums ?? []" />
+        <ResultTable v-if="t === ResultType.ARTICLES" :name="Name(t)" :rows="results?.articles ?? []" />
       </q-tab-panel>
     </q-tab-panels>
   </div>
