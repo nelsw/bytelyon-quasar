@@ -34,9 +34,9 @@ export const ResultTypes = [
 export interface Results {
   sponsored: Result[];
   organic: Result[];
-  videos: Result[];
-  forums: Result[];
-  articles: Result[];
+  video: Result[];
+  forum: Result[];
+  article: Result[];
 }
 
 export const ResultsLength = (t: ResultType, r?: Results): number => {
@@ -49,10 +49,10 @@ export const ResultsLength = (t: ResultType, r?: Results): number => {
     case ResultType.ORGANIC:
       return r.organic?.length ?? 0;
     case ResultType.VIDEOS:
-      return r.videos?.length ?? 0;
+      return r.video?.length ?? 0;
     case ResultType.FORUMS:
-      return r.forums?.length ?? 0;
+      return r.forum?.length ?? 0;
     case ResultType.ARTICLES:
-      return r.articles?.length ?? 0;
+      return r.article?.length ?? 0;
   }
 };
