@@ -3,7 +3,7 @@ import type { QTableColumn } from 'quasar';
 import { decodeTime } from 'ulid';
 import { onMounted, ref } from 'vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
-import MenuList from 'components/list/MenuList.vue';
+import ColumnList from 'components/list/ColumnList.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import DownloadHtmlBtn from 'components/btn/DownloadHtmlBtn.vue';
 import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
@@ -130,7 +130,7 @@ onMounted(() => {
           <x-tooltip text="Columns" />
         </template>
         <template #menu-content>
-          <MenuList v-model="visibleCols" :names="columnNames" />
+          <ColumnList v-model="visibleCols" :names="columnNames" />
         </template>
       </MenuBtn>
     </template>

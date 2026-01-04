@@ -9,7 +9,7 @@ import { decodeTime } from 'ulid';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 import { type Article } from 'src/types/article';
 import XTooltip from 'components/tooltip/XTooltip.vue';
-import MenuList from 'components/list/MenuList.vue';
+import ColumnList from 'components/list/ColumnList.vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import NewsDialog from 'components/dialog/NewsDialog.vue';
@@ -131,7 +131,7 @@ const handleSave = async (data: News, newName: string, oldName: string) => {
             <x-tooltip text="Columns" />
           </template>
           <template #menu-content>
-            <MenuList v-model="visibleCols" :names="columnNames" />
+            <ColumnList v-model="visibleCols" :names="columnNames" />
           </template>
         </MenuBtn>
         <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />

@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useSitemapStore } from 'stores/sitemap-store';
 import { type QTableColumn } from 'quasar';
 import XTooltip from 'components/tooltip/XTooltip.vue';
-import MenuList from 'components/list/MenuList.vue';
+import ColumnList from 'components/list/ColumnList.vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import SitemapDialog from 'components/dialog/SitemapDialog.vue';
@@ -150,7 +150,7 @@ onMounted(async () => {
           <x-tooltip text="Columns" />
         </template>
         <template #menu-content>
-          <MenuList v-model="visibleCols" :names="columnNames" />
+          <ColumnList v-model="visibleCols" :names="columnNames" />
         </template>
       </MenuBtn>
       <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />

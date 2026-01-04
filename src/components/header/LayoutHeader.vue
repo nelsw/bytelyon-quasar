@@ -3,9 +3,11 @@ import HeaderToolbar from 'components/toolbar/HeaderToolbar.vue';
 </script>
 
 <template>
+
   <q-header class="bg-dark" bordered>
     <HeaderToolbar />
   </q-header>
+
 </template>
 
 <style scoped lang="scss">

@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { useTokenStore } from 'stores/token-store';
-import NavToggle from 'components/btn/toggle/NavToggle.vue';
+import LogoImg from 'components/img/LogoImg.vue';
 const store = useTokenStore();
 </script>
 
 <template>
   <q-toolbar>
     <q-avatar>
-      <img src="~assets/logo.svg" alt="Logo" />
+      <LogoImg random />
     </q-avatar>
-    <q-toolbar-title class="text-weight-bold"> ByteLyon </q-toolbar-title>
+    <q-toolbar-title class="text-bold"> ByteLyon </q-toolbar-title>
     <q-space />
     <q-separator vertical inset />
-    <NavToggle />
+
     <q-separator vertical />
     <q-btn
       @click="store.logout()"
-      color="pink-4"
+      color="grey"
       class="q-ml-sm"
       dense
       flat

@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-  <q-btn color="green-14" icon="mdi-plus" flat dense >
+  <q-btn color="green-14" icon="mdi-plus" dense  outline no-caps >
     <x-tooltip :text="hint" />
   </q-btn>
 </template>

@@ -4,7 +4,7 @@ import { type QTableColumn } from 'quasar';
 import { decodeTime } from 'ulid';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
-import MenuList from 'components/list/MenuList.vue';
+import ColumnList from 'components/list/ColumnList.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import JobBtn from 'components/btn/JobBtn.vue';
 import { JobType } from 'src/types/job';
@@ -138,7 +138,7 @@ const dialog = ref<boolean>(false);
             <x-tooltip text="Columns" />
           </template>
           <template #menu-content>
-            <MenuList v-model="visibleCols" :names="columnNames" />
+            <ColumnList v-model="visibleCols" :names="columnNames" />
           </template>
         </MenuBtn>
         <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />

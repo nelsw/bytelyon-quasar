@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import type { Result } from 'src/types/result';
 import { truncateString } from 'src/types/base';
-import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 defineProps<{
   rows: string[];
 }>();
+const input = useTemplateRef<HTMLInputElement>('my-input');
+const reset = (): void => {
+  filter.value = '';
+  input.value?.focus();
+};
 const filter = ref<string>('');
 const handleClick = (r: Result) => window.open(r.link, '_blank');
-
 </script>
 
 <template>
@@ -19,75 +22,31 @@ const handleClick = (r: Result) => window.open(r.link, '_blank');
     :rows-per-page-options="[1000]"
     dense
     flat
-    hide-pagination
+    :hide-pagination="rows.length < 1000"
   >
-    <template #top="props">
+    <template #top v-if="rows.length > 100">
       <q-input
+        ref="my-input"
         v-model="filter"
         debounce="300"
         color="primary"
-        label="Filter URLs"
+        label="URL Filter"
         name="filter"
         dense
       >
         <template #prepend>
-          <q-icon name="mdi-filter" size="sm" />
+          <q-icon name="mdi-filter-outline" size="xs" />
+        </template>
+        <template #append>
+          <q-icon
+            v-if="filter !== ''"
+            name="mdi-close-circle-outline"
+            class="cursor-pointer"
+            @click="reset"
+            size="xs"
+          />
         </template>
       </q-input>
-      <q-space />
-      <div class="q-gutter-x-xs" v-if="rows.length > 1000">
-        <q-btn
-          v-if="props.pagesNumber > 2"
-          icon="mdi-page-first"
-          color="grey-8"
-          size="sm"
-          dense
-          flat
-          :disable="props.isFirstPage"
-          @click="props.firstPage"
-        />
-        <q-btn
-          icon="mdi-chevron-left"
-          color="grey-8"
-          size="sm"
-          dense
-          flat
-          :disable="props.isFirstPage"
-          @click="props.prevPage"
-        />
-        <q-badge color="primary" class="q-mx-xs" dense >
-          <span>
-            {{props.pagination.page}}
-          </span>
-        </q-badge>
-        /
-        <q-badge color="primary" class="q-mx-xs" dense outline>
-          <span class="text-white">{{props.pagesNumber}}</span>
-        </q-badge>
-        <q-btn
-          icon="mdi-chevron-right"
-          color="grey-8"
-          size="sm"
-          dense
-          flat
-          :disable="props.isLastPage"
-          @click="props.nextPage"
-        />
-        <q-btn
-          v-if="props.pagesNumber > 2"
-          icon="mdi-page-last"
-          color="grey-8"
-          size="sm"
-          dense
-          flat
-          :disable="props.isLastPage"
-          @click="props.lastPage"
-        />
-      </div>
-      <q-space />
-      <div>
-        <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
-      </div>
     </template>
     <template #header>
       <q-tr>

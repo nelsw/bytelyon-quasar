@@ -20,6 +20,9 @@ const setup = () => {
   const proxy = ref<Profile>(EmptyProfile);
 
   const load = async () => {
+    if (proxy.value !== EmptyProfile) {
+      return;
+    }
     loading.value = true;
     await api
       .get(url)
@@ -45,12 +48,15 @@ const setup = () => {
 
   const reset = () => proxy.value = clone<Profile>(model.value);
 
+  const firstName = () => proxy.value.name.toString().split(' ')[0]
+
   return {
     loading,
     proxy,
     load,
     save,
     reset,
+    firstName,
   };
 };
 

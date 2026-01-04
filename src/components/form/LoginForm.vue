@@ -4,6 +4,9 @@ import { QForm } from 'quasar';
 import { useTokenStore } from 'stores/token-store';
 import type { AxiosBasicCredentials } from 'axios';
 import { useRouter } from 'vue-router';
+import LogoImg from 'components/img/LogoImg.vue';
+import EmailInput from 'components/form/EmailInput.vue';
+import PasswordInput from 'components/form/PasswordInput.vue';
 
 const store = useTokenStore();
 const router = useRouter();
@@ -24,39 +27,12 @@ const login = async () => {
 
 <template>
   <div class="q-px-md text-center q-mt-lg">
-    <img src="~assets/logo.svg" alt="Logo" width="50%" />
-    <h2 style="margin: 30px 0">ByteLyon</h2>
+    <LogoImg width="50%" random />
+    <h2 style="margin: 30px 0" v-html="`ByteLyon`" />
+    <p class="text-subtitle1 text-bold">Stop crawling; Start Prowling</p>
     <q-form @submit.prevent="login" class="row">
-      <q-input
-        v-model="auth.username"
-        :rules="[
-          (val: string) => (val && val.length > 0) || 'Email is required',
-          (val: string) => /.+@.+\..+/.test(val) || 'Email must be valid',
-        ]"
-        class="col-12 text-weight-bold"
-        label="Email"
-        lazy-rules="ondemand"
-        name="email"
-        type="email"
-        autofocus
-      >
-        <template v-slot:prepend>
-          <q-icon name="mdi-email-outline" />
-        </template>
-      </q-input>
-      <q-input
-        v-model="auth.password"
-        :rules="[(val: string) => (val && val.length > 0) || 'Password is required']"
-        class="col-12 q-mb-sm"
-        label="Password"
-        lazy-rules="ondemand"
-        name="password"
-        type="password"
-      >
-        <template v-slot:prepend>
-          <q-icon name="mdi-lock-outline" />
-        </template>
-      </q-input>
+      <EmailInput v-model="auth.password" />
+      <PasswordInput v-model="auth.password" />
       <q-btn
         label="Login"
         type="submit"

@@ -7,19 +7,32 @@ onMounted(store.load);
 </script>
 
 <template>
-  <q-page padding>
-    <q-form @submit="store.save" @reset="store.reset">
+  <div>
+    <q-card flat square>
+      <q-img src="https://bytelyon-public.s3.amazonaws.com/guest-bg.gif" :ratio="58 / 12" />
+
+      <q-card-section>
+        <q-avatar
+          size="50px"
+          class="absolute"
+          style="top: 0; right: 12px; transform: translateY(-50%)"
+        >
+        </q-avatar>
+      </q-card-section>
+
+      <q-separator />
+    </q-card>
+    <q-form @submit="store.save" @reset="store.reset" class="q-ma-md">
       <q-card flat bordered>
-        <q-inner-loading :showing="store.loading" />
         <q-item>
           <q-item-section avatar>
             <q-avatar>
-              <q-icon name="mdi-account" size="lg" />
+              <img src="~assets/guest-avatar.png" alt="Guest Avatar" />
             </q-avatar>
           </q-item-section>
 
           <q-item-section>
-            <q-item-label class="text-h5">Profile</q-item-label>
+            <q-item-label class="text-h5">User Profile</q-item-label>
           </q-item-section>
 
           <q-item-section side>
@@ -41,5 +54,6 @@ onMounted(store.load);
         </q-card-section>
       </q-card>
     </q-form>
-  </q-page>
+    <q-inner-loading :showing="store.loading" />
+  </div>
 </template>

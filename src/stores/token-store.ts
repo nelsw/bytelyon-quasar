@@ -3,6 +3,7 @@ import { api, type AxiosBasicCredentials, type AxiosError, type AxiosResponse } 
 import { Loading, Notify } from 'quasar';
 import { ref } from 'vue';
 import { type NavigationFailure } from 'vue-router';
+import { useProfileStore } from 'stores/profile-store';
 
 type thisType = ReturnType<typeof useTokenStore>;
 type Token = string | undefined;
@@ -24,6 +25,7 @@ const options = {
 };
 const setup = () => {
   const token = ref<Token>();
+  const profileStore = useProfileStore();
 
   const login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
     Loading.show({ spinnerColor: 'primary' });
@@ -33,11 +35,15 @@ const setup = () => {
       .then((res: AxiosResponse<Auth>): boolean => {
         token.value = res.data.context.token;
         api.defaults.headers.common.Authorization = `Bearer ${token.value}`;
+        console.debug('TokenStore - Set Auth Token');
+        return true;
+      })
+      .then(async () => {
+        await profileStore.load();
         Notify.create({
           timeout: 2000,
-          position: 'bottom',
-          message: '<div class="text-center">Welcome</div>',
-          avatar: 'https://bytelyon-public.s3.amazonaws.com/logo-alt.png',
+          position: 'bottom-right',
+          message: `<div class="text-center">Welcome ${profileStore.firstName()}</div>`,
           html: true,
         });
         return true;
@@ -49,7 +55,7 @@ const setup = () => {
           textColor: 'white',
           icon: 'mdi-alert-circle-outline',
           message: 'Login failed; Check your credentials and try again.',
-          position: 'top',
+          position: 'top-right',
         });
         token.value = undefined;
         api.defaults.headers.common.Authorization = null;
@@ -60,9 +66,12 @@ const setup = () => {
 
   // Cannot be an arrow function give "this"
   async function logout(this: thisType): Promise<NavigationFailure | void | undefined> {
+    Loading.show({ spinnerColor: 'primary' });
     token.value = undefined;
     api.defaults.headers.common.Authorization = null;
-    return await this.router.push({ name: 'index' });
+    await this.router.push({ name: 'index' });
+    Loading.hide();
+    return;
   }
 
   const authorized = (): boolean => !!token.value;
