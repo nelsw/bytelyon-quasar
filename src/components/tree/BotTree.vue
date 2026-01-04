@@ -29,7 +29,7 @@ watch(selected, async () => {
   }
   const path = selected.value ? `/dashboard/${selected.value}` : '/dashboard';
 
-  await router.replace({ path });
+  await router.push({ path:path });
 });
 
 onMounted(async () => {
@@ -47,7 +47,7 @@ onMounted(async () => {
     node-key="id"
     accordion
   />
-  <q-inner-loading :showing="loading" color="primary"/>
+  <q-inner-loading :showing="loading" color="primary" />
 </template>
 
 <style scoped lang="scss"></style>

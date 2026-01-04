@@ -13,7 +13,8 @@ defineProps<{
     :color="color"
     :icon="icon"
     :label="label"
+    text-color="grey-10"
     label-position="left"
-    label-class="bg-grey-3 text-black"
+    :label-class="`bg-grey-10 text-${color}`"
   />
 </template>

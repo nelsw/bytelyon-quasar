@@ -20,7 +20,7 @@ const setup = () => {
   const proxy = ref<Profile>(EmptyProfile);
 
   const load = async () => {
-    if (proxy.value !== EmptyProfile) {
+    if (proxy.value.name !== '') {
       return;
     }
     loading.value = true;

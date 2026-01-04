@@ -29,7 +29,7 @@ const login = async () => {
   <div class="q-px-md text-center q-mt-lg">
     <LogoImg width="50%" random />
     <h2 style="margin: 30px 0" v-html="`ByteLyon`" />
-    <p class="text-subtitle1 text-bold">Stop crawling; Start Prowling</p>
+    <p class="text-subtitle1 text-bold">Stop crawling;<br>Start Prowling.</p>
     <q-form @submit.prevent="login" class="row">
       <EmailInput v-model="auth.password" />
       <PasswordInput v-model="auth.password" />

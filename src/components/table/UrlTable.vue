@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue';
+import { ref } from 'vue';
 import type { Result } from 'src/types/result';
-import { truncateString } from 'src/types/base';
+import { SitemapColor, truncateString } from 'src/types/base';
+import FilterInput from 'components/form/FilterInput.vue';
+
 defineProps<{
   rows: string[];
 }>();
-const input = useTemplateRef<HTMLInputElement>('my-input');
-const reset = (): void => {
-  filter.value = '';
-  input.value?.focus();
-};
+
 const filter = ref<string>('');
 const handleClick = (r: Result) => window.open(r.link, '_blank');
 </script>
@@ -19,34 +17,45 @@ const handleClick = (r: Result) => window.open(r.link, '_blank');
     :rows="rows"
     :filter="filter"
     :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
-    :rows-per-page-options="[1000]"
+    :rows-per-page-options="[25]"
+    :hide-pagination="rows.length < 26"
     dense
     flat
-    :hide-pagination="rows.length < 1000"
   >
-    <template #top v-if="rows.length > 100">
-      <q-input
-        ref="my-input"
-        v-model="filter"
-        debounce="300"
-        color="primary"
-        label="URL Filter"
-        name="filter"
-        dense
-      >
-        <template #prepend>
-          <q-icon name="mdi-filter-outline" size="xs" />
-        </template>
-        <template #append>
-          <q-icon
-            v-if="filter !== ''"
-            name="mdi-close-circle-outline"
-            class="cursor-pointer"
-            @click="reset"
-            size="xs"
-          />
-        </template>
-      </q-input>
+    <template #top="scope">
+      <div class="flex justify-between items-center q-gutter-lg">
+        <div>
+          <FilterInput v-model="filter" :color="SitemapColor" :label="`URLs (${rows.length})`" />
+        </div>
+
+        <div v-if="scope.pagesNumber > 1">
+          <div class="flex justify-center items-center">
+            <q-btn
+              icon="mdi-chevron-left"
+              :color="SitemapColor"
+              dense
+              flat
+              :disable="scope.isFirstPage"
+              @click="scope.prevPage"
+              size="sm"
+            />
+            <span class="text-caption">
+              {{ scope.pagination.page }}
+              <span class="text-grey">/</span>
+              {{ scope.pagesNumber }}
+            </span>
+            <q-btn
+              icon="mdi-chevron-right"
+              dense
+              flat
+              :disable="scope.isLastPage"
+              @click="scope.nextPage"
+              size="sm"
+              :color="SitemapColor"
+            />
+          </div>
+        </div>
+      </div>
     </template>
     <template #header>
       <q-tr>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MaxDialog from 'components/dialog/MaxDialog.vue';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import XTooltip from 'components/tooltip/XTooltip.vue';
 
 const props = defineProps<{
@@ -8,10 +8,8 @@ const props = defineProps<{
   content?: object;
 }>();
 
-const model = defineModel<boolean>({ default: false });
+const model = defineModel<boolean>({ required: true });
 const copied = ref<boolean>(false);
-const disabled = computed(() => !props.content);
-const color = computed(() => disabled.value ? 'grey' : 'orange-14');
 const copyText = async () => {
   try {
     await navigator.clipboard.writeText(JSON.stringify(props.content));
@@ -24,10 +22,6 @@ const copyText = async () => {
 </script>
 
 <template>
-  <q-btn dense flat no-caps size="sm" @click="model = true" :disable="disabled">
-    <q-icon name="mdi-code-json" :color="color" size="xs" />
-    <x-tooltip text="View<br><code>json</code>" :disabled="disabled" />
-  </q-btn>
   <MaxDialog v-model="model">
     <template v-slot:title>
       <q-btn icon="mdi-content-copy" @click="copyText" dense flat>

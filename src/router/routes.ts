@@ -21,14 +21,14 @@ const routes: RouteRecordRaw[] = [
         // todo - homeish page
         children: [
           {
-            path: '/dashboard/search',
+            path: '/dashboard/search/:id?/:date?',
             name: 'search',
             props: true,
             meta: {
               icon: 'mdi-search-web',
               color: 'indigo-12',
             },
-            component: () => import('pages/dashboard/DashboardPage.vue'),
+            component: () => import('pages/dashboard/SearchPage.vue'),
           },
           {
             path: '/dashboard/sitemap/:id?/:date?',

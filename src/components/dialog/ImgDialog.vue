@@ -1,20 +1,13 @@
 <script setup lang="ts">
 import MaxDialog from 'components/dialog/MaxDialog.vue';
-import XTooltip from 'components/tooltip/XTooltip.vue';
-
+const model = defineModel<boolean>({ required: true });
 defineProps<{
   title: string;
-  url: string;
+  src: string;
 }>();
-
-const model = defineModel<boolean>({ default: false });
 </script>
 
 <template>
-  <q-btn dense flat target="_blank" no-caps size="sm" @click="model = true">
-    <q-icon name="mdi-image" color="light-blue-14" size="xs" />
-    <x-tooltip text="View<br>Image" />
-  </q-btn>
   <MaxDialog v-model="model">
     <template v-slot:title>
       <div class="text-h5">
@@ -22,7 +15,7 @@ const model = defineModel<boolean>({ default: false });
       </div>
     </template>
     <template v-slot:content>
-      <q-img :src="url" />
+      <q-img :src="src" />
     </template>
   </MaxDialog>
 </template>

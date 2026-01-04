@@ -77,8 +77,8 @@ const setup = () => {
     const p2 = load('sitemap');
     const p3 = load('search');
     try {
-      const results = await Promise.all([p1, p2, p3]);
-      console.debug('TokenStore - Set Bot Nodes', results[0], results[1], results[2]);
+      const r = await Promise.all([p1, p2, p3]);
+      console.debug(`✅ Nodes [${r.reduce((acc, cur) => acc + cur.length, 0)}]`);
     } catch (e) {
       console.error(e);
     }
@@ -94,6 +94,7 @@ const setup = () => {
         node = node?.children?.find((n) => n.label === date) as QTreeNode;
       }
     }
+    console.debug(`Found ${!!node}`);
     return node;
   };
 

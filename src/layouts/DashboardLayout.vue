@@ -5,6 +5,7 @@ import BotTree from 'components/tree/BotTree.vue';
 import HeaderBreadCrumbs from 'components/breadcrumbs/HeaderBreadCrumbs.vue';
 import { QInput } from 'quasar';
 import MenuBtn from 'components/btn/MenuBtn.vue';
+import TrashBtn from 'components/btn/TrashBtn.vue';
 
 const drawer = ref<boolean>(true);
 const selected = ref<string>('');
@@ -15,7 +16,6 @@ const isFwdSlash = ref(false);
 const input = useTemplateRef<QInput>('my-input');
 
 const onKeyPress = (e: KeyboardEvent) => {
-  console.log('onKeyPress', e);
   if (e.key === 'Meta') {
     isCmd.value = true;
     return;
@@ -37,14 +37,14 @@ onMounted(() => {
 
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-drawer v-model="drawer" side="left" show-if-above bordered :width="225" :breakpoint="600">
+    <q-drawer v-model="drawer" side="left" show-if-above bordered :width="300" :breakpoint="600">
       <q-scroll-area class="fit">
         <BotTree v-model:selected="selected" v-model:expanded="expanded" />
       </q-scroll-area>
     </q-drawer>
     <q-header class="bg-dark" bordered>
       <q-bar class="bg-dark text-white" dark>
-        <div class="flex row items-center" style="min-width: 187px">
+        <div class="flex row items-center" style="min-width: 262px">
           <div class="flex items-center q-mr-lg">
             <q-avatar size="sm">
               <LogoImg random />
@@ -56,6 +56,7 @@ onMounted(() => {
         <q-separator vertical inset />
         <HeaderBreadCrumbs class="q-pl-sm" />
         <q-space />
+        <TrashBtn class="q-mr-xs" />
         <q-separator vertical inset />
         <q-input
           ref="my-input"

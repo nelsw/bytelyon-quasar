@@ -26,21 +26,15 @@ const maxed = ref<boolean>(false);
           icon="mdi-window-minimize"
           @click="maxed = false"
           :disable="!maxed"
-        >
-          <q-tooltip v-if="maxed" class="bg-white text-primary">Minimize</q-tooltip>
-        </q-btn>
+        />
         <q-btn
           dense
           flat
           icon="mdi-window-maximize"
           @click="maxed = true"
           :disable="maxed"
-        >
-          <q-tooltip v-if="!maxed" class="bg-white text-primary">Maximize</q-tooltip>
-        </q-btn>
-        <q-btn dense flat icon="mdi-close" v-close-popup>
-          <q-tooltip class="bg-white text-primary">Close</q-tooltip>
-        </q-btn>
+        />
+        <q-btn dense flat icon="mdi-close" v-close-popup />
       </q-bar>
 
       <q-card-section>
@@ -50,8 +44,3 @@ const maxed = ref<boolean>(false);
   </q-dialog>
 </template>
 
-<style scoped lang="scss">
-.my-card {
-  //width: 500px;
-}
-</style>
