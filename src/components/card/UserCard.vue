@@ -16,7 +16,7 @@ onMounted(store.load);
         class="absolute"
         style="top: 0; right: 12px; transform: translateY(-50%)"
       >
-        <img src="~assets/guest-avatar.png" alt="Guest Avatar" />
+        <img src="../../assets/guest-avatar.png" alt="Guest Avatar" />
       </q-avatar>
       <div class="row no-wrap items-center">
         <div class="col text-caption">{{ store.proxy.name }}</div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBotStore } from 'stores/bot-store';
 import { computed } from 'vue';
-import UrlTabs from 'components/tabs/UrlTabs.vue';
+import UrlTable from 'components/table/UrlTable.vue';
 
 const props = defineProps<{
   id?: string;
@@ -14,5 +14,7 @@ const node = computed(() => {
 </script>
 
 <template>
-  <UrlTabs v-if="id && date" :pages="node.data[0].relative" :links="node.data[0].remote" />
+  <div class="scroll" style="max-height: 95vh">
+    <UrlTable v-if="id && date" :rows="node.data.relative" />
+  </div>
 </template>

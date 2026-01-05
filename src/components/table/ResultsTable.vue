@@ -3,6 +3,7 @@ import type { QTableColumn } from 'quasar';
 import { computed } from 'vue';
 import { type Result } from 'src/types/result';
 import type { ProwlerSearchPageResult } from 'src/types/prowler';
+import { SearchColor } from 'src/types/base';
 
 const props = defineProps<{
   name: string;
@@ -68,6 +69,12 @@ const columns = computed((): QTableColumn<ProwlerSearchPageResult>[] => {
         align: 'left',
       },
       {
+        name: 'price',
+        label: 'Price',
+        field: 'price',
+        align: 'left',
+      },
+      {
         name: 'title',
         label: 'Title',
         field: 'title',
@@ -117,13 +124,13 @@ const handleClick = (r: Result) => window.open(r.link, '_blank');
     dense
     flat
     wrap-cells
-    hide-header
+
   >
     <template v-slot:body="props">
       <q-tr :props="props" @click="handleClick(props.row)">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <span v-if="col.name === 'position'">
-            <q-badge color="indigo-12" outline>
+            <q-badge :color="SearchColor" outline>
               <span class="text-white">
                 {{ col.value }}
               </span>

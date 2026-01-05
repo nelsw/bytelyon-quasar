@@ -1,3 +1,5 @@
+import type { QTreeNode } from 'quasar';
+
 export interface OptionProps {
   readonly label: string;
   readonly value: string | number;
@@ -29,18 +31,59 @@ export const domain = (url: string) => {
   return url;
 };
 
-export const NewsColor: string = 'purple-12';
-export const SitemapColor: string = 'deep-purple-12';
-export const SearchColor: string = 'indigo-12';
+export enum BotEnum {
+  Search,
+  News,
+  Sitemap,
+}
+
+type BotType = string | BotEnum;
+
+interface Bot<BotType> {
+  type: BotType;
+  icon: string;
+  color: string;
+}
+
+// const param = (b: Bot<BotType>): string => b.type.toString().charAt(0).toLowerCase() + b.type.toString().substring(1);
+// const index = (b: Bot<BotType>): number => parseInt(b.type.toString(), 10)
+
+const Serp: Bot<BotType> = {
+  type: BotEnum.Search,
+  icon: 'mdi-search-web',
+  color: 'deep-indigo-14'
+};
+const News: Bot<BotType> = {
+  type: BotEnum.News,
+  icon: 'mdi-newspaper',
+  color: 'deep-indigo-13',
+};
+const Site: Bot<BotType> = {
+  type: BotEnum.Sitemap,
+  icon: 'mdi-sitemap-outline',
+  color: 'deep-indigo-12',
+};
+
+export const Bots: Bot<BotType>[] = [Serp, News, Site];
+
+export const BotNode = (bot: Bot<BotType>, kids: QTreeNode[]): QTreeNode => {
+  return {
+    id: bot.type.toString().charAt(0).toLowerCase(),
+    label: bot.type.toString(),
+    icon: bot.icon,
+    expandable: true,
+    iconColor: bot.color,
+    selectable: true,
+    children: kids,
+  };
+};
+
+export const SearchColor: string = 'indigo-14';
+export const NewsColor: string = 'indigo-13';
+export const SitemapColor: string = 'indigo-12';
 export const NewsIcon: string = 'mdi-newspaper';
 export const SitemapIcon: string = 'mdi-sitemap-outline';
 export const SearchIcon: string = 'mdi-search-web';
-
-export enum ProwlerType {
-  Search = 'Search',
-  Sitemap = 'Sitemap',
-  News = 'News',
-}
 
 export const BotIcon = (s?: string): string => {
   switch (s) {

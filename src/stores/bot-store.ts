@@ -48,11 +48,15 @@ const setup = () => {
       avatar: 'https://bytelyon-public.s3.amazonaws.com/guest-avatar.png',
       expandable: true,
       selectable: true,
+      handler: () => {
+        alert(`Account ${id} farts`);
+      },
       children: [
         {
           id: 'logout',
           label: 'Logout',
           icon: 'mdi-logout',
+          iconColor: 'grey',
           selectable: true,
         },
       ],
@@ -76,12 +80,15 @@ const setup = () => {
     const p1 = load('news');
     const p2 = load('sitemap');
     const p3 = load('search');
-    try {
-      const r = await Promise.all([p1, p2, p3]);
-      console.debug(`✅ Nodes [${r.reduce((acc, cur) => acc + cur.length, 0)}]`);
-    } catch (e) {
-      console.error(e);
-    }
+    return await Promise.all([p1, p2, p3])
+      .then(() => {
+        console.debug('✅ Nodes Loaded');
+        return true;
+      })
+      .catch((err: AxiosError) => {
+        console.error(err);
+        return false;
+      });
   };
 
   const find = (type: string, id?: string, date?: string): QTreeNode | null => {
@@ -98,11 +105,22 @@ const setup = () => {
     return node;
   };
 
+  const Delete = async (id: string) => {
+    return await api
+      .delete(`/prowler`, { params: { id: id } })
+      .then(() => true)
+      .catch((err: AxiosError) => {
+        console.error(err);
+        return false;
+      });
+  };
+
   return {
     model,
     load,
     find,
     loadAll,
+    Delete,
   };
 };
 

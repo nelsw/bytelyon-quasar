@@ -1,8 +1,6 @@
 import { type QTreeNode } from 'quasar';
 import { decodeTime } from 'ulid';
 
-export declare type ProwlerType = string;
-
 export interface Prowler {
   id: string;
   type: string;
@@ -158,6 +156,7 @@ export interface ProwlerSearchPageResult {
   position: number;
   snippet: string;
   source: string;
+  price?: string
   title: string;
 }
 
@@ -171,21 +170,4 @@ export enum SearchPageResultType {
   PopularProducts = "PopularProducts",
   RelatedQuery = "RelatedQuery",
   Video = "Video",
-}
-
-export const ResultTypeIcon = <T extends SearchPageResultType>(t:T) => {
-  switch (t) {
-    case SearchPageResultType.Organic:
-      return 'mdi-leaf-circle-outline';
-    case SearchPageResultType.Sponsored:
-      return 'mdi-credit-card-search-outline';
-    case SearchPageResultType.Video:
-      return 'mdi-movie-search-outline';
-    case SearchPageResultType.Forum:
-      return 'mdi-comment-search-outline';
-    case SearchPageResultType.Article:
-      return 'mdi-book-search-outline';
-    default:
-      return 'mdi-file-search-outline';
-  }
 }

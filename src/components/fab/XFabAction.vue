@@ -2,7 +2,7 @@
 defineProps<{
   color: string;
   icon: string;
-  label: string;
+  label?: string;
 }>();
 </script>
 

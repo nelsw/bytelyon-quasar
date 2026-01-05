@@ -1,76 +1,75 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useNewsStore } from 'stores/news-store';
-import { ulid } from 'ulid';
-import { type News } from 'src/types/news';
 
-const store = useNewsStore();
+const color = `green-13`;
 const model = defineModel<boolean>({ default: false });
 const name = ref<string>('');
-const keys = ref<string[]>([]);
-
-const handleSubmit = async () => {
-  const data: News = {
-    id: ulid(),
-    name: name.value,
-    keywords: keys.value,
-  };
-  onCancel();
-  await store.create(data);
-};
+const topic = ref<string>('');
+const unitModel = ref<string>('Daily');
+const handleSubmit = async () => {};
 const onCancel = () => {
   model.value = false;
   name.value = '';
-  keys.value = [];
 };
 </script>
 
 <template>
   <q-dialog v-model="model" persistent>
-    <q-card class="q-dialog-plugin" style="min-width: 400px" flat>
+    <q-card flat style="min-width: 300px">
       <q-form @submit="handleSubmit">
+        <q-item>
+          <q-item-section avatar>
+            <q-avatar>
+              <q-icon name="mdi-new-box" size="lg" :color="color" />
+            </q-avatar>
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label class="text-h5">News</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator />
         <q-card-section>
-          <div class="text-h4 text-center text-weight-bold">News Feed Details</div>
-          <q-select
-            name="Keywords"
-            label="Keywords"
-            v-model="keys"
-            use-input
-            use-chips
-            multiple
-            square
-            hide-dropdown-icon
-            new-value-mode="add-unique"
-            color="positive"
-          />
           <q-input
+            v-model="topic"
+            :color="color"
+            label="Topic"
+            name="url"
+            type="url"
+            dense
             autofocus
-            v-model="name"
-            name="name"
-            type="text"
-            label="Name"
-            color="positive"
-            clearable
+            hint="What news topic should we aggregate?"
+          />
+          <q-select
+            v-model="unitModel"
+            :color="color"
+            :options="['Hourly', 'Daily', 'Weekly', 'Do Not Repeat']"
+            class="q-my-md"
+            label="Repeat"
+            dense
+            hint="How often should we aggregate news articles?"
           />
         </q-card-section>
-        <q-card-actions align="center">
+        <q-separator />
+        <q-card-section>
           <q-btn
-            class="full-width q-mb-sm text-weight-bolder"
-            color="positive"
-            size="lg"
-            label="Save"
-            text-color="dark"
+            class="full-width"
+            label="Create"
+            :color="color"
+            v-close-popup
             type="submit"
+            text-color="grey-10"
           />
           <q-btn
-            class="full-width text-weight-normal"
-            flat
-            color="positive"
-            size="lg"
+            class="full-width q-mt-sm"
             label="Cancel"
+            :color="color"
             @click="onCancel"
+            flat
+            size="sm"
           />
-        </q-card-actions>
+        </q-card-section>
       </q-form>
     </q-card>
   </q-dialog>

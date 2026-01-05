@@ -12,7 +12,7 @@ const model = defineModel<boolean>({ default: false });
 
 <template>
   <q-btn dense flat target="_blank" no-caps size="sm" @click="model = true">
-    <q-icon name="mdi-image" color="light-blue-14" size="xs" />
+    <q-icon name="mdi-image" color="orange-5" size="xs" />
     <x-tooltip text="View<br>Image" />
   </q-btn>
   <MaxDialog v-model="model">

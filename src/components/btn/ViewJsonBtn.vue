@@ -11,7 +11,7 @@ const props = defineProps<{
 const model = defineModel<boolean>({ default: false });
 const copied = ref<boolean>(false);
 const disabled = computed(() => !props.content);
-const color = computed(() => disabled.value ? 'grey' : 'orange-14');
+const color = computed(() => disabled.value ? 'grey' : 'yellow-5');
 const copyText = async () => {
   try {
     await navigator.clipboard.writeText(JSON.stringify(props.content));

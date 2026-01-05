@@ -5,14 +5,8 @@ import XSplitter from 'components/splitter/XSplitter.vue';
 import FilterInput from 'components/form/FilterInput.vue';
 import { useRouter } from 'vue-router';
 import type { QTree, QTreeNode } from 'quasar';
-import type {
-  ProwlerSearchPage,
-  ProwlerSearchPageResults,
-  ProwlerSitemapResult,
-} from 'src/types/prowler';
-import UrlTabs from 'components/tabs/UrlTabs.vue';
-import SerpResultTabs from 'components/tabs/SerpResultTabs.vue';
-import { NewsColor, ProwlerType, SearchColor, SitemapColor } from 'src/types/base';
+import type { ProwlerSearchPage, ProwlerSitemapResult } from 'src/types/prowler';
+import { NewsColor, SearchColor, SitemapColor } from 'src/types/base';
 
 const store = useProwlerStore();
 const router = useRouter();
@@ -26,17 +20,6 @@ const prowlerSearchPage = ref<ProwlerSearchPage | null>(null);
 const tree = useTemplateRef<QTree>('tree');
 const tabPanelModel = ref<string>('');
 const hideSplit = ref(false);
-
-const prowlerType = (): ProwlerType => {
-  switch (router.currentRoute.value.name) {
-    case 'News':
-      return ProwlerType.News;
-    case 'Sitemap':
-      return ProwlerType.Sitemap;
-    default:
-      return ProwlerType.Search;
-  }
-};
 
 const nodes = computed((): QTreeNode[] => {
   switch (router.currentRoute.value.name) {
@@ -134,20 +117,6 @@ onMounted(store.load);
       </div>
     </template>
 
-    <template v-slot:after>
-      <div v-if="prowlerType() === ProwlerType.Search">
-        <SerpResultTabs
-          v-if="prowlerSearchPage?.data?.results"
-          :results="prowlerSearchPage?.data.results as ProwlerSearchPageResults"
-        />
-      </div>
-      <div v-else-if="prowlerType() === ProwlerType.Sitemap">
-        <UrlTabs
-          v-if="prowlerSitemapResult"
-          :pages="prowlerSitemapResult.relative"
-          :links="prowlerSitemapResult.remote"
-        />
-      </div>
-    </template>
+    <template v-slot:after> </template>
   </x-splitter>
 </template>

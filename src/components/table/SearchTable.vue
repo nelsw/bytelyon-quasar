@@ -8,7 +8,7 @@ import ColumnList from 'components/list/ColumnList.vue';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import JobBtn from 'components/btn/JobBtn.vue';
 import { JobType } from 'src/types/job';
-import PlusButton from 'components/btn/PlusButton.vue';
+import PlusBtn from 'components/btn/PlusBtn.vue';
 import { FollowTargetsCsv, IgnoreTargetsCsv } from 'src/types/targets';
 import { useSearchStore } from 'stores/search-store';
 import { type Search } from 'src/types/search';
@@ -132,7 +132,7 @@ const dialog = ref<boolean>(false);
     </template>
     <template v-slot:top-right="props">
       <div class="flex justify-center items-center q-gutter-xs">
-        <PlusButton hint="New<br>Search" @click="dialog = true" />
+        <PlusBtn hint="New<br>Search" @click="dialog = true" />
         <MenuBtn icon="mdi-view-column-outline">
           <template #tooltip>
             <x-tooltip text="Columns" />

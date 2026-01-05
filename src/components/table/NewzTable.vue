@@ -3,7 +3,7 @@ import { useNewsStore } from 'stores/news-store';
 import { onMounted, ref } from 'vue';
 import { type QTableColumn } from 'quasar';
 import { type News } from 'src/types/news';
-import PlusButton from 'components/btn/PlusButton.vue';
+import PlusBtn from 'components/btn/PlusBtn.vue';
 import ArticleTable from 'components/table/ArticleTable.vue';
 import { decodeTime } from 'ulid';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
@@ -125,7 +125,7 @@ const handleSave = async (data: News, newName: string, oldName: string) => {
     </template>
     <template #top-right="props">
       <div class="flex justify-center items-center q-gutter-xs">
-        <PlusButton hint="New Feed" @click="dialog = true" />
+        <PlusBtn hint="New Feed" @click="dialog = true" />
         <MenuBtn icon="mdi-view-column-outline">
           <template #tooltip>
             <x-tooltip text="Columns" />

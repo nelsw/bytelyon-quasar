@@ -10,7 +10,7 @@ import SitemapDialog from 'components/dialog/SitemapDialog.vue';
 import { type Sitemaps } from 'src/types/sitemaps';
 import { decodeTime } from 'ulid';
 import SitemapTable from 'components/table/SitemapTable.vue';
-import PlusButton from 'components/btn/PlusButton.vue';
+import PlusBtn from 'components/btn/PlusBtn.vue';
 
 const store = useSitemapStore();
 const columns: QTableColumn<Sitemaps>[] = [
@@ -144,7 +144,7 @@ onMounted(async () => {
       </div>
     </template>
     <template #top-right="props">
-      <PlusButton hint="New<br>Sitemap" @click="dialog = true" />
+      <PlusBtn hint="New<br>Sitemap" @click="dialog = true" />
       <MenuBtn icon="mdi-view-column-outline">
         <template #tooltip>
           <x-tooltip text="Columns" />

@@ -14,7 +14,7 @@ const handleClick = () => {
 
 <template>
   <q-btn dense flat no-caps size="sm" @click="handleClick">
-    <q-icon name="mdi-download-box-outline" color="light-blue-14" size="xs" />
+    <q-icon name="mdi-download-box-outline" color="amber-5" size="xs" />
     <x-tooltip text="Download<br>HTML" />
   </q-btn>
   <iframe v-if="model" :src="url" style="display: none" />

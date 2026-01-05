@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useSitemapStore } from 'stores/sitemap-store';
-import { ref, } from 'vue';
+import { ref } from 'vue';
 
-const color = `green-14`;
+const color = `green-13`;
 
 const store = useSitemapStore();
 const model = defineModel<boolean>({ default: false });
 const url = ref<string>('');
-
+const unitModel = ref<string>('Daily');
 const onSubmit = async () => {
   const u = url.value;
   onCancel();
@@ -22,16 +22,60 @@ const onCancel = () => {
 
 <template>
   <q-dialog v-model="model" persistent>
-    <q-card>
+    <q-card flat style="min-width: 275px">
       <q-form @submit="onSubmit">
+        <q-item>
+          <q-item-section avatar>
+            <q-avatar>
+              <q-icon name="mdi-new-box" size="lg" :color="color" />
+            </q-avatar>
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label class="text-h5">Sitemap</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator />
         <q-card-section>
-          <div class="text-h6 text-center">New Sitemap</div>
-          <q-input v-model="url" :color="color" label="URL" name="url" type="url" dense autofocus />
+          <q-input
+            v-model="url"
+            :color="color"
+            label="URL"
+            name="url"
+            type="url"
+            dense
+            autofocus
+            hint="What is the site address to map?"
+          />
+          <q-select
+            v-model="unitModel"
+            :color="color"
+            :options="['Hourly', 'Daily', 'Weekly', 'Do Not Repeat']"
+            class="q-my-md"
+            label="Repeat"
+            dense
+            hint="How often should we map this site?"
+          />
         </q-card-section>
-        <q-card-actions>
-          <q-btn class="full-width" label="Create" color="green-14" v-close-popup type="submit" />
-          <q-btn class="full-width q-mt-sm" label="Cancel" :color="color" @click="onCancel" flat />
-        </q-card-actions>
+        <q-separator />
+        <q-card-section>
+          <q-btn
+            class="full-width"
+            label="Create"
+            :color="color"
+            v-close-popup
+            type="submit"
+            text-color="grey-10"
+          />
+          <q-btn
+            class="full-width q-mt-sm"
+            label="Cancel"
+            :color="color"
+            @click="onCancel"
+            flat
+            size="sm"
+          />
+        </q-card-section>
       </q-form>
     </q-card>
   </q-dialog>
