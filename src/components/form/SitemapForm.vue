@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import { SitemapColor, SitemapIcon } from 'src/types/base';
+import type { Option } from 'src/types/base';
+import { defaultOption, SitemapColor, SitemapIcon } from 'src/types/base';
 import { ref } from 'vue';
+import CreateBtn from 'components/btn/CreateBtn.vue';
+import ResetBtn from 'components/btn/ResetBtn.vue';
+import FrequencySelect from 'components/input/FrequencySelect.vue';
 
-const color = SitemapColor;
 const url = ref<string>('');
-const unitModel = ref<string>('Daily');
+const frequency = ref<Option>(defaultOption());
 
-const onCancel = () => {};
+const onSubmit = () => {};
+const onReset = () => {};
 </script>
 
 <template>
-  <q-form>
-    <q-list>
+  <q-form @submit="onSubmit" @reset="onReset">
+    <q-list dark>
       <q-item>
         <q-item-section avatar>
-          <q-icon :name="SitemapIcon" size="lg" :color="color" />
+          <q-icon :name="SitemapIcon" size="lg" :color="SitemapColor" />
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-h5">Sitemap</q-item-label>
@@ -25,45 +29,31 @@ const onCancel = () => {};
         <q-item-section>
           <q-input
             v-model="url"
-            :color="color"
+            :color="SitemapColor"
             label="URL"
             name="url"
             type="url"
             dense
             autofocus
-            hint="What is the site address to map?" /></q-item-section
-      ></q-item>
-      <q-item
-        ><q-item-section>
-          <q-select
-            v-model="unitModel"
-            :color="color"
-            :options="['Hourly', 'Daily', 'Weekly', 'Do Not Repeat']"
-            class="q-my-md"
-            label="Repeat"
-            dense
+            hint="What is the site address to map?"
+          />
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <frequency-select
+            v-model="frequency"
+            :color="SitemapColor"
             hint="How often should we map this site?"
-        /></q-item-section>
+            label="Repeat"
+          />
+        </q-item-section>
       </q-item>
       <q-separator spaced />
       <q-item>
         <q-item-section>
-          <q-btn
-            class="full-width"
-            label="Create"
-            :color="color"
-            v-close-popup
-            type="submit"
-            text-color="grey-10"
-          />
-          <q-btn
-            class="full-width q-mt-sm"
-            label="Reset"
-            :color="color"
-            @click="onCancel"
-            flat
-            size="sm"
-          />
+          <CreateBtn :color="SitemapColor" />
+          <ResetBtn :color="SitemapColor" />
         </q-item-section>
       </q-item>
     </q-list>

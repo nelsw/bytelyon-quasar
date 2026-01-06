@@ -3,7 +3,7 @@ import UserCard from 'components/card/UserCard.vue';
 </script>
 
 <template>
-  <q-menu fit>
+  <q-menu>
     <UserCard />
   </q-menu>
 </template>

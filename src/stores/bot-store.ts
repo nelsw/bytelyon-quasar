@@ -16,9 +16,9 @@ const botIdx = (s: string): number => {
   switch (s) {
     case 'search':
       return 0;
-    case 'sitemap':
-      return 1;
     case 'news':
+      return 1;
+    case 'sitemap':
       return 2;
     default:
       return -1;
@@ -40,27 +40,8 @@ const rootNode = (id: string, kids: QTreeNode[]): QTreeNode => {
 const setup = () => {
   const model = ref<QTreeNode[]>([
     rootNode('search', []),
-    rootNode('sitemap', []),
     rootNode('news', []),
-    {
-      id: 'account',
-      label: 'Account',
-      avatar: 'https://bytelyon-public.s3.amazonaws.com/guest-avatar.png',
-      expandable: true,
-      selectable: true,
-      handler: () => {
-        alert(`Account ${id} farts`);
-      },
-      children: [
-        {
-          id: 'logout',
-          label: 'Logout',
-          icon: 'mdi-logout',
-          iconColor: 'grey',
-          selectable: true,
-        },
-      ],
-    },
+    rootNode('sitemap', []),
   ]);
 
   const load = async (t: string) => {
@@ -77,9 +58,9 @@ const setup = () => {
   };
 
   const loadAll = async () => {
+    const p3 = load('search');
     const p1 = load('news');
     const p2 = load('sitemap');
-    const p3 = load('search');
     return await Promise.all([p1, p2, p3])
       .then(() => {
         console.debug('✅ Nodes Loaded');
@@ -92,7 +73,6 @@ const setup = () => {
   };
 
   const find = (type: string, id?: string, date?: string): QTreeNode | null => {
-    console.debug(`Find ${type}, ${id}, ${date}`);
     const nodes: QTreeNode[] = model.value[botIdx(type)]?.children as QTreeNode[];
     let node: QTreeNode | null = null;
     if (id) {
@@ -101,7 +81,6 @@ const setup = () => {
         node = node?.children?.find((n) => n.label === date) as QTreeNode;
       }
     }
-    console.debug(`Found ${!!node}`);
     return node;
   };
 
@@ -115,12 +94,23 @@ const setup = () => {
       });
   };
 
+  const Save = async (o: object) => {
+    return await api
+      .put(`/prowler`, o)
+      .then(()=>true)
+      .catch((err: AxiosError) => {
+        console.error(err);
+        return false;
+      });
+  }
+
   return {
     model,
     load,
     find,
     loadAll,
     Delete,
+    Save,
   };
 };
 

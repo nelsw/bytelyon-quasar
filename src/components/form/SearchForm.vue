@@ -1,28 +1,76 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { SearchColor, SearchIcon } from 'src/types/base';
+import { onMounted, ref, watch } from 'vue';
+import { useBotStore } from 'stores/bot-store';
+import FrequencySelect from 'components/input/FrequencySelect.vue';
+import type { Option, Prowler } from 'src/types/base';
+import { clone, defaultOption, Options } from 'src/types/base';
 
-const color = SearchColor;
-const unitOptions = ['Hourly', 'Daily', 'Weekly', 'Do Not Repeat'];
+const props = defineProps<{
+  color: string;
+  icon: string;
+  prowler?: Prowler | null;
+}>();
+
 const query = ref<string>('');
-const unitModel = ref<string>(unitOptions[1] as string);
+const frequency = ref<Option>(defaultOption());
 const followAll = ref<boolean>(true);
 const targets = ref<string[]>([]);
 
-const onCancel = () => {
+const store = useBotStore();
+
+// const loadFromModel = () => {};
+const onLoad = () => {
+  console.log('SearchForm mounted', JSON.stringify(props.prowler, null, 2));
+  if (!props.prowler) {
+    onReset();
+    return;
+  }
+
+  const temp = clone(props.prowler);
+  query.value = temp.id;
+  for (const option of Options) {
+    if (option.value === temp.frequency) {
+      frequency.value = option;
+      break;
+    }
+  }
+
+  followAll.value = temp.targets['*'] as boolean;
+  targets.value = Object.keys(temp.targets).filter((k) => k !== '*');
+};
+const onReset = () => {
   query.value = '';
-  unitModel.value = 'Daily';
+  frequency.value = defaultOption();
   followAll.value = true;
   targets.value = [];
 };
+
+const onSubmit = async () => {
+  const model: Prowler = {
+    id: query.value,
+    type: 'search',
+    frequency: frequency?.value?.value as number,
+    targets: {
+      '*': followAll.value,
+    },
+  };
+
+  for (const target of targets.value) {
+    model.targets[target] = !followAll.value;
+  }
+
+  console.debug(`SearchForm: ${(await store.Save(model)) ? `✅` : `❌`}`);
+};
+watch(props, onLoad);
+onMounted(onLoad);
 </script>
 
 <template>
-  <q-form>
-    <q-list>
+  <q-form @submit="onSubmit" @reset="onReset">
+    <q-list dark>
       <q-item>
         <q-item-section avatar>
-          <q-icon :name="SearchIcon" size="lg" :color="color" />
+          <q-icon :name="icon" size="lg" :color="color" />
         </q-item-section>
         <q-item-section>
           <q-item-label class="text-h5">Search</q-item-label>
@@ -37,19 +85,19 @@ const onCancel = () => {
             label="Query"
             name="query"
             type="text"
+            dense
             autofocus
-            hint="What are we Googling?"
+            hint="What are we searching?"
           />
         </q-item-section>
       </q-item>
       <q-item>
         <q-item-section>
-          <q-select
-            v-model="unitModel"
+          <frequency-select
+            v-model="frequency"
             :color="color"
-            :options="['Hourly', 'Daily', 'Weekly', 'Do Not Repeat']"
             label="Repeat"
-            hint="How often should we Google this?"
+            hint="How often should we search this?"
           />
         </q-item-section>
       </q-item>
@@ -73,7 +121,7 @@ const onCancel = () => {
       <q-item>
         <q-item-section>
           <q-select
-            label="Exclusions"
+            :label="`${followAll ? 'Exclusions' : 'Inclusions'}`"
             v-model="targets"
             use-input
             use-chips
@@ -89,22 +137,7 @@ const onCancel = () => {
       <q-separator spaced />
       <q-item>
         <q-item-section>
-          <q-btn
-            class="full-width"
-            label="Create"
-            :color="color"
-            v-close-popup
-            type="submit"
-            text-color="grey-10"
-          />
-          <q-btn
-            class="full-width q-mt-sm"
-            label="Reset"
-            :color="color"
-            @click="onCancel"
-            flat
-            size="sm"
-          />
+          <q-btn class="full-width" label="Save" text-color="grey-10" type="submit" :color="color" />
         </q-item-section>
       </q-item>
     </q-list>

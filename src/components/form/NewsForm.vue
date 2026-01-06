@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { NewsColor, NewsIcon } from 'src/types/base';
+import { defaultOption, NewsColor, NewsIcon, type Option } from 'src/types/base';
 import { ref } from 'vue';
-const unitModel = ref<string>('Daily');
+import ResetBtn from 'components/btn/ResetBtn.vue';
+import CreateBtn from 'components/btn/CreateBtn.vue';
+import FrequencySelect from 'components/input/FrequencySelect.vue';
+
 const topic = ref<string>('');
-const onCancel = () => {};
+const frequency = ref<Option>(defaultOption());
+
+const onSubmit = () => {};
+const onReset = () => {};
 </script>
 
 <template>
-  <q-form>
+  <q-form @submit="onSubmit" @reset="onReset">
     <q-list dark>
       <q-item>
         <q-item-section avatar>
@@ -19,7 +25,7 @@ const onCancel = () => {};
           <q-item-label class="text-h5">News</q-item-label>
         </q-item-section>
       </q-item>
-<q-separator />
+      <q-separator />
       <q-item>
         <q-item-section>
           <q-input
@@ -31,39 +37,24 @@ const onCancel = () => {};
             dense
             autofocus
             hint="What news topic should we aggregate?"
-        /></q-item-section>
+        />
+        </q-item-section>
       </q-item>
       <q-item>
         <q-item-section>
-          <q-select
-            v-model="unitModel"
+          <frequency-select
+            v-model="frequency"
             :color="NewsColor"
-            :options="['Hourly', 'Daily', 'Weekly', 'Do Not Repeat']"
-            class="q-my-md"
-            label="Repeat"
-            dense
             hint="How often should we look for news?"
-        /></q-item-section>
+            label="Repeat"
+          />
+        </q-item-section>
       </q-item>
       <q-separator spaced />
       <q-item>
         <q-item-section>
-          <q-btn
-            class="full-width"
-            label="Create"
-            :color="NewsColor"
-            v-close-popup
-            type="submit"
-            text-color="grey-10"
-          />
-          <q-btn
-            class="full-width q-mt-sm"
-            label="Reset"
-            :color="NewsColor"
-            @click="onCancel"
-            flat
-            size="sm"
-          />
+          <CreateBtn :color="NewsColor" />
+          <ResetBtn :color="NewsColor" />
         </q-item-section>
       </q-item>
     </q-list>

@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { QTree } from 'quasar';
+import { QTree } from 'quasar';
 import { computed, onMounted, ref, watch } from 'vue';
 import { BotColor } from 'src/types/base';
 import { useBotStore } from 'stores/bot-store';
 import { useRouter } from 'vue-router';
 import { useTokenStore } from 'stores/token-store';
-import { useFilterStore } from 'stores/filter-store';
-
+// const model = defineModel<string>();
+defineProps<{
+  filter?: string;
+}>()
 const router = useRouter();
 const store = useBotStore();
 const tokenStore = useTokenStore();
-const filterStore = useFilterStore();
 const expanded = defineModel<string[]>('expanded', {
   default: [],
 });
 const loading = ref<boolean>(true);
 const selected = defineModel<string>('selected');
-
 const color = computed(() => {
   if (!selected.value) return;
 
@@ -41,12 +41,13 @@ onMounted(async () => (loading.value = !(await store.loadAll())));
 
 <template>
   <q-tree
+    ref="my-tree"
     v-if="!loading"
     v-model:expanded="expanded"
     v-model:selected="selected"
-    :filter="filterStore.model"
     :selected-color="color"
     :nodes="store.model"
+    :filter="filter"
     default-expand-all
     node-key="id"
     accordion

@@ -31,9 +31,9 @@ onMounted(store.load);
   </q-card>
 </template>
 
-<style  lang="scss">
+<style scoped  lang="scss">
 .my-card {
-  width: 100%;
+
   max-width: 300px;
   min-width: 200px;
 }

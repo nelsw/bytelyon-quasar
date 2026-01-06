@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBotStore } from 'stores/bot-store';
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import SerpResultTabs from 'components/tabs/SerpResultTabs.vue';
 import XFabAction from 'components/fab/XFabAction.vue';
 import JsonDialog from 'components/dialog/JsonDialog.vue';
@@ -14,21 +14,25 @@ const props = defineProps<{
 
 const store = useBotStore();
 
-const model = defineModel<QTreeNode>({ default: {} });
+const model = defineModel<QTreeNode>();
 
 const fabModel = ref<boolean>(true);
 const imgModel = ref<boolean>(false);
 const jsonModel = ref<boolean>(false);
 const htmlModel = ref<boolean>(false);
 
-const title = computed(() => `${props.id} - ${props.date}`);
 const setModel = () => {
-  console.log(JSON.stringify(model.value?.data, null, 2));
-  const n = store.find('search', props.id, props.date);
-  if (n) {
-    model.value = n;
+  if (!props.date) {
+    console.debug('Missing date');
+    return;
   }
-  console.log(JSON.stringify(model.value?.data, null, 2));
+  const n = store.find('search', props.id, props.date);
+  if (!n) {
+    console.debug('Bot was not found');
+    return;
+  }
+  model.value = n;
+  console.log(JSON.stringify(model.value, null, 2));
 };
 
 onMounted(setModel);
@@ -38,8 +42,8 @@ watch(fabModel, () => (fabModel.value = true));
 </script>
 
 <template>
-  <SerpResultTabs v-if="id && date"  v-model:node="model" />
-  <q-page-sticky v-if="id && date && model" position="bottom-right" :offset="[18, 18]">
+  <SerpResultTabs v-if="id && date" v-model:node="model as QTreeNode" />
+  <q-page-sticky v-if="id && date && model" position="bottom-left" :offset="[18, 18]">
     <q-fab
       v-model="fabModel"
       color="yellow-10"
@@ -48,7 +52,7 @@ watch(fabModel, () => (fabModel.value = true));
       persistent
       label="Files"
       text-color="grey-10"
-      vertical-actions-align="right"
+      vertical-actions-align="left"
     >
       <template #icon="{ opened }">
         <q-icon
@@ -76,11 +80,16 @@ watch(fabModel, () => (fabModel.value = true));
       <x-fab-action color="yellow-7" icon="mdi-code-json" label="JSON" @click="jsonModel = true" />
     </q-fab>
   </q-page-sticky>
-  <ImgDialog v-if="id && date && model" v-model="imgModel" :title="title" :src="model.data?.img" />
+  <ImgDialog
+    v-if="id && date && model"
+    v-model="imgModel"
+    :title="`${props.id} - ${props.date}`"
+    :src="model.data?.img"
+  />
   <JsonDialog
     v-if="id && date && model"
     v-model="jsonModel"
-    :title="title"
+    :title="`${props.id} - ${props.date}`"
     :content="model.data?.json.results"
   />
   <iframe v-if="id && date && model && htmlModel" :src="model.data?.html" style="display: none" />

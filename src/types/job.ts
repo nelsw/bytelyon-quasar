@@ -1,4 +1,3 @@
-import { type Frequency } from 'src/types/frequency';
 
 export const enum JobType {
   NEWS = 'news',
@@ -10,7 +9,7 @@ export interface Job {
   id: string;
   name: string;
   type: JobType;
-  frequency: Frequency;
+  frequency: unknown;
   results: JobResults;
 }
 

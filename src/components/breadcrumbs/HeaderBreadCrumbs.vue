@@ -31,19 +31,19 @@ const icon = computed(() => {
 <template>
   <div class="flex">
     <div v-if="type !== ''" class="flex items-center">
-      <q-icon :name="icon" :color="color" size="xs" />
+      <q-icon :name="icon" :color="color" size="sm" />
       <div class="text-caption text-capitalize q-mx-sm">{{ type }}</div>
     </div>
 
     <div v-if="id !== ''" class="flex items-center">
-      <q-icon name="mdi-slash-forward" color="grey-14" size="xs" />
-      <q-icon name="mdi-format-quote-open" :color="color" size="xs" />
+      <q-icon name="mdi-slash-forward" color="grey-14" size="md" />
+      <q-icon name="mdi-identifier" :color="color" size="md" />
       <div class="text-caption q-ml-xs">{{ id }}</div>
     </div>
 
     <div v-if="date !== ''" class="flex items-center">
-      <q-icon name="mdi-slash-forward" color="grey-14" size="xs" />
-      <q-icon name="mdi-table-clock" :color="color" size="xs" />
+      <q-icon name="mdi-slash-forward" color="grey-14" size="md" />
+      <q-icon name="mdi-table-clock" :color="color" size="sm" />
       <div class="text-caption q-mx-sm">{{ date }}</div>
     </div>
   </div>
