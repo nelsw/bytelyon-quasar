@@ -5,6 +5,10 @@ import FrequencySelect from 'components/input/FrequencySelect.vue';
 import type { Option, Prowler } from 'src/types/base';
 import { clone, defaultOption, Options } from 'src/types/base';
 
+const emit = defineEmits<{
+  close: [void];
+}>();
+
 const props = defineProps<{
   color: string;
   icon: string;
@@ -66,14 +70,15 @@ onMounted(onLoad);
 </script>
 
 <template>
-  <q-form @submit="onSubmit" @reset="onReset">
+  <q-form @submit="onSubmit">
     <q-list dark>
       <q-item>
         <q-item-section avatar>
           <q-icon :name="icon" size="lg" :color="color" />
         </q-item-section>
-        <q-item-section>
-          <q-item-label class="text-h5">Search</q-item-label>
+        <q-item-section class="text-h5"> Search </q-item-section>
+        <q-item-section side>
+          <q-btn icon="mdi-close" color="grey" flat dense @click="onReset;emit('close')" />
         </q-item-section>
       </q-item>
       <q-separator />
@@ -134,11 +139,15 @@ onMounted(onLoad);
           />
         </q-item-section>
       </q-item>
-      <q-separator spaced />
+      <q-separator  />
       <q-item>
-        <q-item-section>
-          <q-btn class="full-width" label="Save" text-color="grey-10" type="submit" :color="color" />
-        </q-item-section>
+        <q-btn
+          class="full-width"
+          label="Save"
+          text-color="grey-10"
+          type="submit"
+          :color="color"
+        />
       </q-item>
     </q-list>
   </q-form>

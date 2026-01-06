@@ -65,18 +65,18 @@ export const label = (t: BotType): string => t.toString();
 
 const Serp: Bot = {
   type: BotEnum.Search,
-  icon: 'mdi-search-web',
-  color: 'deep-indigo-14'
+  icon: 'mdi-web',
+  color: 'indigo-14'
 };
 const News: Bot = {
   type: BotEnum.News,
   icon: 'mdi-newspaper',
-  color: 'deep-indigo-13',
+  color: 'indigo-13',
 };
 const Site: Bot = {
   type: BotEnum.Sitemap,
   icon: 'mdi-sitemap-outline',
-  color: 'deep-indigo-12',
+  color: 'indigo-12',
 };
 
 export const Bots: Bot[] = [Serp, News, Site];

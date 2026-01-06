@@ -1,20 +1,15 @@
 <script setup lang="ts">
 import LogoImg from 'components/img/LogoImg.vue';
 import { ref } from 'vue';
-import BotTree from 'components/tree/BotTree.vue';
 import HeaderBreadCrumbs from 'components/breadcrumbs/HeaderBreadCrumbs.vue';
-import MenuBtn from 'components/btn/MenuBtn.vue';
-import RightDrawer from 'components/drawer/RightDrawer.vue';
-import TreeFilter from 'components/input/TreeFilter.vue';
-import PlusBtn from 'components/btn/PlusBtn.vue';
+import DashboardFooter from 'components/footer/DashboardFooter.vue';
+import LeftDrawer from 'components/drawer/LeftDrawer.vue';
 
 const drawerLeft = ref<boolean>(true);
-const selected = ref<string>('');
-const filter = ref<string>('');
 </script>
 
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpR lFr">
     <q-drawer
       v-model="drawerLeft"
       side="left"
@@ -23,32 +18,20 @@ const filter = ref<string>('');
       :width="300"
       :breakpoint="600"
     >
-      <q-scroll-area class="fit">
-        <TreeFilter v-model="filter" class="q-px-lg" />
-        <q-separator inset />
-        <BotTree v-model:selected="selected" :filter="filter" />
-      </q-scroll-area>
+      <LeftDrawer />
     </q-drawer>
-    <RightDrawer v-model="selected" />
     <q-header class="bg-dark" bordered>
       <q-toolbar class="bg-dark">
-        <div class="flex row justify-center items-center q-mx-sm">
-          <div class="flex items-center">
-            <q-avatar size="md">
-              <LogoImg />
-            </q-avatar>
-            <div class="text-subtitle1 q-ml-md">ByteLyon</div>
-          </div>
-        </div>
-        <div v-if="drawerLeft" style="min-width: 110px" />
+        <q-avatar size="md">
+          <LogoImg />
+        </q-avatar>
 
-        <MenuBtn v-model="drawerLeft" />
         <q-separator vertical spaced inset />
 
         <q-space />
         <HeaderBreadCrumbs />
         <q-space />
-        <PlusBtn />
+
         <q-separator vertical spaced inset />
         <q-btn dense flat :to="{ name: 'account' }" color="dark" size="md">
           <q-avatar size="md">
@@ -57,6 +40,7 @@ const filter = ref<string>('');
         </q-btn>
       </q-toolbar>
     </q-header>
+    <DashboardFooter v-model:drawer-left="drawerLeft" />
     <q-page-container>
       <q-page>
         <router-view />

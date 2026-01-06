@@ -27,7 +27,7 @@ onMounted(() =>
 <template>
   <q-input
     ref="input"
-    class="my-input text-caption"
+
     v-model="model"
     dense
     borderless
