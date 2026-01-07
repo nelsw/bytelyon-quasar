@@ -26,7 +26,7 @@ const copyText = async () => {
 <template>
   <q-btn dense flat no-caps size="sm" @click="model = true" :disable="disabled">
     <q-icon name="mdi-code-json" :color="color" size="xs" />
-    <x-tooltip text="View<br><code>json</code>" :disabled="disabled" />
+<!--    <x-tooltip text="View<br><code>json</code>" :disabled="disabled" />-->
   </q-btn>
   <MaxDialog v-model="model">
     <template v-slot:title>

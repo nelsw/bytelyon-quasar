@@ -6,14 +6,13 @@ import BotTree from 'components/tree/BotTree.vue';
 const model = defineModel<boolean>({ required: true });
 
 const filter = ref<string>('');
-const selected = ref<string>('');
 </script>
 
 <template>
-  <q-drawer v-model="model" side="left" show-if-above bordered :width="300" :breakpoint="600">
+  <q-drawer v-model="model" side="left" show-if-above bordered :width="600" :breakpoint="600">
     <q-scroll-area
       style="height: calc(100% - 40px); margin-top: 40px;">
-      <BotTree v-model:selected="selected" :filter="filter" />
+      <BotTree  :filter="filter" />
     </q-scroll-area>
 
     <div class="absolute-top" style="height: 40px">

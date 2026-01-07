@@ -21,7 +21,14 @@ export const Options:Option[] = [
 
 export const defaultOption = (): Option => Options[0] as Option;
 
-
+export const optionLabel = (value:number): string  => {
+  for (const option of Options) {
+    if (option.value === value) {
+      return option.label;
+    }
+  }
+  return 'Unknown';
+}
 
 
 
