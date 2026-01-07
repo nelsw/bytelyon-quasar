@@ -9,7 +9,7 @@ const filter = ref<string>('');
 </script>
 
 <template>
-  <q-drawer v-model="model" side="left" show-if-above bordered :width="600" :breakpoint="600">
+  <q-drawer v-model="model" side="left" show-if-above bordered :width="300" :breakpoint="600">
     <q-scroll-area
       style="height: calc(100% - 40px); margin-top: 40px;">
       <BotTree  :filter="filter" />

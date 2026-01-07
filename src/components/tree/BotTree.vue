@@ -447,9 +447,6 @@ const nodes: QTreeNode[] = [
     ],
   },
 ];
-// const x = tree.value?.isExpanded(s);
-// console.log(selected.value, s, x);
-// tree.value?.setExpanded(s, true);
 </script>
 
 <template>
@@ -518,14 +515,4 @@ const nodes: QTreeNode[] = [
     <!--    </template>-->
   </q-tree>
   <q-inner-loading :showing="loading" :color="SearchColor" />
-  Expanded
-  <pre>{{ expanded }}</pre>
-  Selected
-  <pre>{{ selected }}</pre>
 </template>
-
-<style scoped lang="scss">
-q-icon.mdi.mdi-image-outline.q-tree__icon.q-mr-sm {
-  color: #00c853;
-}
-</style>

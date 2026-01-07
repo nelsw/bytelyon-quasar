@@ -41,3 +41,42 @@ quasar build
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+
+
+todo 
+
+
+Export
+HTML
+CSV
+PNG
+JSON
+
+View
+PNG (perhaps a gallery)
+
+Copy
+JSON
+
+****
+
+Update FE tree result formatting
+Nodify all data
+Prettify the nodes
+
+****
+
+BE
+Save all sponsored and hidden results on the fly
+Save all result types after closing the PW instance
+Chunk results
+/search returns all search q's
+/search?q=foo returns all ulid's
+/search?q=foo&ulid=bar returns the serp and page data
+
+*** 
+
+BETA
+
+User sign up
+profile page etc
