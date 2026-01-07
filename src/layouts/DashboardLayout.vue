@@ -2,45 +2,42 @@
 import LogoImg from 'components/img/LogoImg.vue';
 import { ref } from 'vue';
 import HeaderBreadCrumbs from 'components/breadcrumbs/HeaderBreadCrumbs.vue';
-import DashboardFooter from 'components/footer/DashboardFooter.vue';
 import LeftDrawer from 'components/drawer/LeftDrawer.vue';
+import PlusBtn from 'components/btn/PlusBtn.vue';
+import MenuBtn from 'components/btn/MenuBtn.vue';
 
 const drawerLeft = ref<boolean>(true);
 </script>
 
 <template>
   <q-layout view="hHh lpR lFr">
-    <q-drawer
-      v-model="drawerLeft"
-      side="left"
-      show-if-above
-      bordered
-      :width="300"
-      :breakpoint="600"
-    >
-      <LeftDrawer />
-    </q-drawer>
+    <LeftDrawer v-model="drawerLeft" />
     <q-header class="bg-dark" bordered>
       <q-toolbar class="bg-dark">
-        <q-avatar size="md">
-          <LogoImg />
-        </q-avatar>
-
-        <q-separator vertical spaced inset />
-
-        <q-space />
-        <HeaderBreadCrumbs />
-        <q-space />
-
-        <q-separator vertical spaced inset />
-        <q-btn dense flat :to="{ name: 'account' }" color="dark" size="md">
-          <q-avatar size="md">
-            <img src="https://avatars.githubusercontent.com/u/7100798?v=4" alt="User Avatar" />
-          </q-avatar>
-        </q-btn>
+        <div class="row full-width">
+          <div class="col-3 flex items-center">
+            <q-avatar size="md">
+              <LogoImg />
+            </q-avatar>
+            <div class="text-white text-subtitle1 q-ml-sm">ByteLyon</div>
+            <q-separator vertical spaced inset />
+            <MenuBtn v-model="drawerLeft" />
+          </div>
+          <div class="col-6 flex justify-center items-center">
+            <HeaderBreadCrumbs />
+          </div>
+          <div class="col-3 flex justify-end items-center">
+            <PlusBtn />
+            <q-separator vertical spaced inset />
+            <q-btn dense flat :to="{ name: 'account' }" color="dark" size="md">
+              <q-avatar size="md">
+                <img src="https://avatars.githubusercontent.com/u/7100798?v=4" alt="User Avatar" />
+              </q-avatar>
+            </q-btn>
+          </div>
+        </div>
       </q-toolbar>
     </q-header>
-    <DashboardFooter v-model:drawer-left="drawerLeft" />
     <q-page-container>
       <q-page>
         <router-view />

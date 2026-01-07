@@ -57,6 +57,7 @@ onMounted(async () => (loading.value = !(await store.loadAll())));
     :filter="filter"
     node-key="id"
     accordion
+    default-expand-all
     @update:selected="onSelected"
   />
   <q-inner-loading :showing="loading" :color="SearchColor" />

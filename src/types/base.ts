@@ -13,15 +13,13 @@ export interface Option {
 }
 
 export const Options:Option[] = [
-  { label: 'Do Not Repeat', value: 0 },
+  { label: 'Never', value: 0 },
   { label: 'Hourly', value: hour },
   { label: 'Daily', value: hour * 24 },
   { label: 'Weekly', value: hour * 24 * 7 },
 ];
 
-export const defaultOption = (): Option => {
-  return { label: 'Do Not Repeat', value: 0 };
-};
+export const defaultOption = (): Option => Options[0] as Option;
 
 
 

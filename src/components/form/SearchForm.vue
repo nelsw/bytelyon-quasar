@@ -19,7 +19,6 @@ const query = ref<string>('');
 const frequency = ref<Option>(defaultOption());
 const followAll = ref<boolean>(true);
 const targets = ref<string[]>([]);
-
 const store = useBotStore();
 
 // const loadFromModel = () => {};
@@ -73,12 +72,24 @@ onMounted(onLoad);
   <q-form @submit="onSubmit">
     <q-list dark>
       <q-item>
-        <q-item-section avatar>
-          <q-icon :name="icon" size="lg" :color="color" />
-        </q-item-section>
-        <q-item-section class="text-h5"> Search </q-item-section>
-        <q-item-section side>
-          <q-btn icon="mdi-close" color="grey" flat dense @click="onReset;emit('close')" />
+        <q-item-section>
+          <div class="flex items-center q-gutter-sm">
+            <div>
+              <q-icon :name="icon" size="lg" :color="color" />
+            </div>
+            <div class="text-h5">Search</div>
+            <q-space />
+            <q-btn
+              icon="mdi-close"
+              color="grey"
+              flat
+              dense
+              @click="
+                onReset;
+                emit('close');
+              "
+            />
+          </div>
         </q-item-section>
       </q-item>
       <q-separator />
@@ -92,62 +103,40 @@ onMounted(onLoad);
             type="text"
             dense
             autofocus
-            hint="What are we searching?"
-          />
+          >
+            <template #prepend>
+              <q-icon name="mdi-format-quote-open" :color="color" />
+            </template>
+          </q-input>
         </q-item-section>
       </q-item>
       <q-item>
         <q-item-section>
-          <frequency-select
-            v-model="frequency"
-            :color="color"
-            label="Repeat"
-            hint="How often should we search this?"
-          />
+          <frequency-select v-model="frequency" :color="color" label="Repeat" />
         </q-item-section>
       </q-item>
-      <q-item>
+
+      <q-item tag="label" v-ripple>
+        <q-item-section avatar>
+          <q-checkbox v-model="followAll" :color="color" keep-color />
+        </q-item-section>
         <q-item-section>
-          <q-toggle
-            v-model="followAll"
-            checked-icon="mdi-check"
-            :color="color"
-            :label="`${followAll ? 'Crawl' : 'Ignore'}  Result Pages`"
-            unchecked-icon="mdi-close"
-          />
-          <div v-if="followAll" class="text-grey" style="font-size: 11px">
-            Scrape the Google SERP & each result page.
-          </div>
-          <div v-else class="text-grey" style="font-size: 11px">
-            Do not Crawl; Only Scrape the Google SERP.
-          </div>
+          <q-item-label>Include Landing Pages</q-item-label>
+          <q-item-label caption>Crawl & Scrape result URLs?</q-item-label>
         </q-item-section>
       </q-item>
+      <q-separator />
       <q-item>
+
         <q-item-section>
-          <q-select
-            :label="`${followAll ? 'Exclusions' : 'Inclusions'}`"
-            v-model="targets"
-            use-input
-            use-chips
-            multiple
-            hide-dropdown-icon
-            input-debounce="0"
-            new-value-mode="add-unique"
+          <q-btn
+            class="full-width"
+            label="Save"
+            text-color="grey-10"
+            type="submit"
             :color="color"
-            :hint="`Domains to explicitly ${followAll ? 'Ignore' : 'Crawl'}`"
           />
         </q-item-section>
-      </q-item>
-      <q-separator  />
-      <q-item>
-        <q-btn
-          class="full-width"
-          label="Save"
-          text-color="grey-10"
-          type="submit"
-          :color="color"
-        />
       </q-item>
     </q-list>
   </q-form>

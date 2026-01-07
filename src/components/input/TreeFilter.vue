@@ -11,7 +11,6 @@ defineProps<{
 onMounted(() =>
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === '/' && model.value.length === 0) {
-      model.value = '';
       input.value?.focus();
       return;
     }
@@ -27,7 +26,6 @@ onMounted(() =>
 <template>
   <q-input
     ref="input"
-
     v-model="model"
     dense
     borderless
@@ -36,15 +34,15 @@ onMounted(() =>
     hide-bottom-space
     placeholder="Filter"
   >
-    <template #before>
+    <template #prepend>
       <q-icon v-if="model.length === 0" name="mdi-filter-variant" color="grey" size="xs" />
       <q-btn v-else dense size="xs" @click="model = ''" flat>
         <q-icon name="mdi-close" color="grey" size="xs" />
       </q-btn>
     </template>
-    <template v-if="cmd" #after>
-      <q-badge :outline="true" color="grey-9" text-color="purple">
-        <span class="text-grey q-pa-xs"> {{ `${model.length > 0 ? 'esc' : '⌘/'}` }} </span>
+    <template #append>
+      <q-badge :outline="true" color="grey-9" align="middle">
+        <span class="text-grey text-caption"> {{ `${model.length > 0 ? 'esc' : '⌘/'}` }} </span>
       </q-badge>
     </template>
   </q-input>

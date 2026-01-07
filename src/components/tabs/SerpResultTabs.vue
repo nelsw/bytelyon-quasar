@@ -66,12 +66,7 @@ onMounted(() => {});
 </script>
 
 <template>
-  <q-splitter
-    v-model="splitterModel"
-    class="full-height"
-    dark
-    unit="px"
-  >
+  <q-splitter v-model="splitterModel" class="full-height" dark unit="px">
     <template v-slot:before>
       <q-tabs
         v-model="tab"
@@ -94,8 +89,8 @@ onMounted(() => {});
         />
       </q-tabs>
     </template>
+    <q-separator />
     <template v-slot:after>
-      <q-separator />
       <q-tab-panels
         v-model="tab"
         animated
