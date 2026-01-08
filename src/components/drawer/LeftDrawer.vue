@@ -9,16 +9,13 @@ const filter = ref<string>('');
 </script>
 
 <template>
-  <q-drawer v-model="model" side="left" show-if-above bordered :width="300" :breakpoint="600">
-    <q-scroll-area
-      style="height: calc(100% - 40px); margin-top: 40px;">
-      <BotTree  :filter="filter" />
+  <q-drawer v-model="model" side="left" show-if-above bordered :width="350" :breakpoint="600">
+    <q-scroll-area style="height: calc(100% - 40px); margin-top: 40px">
+      <BotTree :filter="filter" />
     </q-scroll-area>
-
     <div class="absolute-top" style="height: 40px">
-      <div class=" q-mx-sm">
+      <div class="q-mx-sm">
         <TreeFilter v-model="filter" />
-
       </div>
       <q-separator />
     </div>

@@ -62,7 +62,7 @@ const update = () => {
 const splitterModel = ref(153);
 
 watch(node, update);
-onMounted(() => {});
+onMounted(update);
 </script>
 
 <template>

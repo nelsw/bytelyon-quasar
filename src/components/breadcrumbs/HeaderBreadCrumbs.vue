@@ -14,11 +14,13 @@ const type = computed(() => {
 });
 const id = computed(() => {
   const p = parts();
-  return p.length > 1 && type.value !== '' ? (p[1] as string) : '';
+  const s = p.length > 1 && type.value !== '' ? (p[1] as string) : '';
+  return s.replaceAll('%20', ' ');
 });
 const date = computed(() => {
   const p = parts();
-  return p.length > 2 && id.value !== '' ? (p[2] as string) : '';
+  const s = p.length > 2 && id.value !== '' ? (p[2] as string) : '';
+  return s.replaceAll('%20', ' ');
 });
 const color = computed(() => {
   return BotColor(type.value);

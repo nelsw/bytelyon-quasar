@@ -118,7 +118,7 @@ export const SitemapIcon: string = 'mdi-sitemap-outline';
 export const SearchIcon: string = 'mdi-web';
 
 export const BotIcon = (s?: string): string => {
-  switch (s) {
+  switch (s?.split('/')[0]) {
     case 'search':
       return SearchIcon;
     case 'sitemap':
@@ -131,7 +131,7 @@ export const BotIcon = (s?: string): string => {
 };
 
 export const BotColor = <T>(t: T): string => {
-  switch (t) {
+  switch (t?.toString().split('/')[0]) {
     case 'search':
       return SearchColor;
     case 'sitemap':
