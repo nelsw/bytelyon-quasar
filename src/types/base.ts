@@ -108,6 +108,7 @@ export interface Prowler {
   targets: {
     [key: string]: boolean;
   };
+  disabled: boolean;
 }
 
 export const SearchColor: string = 'indigo-14';

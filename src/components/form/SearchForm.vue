@@ -58,6 +58,7 @@ const onSubmit = async () => {
     targets: {
       '*': followAll.value,
     },
+    disabled: false,
   };
 
   for (const target of targets.value) {

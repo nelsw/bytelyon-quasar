@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useBotStore } from 'stores/bot-store';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
-import { SitemapColor } from 'src/types/base';
+import type { Prowler } from 'src/types/base';
+import { SitemapColor, SitemapIcon } from 'src/types/base';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { QInput, type QTableColumn, useQuasar } from 'quasar';
+import SitemapForm from 'components/form/SitemapForm.vue';
+import type { ProwlerSitemapResult } from 'src/types/prowler';
 
 interface Row {
   url: string;
@@ -42,6 +45,30 @@ const props = defineProps<{
   date?: string;
 }>();
 
+const defaultProwler = (): Prowler => {
+  return {
+    id: '',
+    type: 'search',
+    frequency: 900000000000, // 15min of nanos
+    targets: {
+      '*': true,
+    },
+    disabled: false,
+  };
+};
+
+const defaultSession = (): ProwlerSitemapResult => {
+  return {
+    id: '',
+    domain: '',
+    relative: [],
+    remote: [],
+  };
+};
+
+const prowler = ref<Prowler>(defaultProwler());
+const session = ref<ProwlerSitemapResult>();
+
 const input = useTemplateRef<QInput>('my-input');
 const store = useBotStore();
 const filter = ref<string>('');
@@ -67,15 +94,30 @@ const confirm = () => {
 
 const setModel = () => {
   rows.value = [];
-  const node = store.find('sitemap', props.id, props.date);
-  if (!node) return;
-  ulid.value = node.data.id;
+
+  const prowlerNode = store.find('sitemap', props.id);
+  if (!prowlerNode) {
+    prowler.value = defaultProwler();
+    return;
+  }
+  prowler.value = prowlerNode.data;
+
+  if (props.date === undefined || props.date === null) {
+    return;
+  }
+
+  const sessionNode = store.find('sitemap', props.id, props.date);
+  if (!sessionNode) {
+    session.value = defaultSession();
+    return;
+  }
+  session.value = sessionNode.data;
   const rel =
-    node.data?.relative?.map((url: string) => {
+    session.value?.relative?.map((url: string) => {
       return { url: url, backlink: false };
     }) ?? [];
   const rem =
-    node.data?.remote?.map((url: string) => {
+    session.value?.remote?.map((url: string) => {
       return { url: url, backlink: true };
     }) ?? [];
   rows.value = rel.concat(rem);
@@ -87,8 +129,14 @@ watch(props, setModel);
 </script>
 
 <template>
+  <SitemapForm
+    v-model="prowler"
+    :color="SitemapColor"
+    :icon="SitemapIcon"
+    :disable="date !== undefined"
+  />
   <q-table
-    v-if="date"
+    v-if="date !== undefined"
     :rows="rows"
     :columns="columns"
     :filter="filter"

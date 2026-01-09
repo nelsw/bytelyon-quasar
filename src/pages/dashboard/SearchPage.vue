@@ -6,8 +6,10 @@ import XFabAction from 'components/fab/XFabAction.vue';
 import JsonDialog from 'components/dialog/JsonDialog.vue';
 import ImgDialog from 'components/dialog/ImgDialog.vue';
 import type { QTreeNode } from 'quasar';
+import { useQuasar } from 'quasar';
 import SearchForm from 'components/form/SearchForm.vue';
 import { BotColor, BotIcon } from 'src/types/base';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   id?: string;
@@ -36,6 +38,27 @@ const setModel = () => {
   model.value = n;
   console.log(JSON.stringify(model.value, null, 2));
 };
+const $r = useRouter();
+const $q = useQuasar();
+const confirm = () => {
+  let ok = false;
+  const fn = () => {
+    ok = true;
+    console.log('fn', ok);
+    void $r.push({ name: 'search', params: { id: props.id } });
+  };
+
+  const opt = $q
+    .dialog({
+      title: 'Confirm',
+      message: `Delete Search / ${props.id} / ${props.date}?`,
+      cancel: true,
+      persistent: true,
+      color: 'red-13',
+    })
+    .onOk(fn);
+  console.log(ok, opt);
+};
 
 onMounted(setModel);
 watch(props, setModel);
@@ -45,6 +68,7 @@ watch(fabModel, () => (fabModel.value = true));
 
 <template>
   <SearchForm :color="BotColor('search')" :icon="BotIcon('search')" />
+  <q-btn color="red-13" dense flat icon="mdi-delete" @click="confirm" />
   <SerpResultTabs v-if="id && date" v-model:node="model as QTreeNode" />
   <q-page-sticky v-if="id && date && model" position="bottom-left" :offset="[18, 18]">
     <q-fab

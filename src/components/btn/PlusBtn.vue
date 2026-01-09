@@ -2,7 +2,6 @@
 import { type Bot, BotEnum, Bots } from 'src/types/base';
 import { ref } from 'vue';
 import NewsForm from 'components/form/NewsForm.vue';
-import SitemapForm from 'components/form/SitemapForm.vue';
 import SearchForm from 'components/form/SearchForm.vue';
 
 const dialog = ref(false);
@@ -14,7 +13,7 @@ const onClick = (b: Bot): void => {
 </script>
 
 <template>
-  <q-btn icon="mdi-plus" color="green-13" dense flat size="md" >
+  <q-btn icon="mdi-plus" color="green-13" dense flat size="md">
     <q-menu transition-show="scale" transition-hide="scale" auto-close>
       <q-list style="min-width: 100%" dense>
         <q-item v-for="b in Bots" :key="b.type" clickable v-close-popup @click="onClick(b)">
@@ -36,7 +35,7 @@ const onClick = (b: Bot): void => {
         :icon="bot.icon"
         @close="dialog = false"
       />
-      <SitemapForm v-else-if="bot?.type === 'sitemap'" :color="bot.color" :icon="bot.icon" />
+      <!--      <SitemapForm v-else-if="bot?.type === 'sitemap'" :color="bot.color" :icon="bot.icon" />-->
       <NewsForm v-else-if="bot?.type === 'news'" :color="bot.color" :icon="bot.icon" />
     </q-card>
   </q-dialog>

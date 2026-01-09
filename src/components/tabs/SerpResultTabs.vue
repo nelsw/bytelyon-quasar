@@ -66,7 +66,7 @@ onMounted(update);
 </script>
 
 <template>
-  <q-btn color="red-13" dense flat  icon="mdi-delete"  />
+
   <q-splitter v-model="splitterModel" class="full-height" dark unit="px">
     <template v-slot:before>
       <q-tabs
