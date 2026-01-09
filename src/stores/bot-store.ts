@@ -79,11 +79,28 @@ const setup = () => {
     return node;
   };
 
+  // const DeleteNode = async (node: QTreeNode) => {
+  //   return await api
+  //     .delete(`/prowler`, { params: { id: id } })
+  //     .then(() => {
+  //       console.debug(`✅ BotStore#Delete: ${id}`);
+  //       return true;
+  //     })
+  //     .catch((err: AxiosError) => {
+  //       console.error(err);
+  //       return false;
+  //     });
+  // };
+
   const Delete = async (id: string) => {
     return await api
       .delete(`/prowler`, { params: { id: id } })
-      .then(() => true)
+      .then(() => {
+        console.debug(`✅ BotStore#Delete: ${id}`);
+        return true;
+      })
       .catch((err: AxiosError) => {
+        console.debug(`❌ BotStore#Delete: ${id}`);
         console.error(err);
         return false;
       });
@@ -93,7 +110,7 @@ const setup = () => {
     return await api
       .put(`/prowler`, o)
       .then(async (res: AxiosResponse<Prowler>) => {
-        console.debug(`BotStore#Save: ${JSON.stringify(res, null, 2)}`);
+        console.debug(`✅ BotStore#Save: ${JSON.stringify(res, null, 2)}`);
         await load(o.type);
         return true;
       })

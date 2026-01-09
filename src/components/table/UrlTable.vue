@@ -12,7 +12,6 @@ const $q = useQuasar();
 
 const filter = ref<string>('');
 const exportTable = () => {
-
   const content = props.rows.join('\r\n');
 
   const status = exportFile('table-export.csv', content, 'text/csv');
@@ -34,7 +33,6 @@ const exportTable = () => {
     :filter-method="(rows, terms) => rows.filter((row) => row.includes(terms))"
     :rows-per-page-options="[20, 50, 100, 0]"
     :color="SitemapColor"
-    virtual-scroll
     dense
     flat
   >
@@ -50,7 +48,7 @@ const exportTable = () => {
 
       <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
       <q-separator vertical spaced />
-      <q-btn color="red-13" dense flat icon="mdi-delete" />
+      <q-btn color="red-13" dense flat icon="mdi-delete-outline" />
     </template>
     <template #header>
       <q-tr>

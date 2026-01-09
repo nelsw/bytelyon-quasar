@@ -44,7 +44,7 @@ const icon = computed(() => {
     </div>
 
     <div v-if="date !== ''" class="flex items-center">
-      <q-icon name="mdi-slash-forward" color="grey-9" size="sm" />
+      <q-icon name="mdi-slash-forward" color="grey-9" size="sm" class="q-mx-xs" />
       <q-icon :name="DateIcon" :color="color" size="xs" />
       <div class="text-caption q-ml-sm">{{ date }}</div>
     </div>
