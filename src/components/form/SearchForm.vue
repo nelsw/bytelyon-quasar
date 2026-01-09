@@ -40,8 +40,8 @@ const onLoad = () => {
     }
   }
 
-  followAll.value = temp.targets['*'] as boolean;
-  targets.value = Object.keys(temp.targets).filter((k) => k !== '*');
+  // followAll.value = temp.targets['*'] as boolean;
+  // targets.value = Object.keys(temp.targets).filter((k) => k !== '*');
 };
 const onReset = () => {
   query.value = '';
@@ -55,15 +55,10 @@ const onSubmit = async () => {
     id: query.value,
     type: 'search',
     frequency: frequency?.value?.value as number,
-    targets: {
-      '*': followAll.value,
-    },
+    blacklist:[],
     disabled: false,
   };
 
-  for (const target of targets.value) {
-    model.targets[target] = !followAll.value;
-  }
 
   if (await store.Save(model)) {
     $q.notify({

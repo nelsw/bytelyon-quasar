@@ -12,7 +12,7 @@ export interface Option {
   readonly value: string | number;
 }
 
-export const Options:Option[] = [
+export const Options: Option[] = [
   { label: 'Never', value: 0 },
   { label: 'Hourly', value: hour },
   { label: 'Daily', value: hour * 24 },
@@ -21,16 +21,14 @@ export const Options:Option[] = [
 
 export const defaultOption = (): Option => Options[0] as Option;
 
-export const optionLabel = (value:number): string  => {
+export const optionLabel = (value: number): string => {
   for (const option of Options) {
     if (option.value === value) {
       return option.label;
     }
   }
   return 'Unknown';
-}
-
-
+};
 
 export const clone = <T>(t: T): T => JSON.parse(JSON.stringify(t));
 
@@ -55,23 +53,22 @@ export enum BotEnum {
 
 export type BotType = BotEnum | string;
 
-
-
-
 export interface Bot {
   type: BotType;
   icon: string;
   color: string;
 }
 
-export const index = (t: BotType): number => Object.values(BotEnum).findIndex((key: string) => key === t.toString());
-export const param = (t: BotType): string => t.toString().charAt(0).toLowerCase() + t.toString().substring(1);
+export const index = (t: BotType): number =>
+  Object.values(BotEnum).findIndex((key: string) => key === t.toString());
+export const param = (t: BotType): string =>
+  t.toString().charAt(0).toLowerCase() + t.toString().substring(1);
 export const label = (t: BotType): string => t.toString();
 
 const Serp: Bot = {
   type: BotEnum.Search,
   icon: 'mdi-web',
-  color: 'indigo-14'
+  color: 'indigo-14',
 };
 const News: Bot = {
   type: BotEnum.News,
@@ -85,6 +82,19 @@ const Site: Bot = {
 };
 
 export const Bots: Bot[] = [Serp, News, Site];
+
+export const Bot = (t: BotType): Bot | undefined => {
+  switch (t as BotEnum) {
+    case BotEnum.Search:
+      return Serp;
+    case BotEnum.News:
+      return News;
+    case BotEnum.Sitemap:
+      return Site;
+    default:
+      return undefined;
+  }
+};
 
 export const BotNode = (bot: Bot, kids: QTreeNode[]): QTreeNode => {
   return {
@@ -105,9 +115,7 @@ export interface Prowler {
   prowled?: string | undefined;
   frequency: number;
   duration?: number | undefined;
-  targets: {
-    [key: string]: boolean;
-  };
+  blacklist: string[];
   disabled: boolean;
 }
 
@@ -115,7 +123,7 @@ export const SearchColor: string = 'indigo-14';
 export const NewsColor: string = 'indigo-13';
 export const SitemapColor: string = 'indigo-12';
 export const NewsIcon: string = 'mdi-newspaper';
-export const SitemapIcon: string = 'mdi-sitemap-outline';
+export const SitemapIcon: string = 'mdi-sitemap';
 export const SearchIcon: string = 'mdi-web';
 export const IdIcon: string = 'mdi-format-quote-open';
 export const DateIcon: string = 'mdi-table-clock';

@@ -16,47 +16,45 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DashboardLayout.vue'),
     children: [
       {
-        path: '/dashboard',
+        path: '',
         name: 'Dashboard',
-        // todo - homeish page
-        children: [
-          {
-            path: '/dashboard/search/:id?/:date?',
-            name: 'search',
-            props: true,
-            meta: {
-              icon: 'mdi-search-web',
-              color: 'indigo-12',
-            },
-            component: () => import('pages/dashboard/SearchPage.vue'),
-          },
-          {
-            path: '/dashboard/sitemap/:id?/:date?',
-            name: 'sitemap',
-            props: true,
-            meta: {
-              icon: 'mdi-sitemap',
-              color: 'deep-purple-12',
-            },
-            component: () => import('pages/dashboard/SitemapPage.vue'),
-          },
-          {
-            path: '/dashboard/news/:id?/:date?',
-            name: 'news',
-            props: true,
-            meta: {
-              icon: 'mdi-newspaper',
-              color: 'purple-12',
-            },
-            component: () => import('pages/dashboard/NewsPage.vue'),
-          },
-          {
-            path: '/dashboard/account',
-            name: 'account',
-            component: () => import('pages/ProfilePage.vue'),
-          },
-        ],
+        component: () => import('pages/dashboard/DashboardPage.vue'),
       },
+      {
+        path: '/search/:id?/:date?',
+        name: 'search',
+        props: true,
+        meta: {
+          icon: 'mdi-search-web',
+          color: 'indigo-12',
+        },
+        component: () => import('pages/dashboard/SearchPage.vue'),
+      },
+      {
+        path: '/sitemap/:id?/:date?',
+        name: 'sitemap',
+        props: true,
+        meta: {
+          icon: 'mdi-sitemap',
+          color: 'deep-purple-12',
+        },
+        component: () => import('pages/dashboard/SitemapPage.vue'),
+      },
+      {
+        path: '/news/:id?/:date?',
+        name: 'news',
+        props: true,
+        meta: {
+          icon: 'mdi-newspaper',
+          color: 'purple-12',
+        },
+        component: () => import('pages/dashboard/NewsPage.vue'),
+      },
+      {
+        path: '/account',
+        name: 'account',
+        component: () => import('pages/ProfilePage.vue'),
+      }
     ],
   },
   // Always leave this as last one, but we can also remove it

@@ -5,7 +5,12 @@ import { ref } from 'vue';
 import { BotColor, BotIcon, type Prowler } from 'src/types/base';
 
 const id = 'bot-store';
-const options = {};
+const options = {
+  persist: {
+    debug: true,
+    storage: sessionStorage,
+  },
+};
 
 const botIdx = (s: string): number => {
   switch (s) {

@@ -2,11 +2,10 @@
 import { useBotStore } from 'stores/bot-store';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import type { Prowler } from 'src/types/base';
-import { SitemapColor, SitemapIcon } from 'src/types/base';
+import { SitemapColor } from 'src/types/base';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { QInput, type QTableColumn, useQuasar } from 'quasar';
-import SitemapForm from 'components/form/SitemapForm.vue';
 import type { ProwlerSitemapResult } from 'src/types/prowler';
 
 interface Row {
@@ -50,9 +49,7 @@ const defaultProwler = (): Prowler => {
     id: '',
     type: 'search',
     frequency: 900000000000, // 15min of nanos
-    targets: {
-      '*': true,
-    },
+    blacklist: [],
     disabled: false,
   };
 };
@@ -129,12 +126,7 @@ watch(props, setModel);
 </script>
 
 <template>
-  <SitemapForm
-    v-model="prowler"
-    :color="SitemapColor"
-    :icon="SitemapIcon"
-    :disable="date !== undefined"
-  />
+  <q-page padding>
   <q-table
     v-if="date !== undefined"
     :rows="rows"
@@ -197,4 +189,5 @@ watch(props, setModel);
       </q-tr>
     </template>
   </q-table>
+  </q-page>
 </template>

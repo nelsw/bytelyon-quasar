@@ -3,24 +3,21 @@ import { useRouter } from 'vue-router';
 import { computed } from 'vue';
 import { BotColor, BotIcon, DateIcon, IdIcon } from 'src/types/base';
 
+
+
 const router = useRouter();
-const parts = (): string[] =>
-  router.currentRoute.value.path.replaceAll(/\/dashboard\//gi, '').split('/');
 const type = computed(() => {
-  const p = parts();
-  return ((p.length > 0 && p[0]?.match(/news|sitemap|search/gi)?.length) ?? 0 > 0)
-    ? (p[0] as string)
-    : '';
+  const b = router.currentRoute.value.name?.toString().match(/news|sitemap|search/gi) !== null;
+  if (b) {
+    return router.currentRoute.value.name as string;
+  }
+  return '';
 });
 const id = computed(() => {
-  const p = parts();
-  const s = p.length > 1 && type.value !== '' ? (p[1] as string) : '';
-  return s.replaceAll('%20', ' ');
+  return router.currentRoute.value.params.id as string;
 });
 const date = computed(() => {
-  const p = parts();
-  const s = p.length > 2 && id.value !== '' ? (p[2] as string) : '';
-  return s.replaceAll('%20', ' ');
+  return router.currentRoute.value.params.date as string;
 });
 const color = computed(() => {
   return BotColor(type.value);
@@ -28,6 +25,9 @@ const color = computed(() => {
 const icon = computed(() => {
   return BotIcon(type.value);
 });
+
+
+
 </script>
 
 <template>
@@ -37,13 +37,13 @@ const icon = computed(() => {
       <div class="text-caption text-capitalize q-mx-sm">{{ type }}</div>
     </div>
 
-    <div v-if="id !== ''" class="flex items-center">
+    <div v-if="id !== '' && id !== undefined" class="flex items-center">
       <q-icon name="mdi-slash-forward" color="grey-9" size="sm" />
       <q-icon :name="IdIcon" :color="color" size="sm" />
       <div class="text-caption q-ml-xs">{{ id }}</div>
     </div>
 
-    <div v-if="date !== ''" class="flex items-center">
+    <div v-if="date !== ''&& date!==undefined" class="flex items-center">
       <q-icon name="mdi-slash-forward" color="grey-9" size="sm" class="q-mx-xs" />
       <q-icon :name="DateIcon" :color="color" size="xs" />
       <div class="text-caption q-ml-sm">{{ date }}</div>

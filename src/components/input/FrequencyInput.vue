@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { Option } from 'src/types/base';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 
 defineProps<{
   color: string;
-  disable: boolean;
 }>();
 
 const nano = 1;
@@ -72,7 +71,7 @@ const duration = (u: Unit): number => {
 };
 
 const UnitOptions: Option[] = [
-  { label: 'Minute', value: Unit.MINUTE },
+  { label: 'Minutes', value: Unit.MINUTE },
   { label: 'Hour', value: Unit.HOUR },
   { label: 'Day', value: Unit.DAY },
 ];
@@ -84,9 +83,14 @@ const proxy = ref<Frequency>({
   qty: 15,
 });
 
-watch(proxy, (p) => (model.value = duration(p.unit) * p.qty));
+const onChange = (o:object) => {
+  console.debug('onChange', JSON.stringify(o, null, 2));
+  model.value = duration(proxy.value.unit) * proxy.value.qty;
+  console.log('watch',duration(proxy.value.unit), proxy.value.qty, duration(proxy.value.unit) * proxy.value.qty, model.value);
+};
 
 onMounted(() => {
+  console.log('mounted', model.value);
   let v: number = model.value;
 
   if (v === 0) {
@@ -108,27 +112,30 @@ onMounted(() => {
 
 <template>
   <div class="flex justify-start items-center q-gutter-sm">
-    <q-icon name="mdi-clock" size="md" :color="color" />
+    <q-icon class="q-mr-sm" name="mdi-clock" size="sm" :color="color" />
     <q-select
       v-model="proxy.qty"
-      label="Value"
+      label="Repeat"
       name="value"
       :color="color"
       map-options
+      hide-dropdown-icon
       emit-value
       :options="FrequencyOptions(proxy.unit)"
-      :disable="disable"
-      style="min-width: 70px"
+      style="width: 45px"
+      @update:model-value="onChange"
     />
     <q-select
       v-model="proxy.unit"
-      label="Unit"
+      label="Every"
       name="unit"
       :color="color"
       map-options
       emit-value
       :options="UnitOptions"
-      :disable="disable"
+      hide-dropdown-icon
+      style="width: 60px"
+      @update:model-value="onChange"
     />
   </div>
 </template>

@@ -75,7 +75,7 @@ const confirm = () => {
       void store.Delete(row.id);
       rows.value.splice(rows.value.indexOf(row), 1);
     });
-    void store.load('news')
+    void store.load('news');
     if (rows.value.length === 0) {
       void $r.push({ name: 'news', params: { id: props.id } });
     }
@@ -94,59 +94,67 @@ watch(props, setModel);
 </script>
 
 <template>
-  <q-table
-    v-if="id && date"
-    :loading="loading"
-    :color="NewsColor"
-    :rows="rows"
-    :rows-per-page-options="[10, 20, 50, 100, 0]"
-    :pagination="{ sortBy: 'id' }"
-    :filter="filter"
-    :columns="columns"
-    row-key="id"
-    selection="multiple"
-    v-model:selected="selected"
-    dense
-    flat
-    binary-state-sort
-  >
-    <template #top="props">
-      <div class="flex col-grow items-center">
-        <q-icon name="mdi-newspaper-variant" size="md" :color="NewsColor" />
-        <div class="text-h5 q-ml-xs q-mr-sm">Articles</div>
-        <q-separator vertical spaced inset />
-        <q-btn
-          color="red-13"
-          dense
-          flat
-          icon="mdi-delete-outline"
-          @click="confirm"
-          :disable="selected.length === 0"
-        />
-        <q-space />
-        <q-input
-          ref="my-input"
-          style="margin-bottom: 10px"
-          class="q-mr-sm"
-          v-model="filter"
-          :color="NewsColor"
-          placeholder="Filter"
-          dense
-          autofocus
-        >
-          <template #prepend>
-            <q-icon name="mdi-filter-variant" :color="NewsColor" />
-          </template>
-        </q-input>
-        <q-separator vertical spaced inset />
-        <q-btn color="blue-grey-5" dense flat icon="mdi-file-export-outline" @click="exportTable" />
-        <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
-      </div>
-    </template>
-    <template #body-cell-delete="props">
-      <q-td :props="props">
-        <OpenInNewBtn :url="props.row.url" @click="confirm" />
-      </q-td>
-    </template>
-  </q-table>
+  <q-page padding>
+    <q-table
+      v-if="id && date"
+      :loading="loading"
+      :color="NewsColor"
+      :rows="rows"
+      :rows-per-page-options="[10, 20, 50, 100, 0]"
+      :pagination="{ sortBy: 'id' }"
+      :filter="filter"
+      :columns="columns"
+      row-key="id"
+      selection="multiple"
+      v-model:selected="selected"
+      dense
+      flat
+      binary-state-sort
+    >
+      <template #top="props">
+        <div class="flex col-grow items-center">
+          <q-icon name="mdi-newspaper-variant" size="md" :color="NewsColor" />
+          <div class="text-h5 q-ml-xs q-mr-sm">Articles</div>
+          <q-separator vertical spaced inset />
+          <q-btn
+            color="red-13"
+            dense
+            flat
+            icon="mdi-delete-outline"
+            @click="confirm"
+            :disable="selected.length === 0"
+          />
+          <q-space />
+          <q-input
+            ref="my-input"
+            style="margin-bottom: 10px"
+            class="q-mr-sm"
+            v-model="filter"
+            :color="NewsColor"
+            placeholder="Filter"
+            dense
+            autofocus
+          >
+            <template #prepend>
+              <q-icon name="mdi-filter-variant" :color="NewsColor" />
+            </template>
+          </q-input>
+          <q-separator vertical spaced inset />
+          <q-btn
+            color="blue-grey-5"
+            dense
+            flat
+            icon="mdi-file-export-outline"
+            @click="exportTable"
+          />
+          <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
+        </div>
+      </template>
+      <template #body-cell-delete="props">
+        <q-td :props="props">
+          <OpenInNewBtn :url="props.row.url" @click="confirm" />
+        </q-td>
+      </template>
+    </q-table>
+  </q-page>
 </template>
