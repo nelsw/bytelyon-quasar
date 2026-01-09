@@ -116,6 +116,8 @@ export const SitemapColor: string = 'indigo-12';
 export const NewsIcon: string = 'mdi-newspaper';
 export const SitemapIcon: string = 'mdi-sitemap-outline';
 export const SearchIcon: string = 'mdi-web';
+export const IdIcon: string = 'mdi-format-quote-open';
+export const DateIcon: string = 'mdi-table-clock';
 
 export const BotIcon = (s?: string): string => {
   switch (s?.split('/')[0]) {

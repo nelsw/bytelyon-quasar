@@ -14,7 +14,5 @@ const node = computed(() => {
 </script>
 
 <template>
-  <div class="scroll" style="max-height: 95vh">
-    <UrlTable v-if="id && date" :rows="node.data.relative" />
-  </div>
+  <UrlTable v-if="id && date" :rows="node.data.relative" />
 </template>

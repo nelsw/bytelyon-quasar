@@ -6,6 +6,8 @@ import XFabAction from 'components/fab/XFabAction.vue';
 import JsonDialog from 'components/dialog/JsonDialog.vue';
 import ImgDialog from 'components/dialog/ImgDialog.vue';
 import type { QTreeNode } from 'quasar';
+import SearchForm from 'components/form/SearchForm.vue';
+import { BotColor, BotIcon } from 'src/types/base';
 
 const props = defineProps<{
   id?: string;
@@ -42,6 +44,7 @@ watch(fabModel, () => (fabModel.value = true));
 </script>
 
 <template>
+  <SearchForm :color="BotColor('search')" :icon="BotIcon('search')" />
   <SerpResultTabs v-if="id && date" v-model:node="model as QTreeNode" />
   <q-page-sticky v-if="id && date && model" position="bottom-left" :offset="[18, 18]">
     <q-fab

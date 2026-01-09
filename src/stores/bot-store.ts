@@ -2,7 +2,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import { type QTreeNode } from 'quasar';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
-import { BotColor, BotIcon } from 'src/types/base';
+import { BotColor, BotIcon, type Prowler } from 'src/types/base';
 
 const id = 'bot-store';
 const options = {};
@@ -27,7 +27,7 @@ const rootNode = (id: string, kids: QTreeNode[]): QTreeNode => {
     icon: BotIcon(id),
     iconColor: BotColor(id),
     children: kids,
-    lazy: true,
+    lazy: false,
   };
 };
 
@@ -43,10 +43,11 @@ const setup = () => {
       .get<QTreeNode[]>('/prowler', { params: { type: t } })
       .then((res: AxiosResponse<QTreeNode[]>) => {
         model.value[botIdx(t)] = rootNode(t, res.data);
+        console.debug('✅ Nodes Loaded', t, res.data.length);
         return res.data;
       })
       .catch((err: AxiosError) => {
-        console.error(err);
+        console.error(err.response?.statusText);
         return [] as QTreeNode[];
       });
   };
@@ -88,15 +89,21 @@ const setup = () => {
       });
   };
 
-  const Save = async (o: object) => {
+  const Save = async (o: Prowler) => {
     return await api
       .put(`/prowler`, o)
-      .then(()=>true)
+      .then(async (res: AxiosResponse<Prowler>) => {
+        console.debug(`BotStore#Save: ${JSON.stringify(res, null, 2)}`);
+        await load(o.type);
+        return true;
+      })
       .catch((err: AxiosError) => {
+        console.debug(`BotStore#Save: ${JSON.stringify(err, null, 2)}`);
         console.error(err);
+        console.error(err.response?.statusText);
         return false;
       });
-  }
+  };
 
   return {
     model,

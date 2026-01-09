@@ -4,10 +4,11 @@ import { useBotStore } from 'stores/bot-store';
 import FrequencySelect from 'components/input/FrequencySelect.vue';
 import type { Option, Prowler } from 'src/types/base';
 import { clone, defaultOption, Options } from 'src/types/base';
+import { useQuasar } from 'quasar';
 
-const emit = defineEmits<{
-  close: [void];
-}>();
+// const emit = defineEmits<{
+//   close: [void];
+// }>();
 
 const props = defineProps<{
   color: string;
@@ -15,6 +16,7 @@ const props = defineProps<{
   prowler?: Prowler | null;
 }>();
 
+const $q = useQuasar();
 const query = ref<string>('');
 const frequency = ref<Option>(defaultOption());
 const followAll = ref<boolean>(true);
@@ -62,6 +64,24 @@ const onSubmit = async () => {
     model.targets[target] = !followAll.value;
   }
 
+  if (await store.Save(model)) {
+    $q.notify({
+      timeout: 2000,
+      color: 'green-13',
+      textColor: 'grey-10',
+      icon: 'mdi-check',
+      position: 'bottom',
+      message: `Saved`,
+    });
+  } else {
+    $q.notify({
+      timeout: 2000,
+      color: 'red-13',
+      icon: 'mdi-alert-circle-outline',
+      position: 'bottom',
+      message: `Saved`,
+    });
+  }
   console.debug(`SearchForm: ${(await store.Save(model)) ? `✅` : `❌`}`);
 };
 watch(props, onLoad);
@@ -71,28 +91,28 @@ onMounted(onLoad);
 <template>
   <q-form @submit="onSubmit">
     <q-list dark>
-      <q-item>
-        <q-item-section>
-          <div class="flex items-center q-gutter-sm">
-            <div>
-              <q-icon :name="icon" size="lg" :color="color" />
-            </div>
-            <div class="text-h5">Search</div>
-            <q-space />
-            <q-btn
-              icon="mdi-close"
-              color="grey"
-              flat
-              dense
-              @click="
-                onReset;
-                emit('close');
-              "
-            />
-          </div>
-        </q-item-section>
-      </q-item>
-      <q-separator />
+      <!--      <q-item>-->
+      <!--        <q-item-section>-->
+      <!--          <div class="flex items-center q-gutter-sm">-->
+      <!--            <div>-->
+      <!--              <q-icon :name="icon" size="lg" :color="color" />-->
+      <!--            </div>-->
+      <!--            <div class="text-h5">Search</div>-->
+      <!--            <q-space />-->
+      <!--            <q-btn-->
+      <!--              icon="mdi-close"-->
+      <!--              color="grey"-->
+      <!--              flat-->
+      <!--              dense-->
+      <!--              @click="-->
+      <!--                onReset;-->
+      <!--                emit('close');-->
+      <!--              "-->
+      <!--            />-->
+      <!--          </div>-->
+      <!--        </q-item-section>-->
+      <!--      </q-item>-->
+      <!--      <q-separator />-->
       <q-item>
         <q-item-section>
           <q-input
@@ -103,6 +123,7 @@ onMounted(onLoad);
             type="text"
             dense
             autofocus
+            :rules="[(val: string) => (val && val.length > 0) || 'Query is required']"
           >
             <template #prepend>
               <q-icon name="mdi-format-quote-open" :color="color" />
@@ -127,7 +148,6 @@ onMounted(onLoad);
       </q-item>
       <q-separator />
       <q-item>
-
         <q-item-section>
           <q-btn
             class="full-width"

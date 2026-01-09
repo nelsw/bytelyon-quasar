@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
-import { BotColor, BotIcon } from 'src/types/base';
+import { BotColor, BotIcon, DateIcon, IdIcon } from 'src/types/base';
 
 const router = useRouter();
 const parts = (): string[] =>
@@ -39,13 +39,13 @@ const icon = computed(() => {
 
     <div v-if="id !== ''" class="flex items-center">
       <q-icon name="mdi-slash-forward" color="grey-9" size="sm" />
-      <q-icon name="mdi-format-quote-open" :color="color" size="sm" />
+      <q-icon :name="IdIcon" :color="color" size="sm" />
       <div class="text-caption q-ml-xs">{{ id }}</div>
     </div>
 
     <div v-if="date !== ''" class="flex items-center">
       <q-icon name="mdi-slash-forward" color="grey-9" size="sm" />
-      <q-icon name="mdi-table-clock" :color="color" size="xs" />
+      <q-icon :name="DateIcon" :color="color" size="xs" />
       <div class="text-caption q-ml-sm">{{ date }}</div>
     </div>
   </div>

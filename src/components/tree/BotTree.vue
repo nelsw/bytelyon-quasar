@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { QTreeNode } from 'quasar';
 import { QTree } from 'quasar';
-import { ref, useTemplateRef, watch } from 'vue';
+import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useBotStore } from 'stores/bot-store';
 import { BotColor } from 'src/types/base';
 import { useRouter } from 'vue-router';
 
-defineProps<{
-  filter?: string;
-}>();
+const model = defineModel<string>();
+
 const router = useRouter();
 const store = useBotStore();
 const tree = useTemplateRef<QTree>('my-tree');
@@ -27,19 +26,6 @@ const nodeIcon = (n: QTreeNode) => {
   }
 };
 
-interface Details {
-  node: QTreeNode;
-  key: string;
-  done: (children?: readonly QTreeNode[]) => void;
-  fail: () => void;
-}
-
-const onLazyLoad = async (details: Details) => {
-  const nodes = await store.load(details.key);
-  // todo - handle fail
-  details.done(nodes);
-};
-
 watch(selected, async (newVal, oldVal) => {
   console.debug(`BotTree Selection: \n\tnew=[${newVal}]\n\told=[${oldVal}]`);
   let s;
@@ -54,6 +40,18 @@ watch(selected, async (newVal, oldVal) => {
   const [type, id, date] = (s ?? '').split('/');
   await router.push({ name: `${type}`, params: { id, date } });
 });
+
+watch(model, (newVal, oldVal) => {
+  console.debug(`BotTree Filter: \n\tnew=[${newVal}]\n\told=[${oldVal}]`);
+  if (oldVal === '' && newVal !== '') {
+    tree.value?.expandAll();
+  } else if (oldVal !== '' && newVal === '') {
+    tree.value?.collapseAll();
+  }
+});
+onMounted(async () => {
+  await store.loadAll();
+});
 </script>
 
 <template>
@@ -61,11 +59,10 @@ watch(selected, async (newVal, oldVal) => {
     ref="my-tree"
     v-model:selected="selected"
     :nodes="store.model"
-    :filter="filter"
+    :filter="model"
     node-key="id"
     accordion
     dark
-    @lazy-load="onLazyLoad"
   >
     <template v-slot:default-header="prop">
       <div class="row items-center">

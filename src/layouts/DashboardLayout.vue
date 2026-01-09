@@ -39,7 +39,7 @@ const drawerLeft = ref<boolean>(true);
       </q-toolbar>
     </q-header>
     <q-page-container>
-      <q-page>
+      <q-page padding>
         <router-view />
       </q-page>
     </q-page-container>
