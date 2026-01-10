@@ -48,7 +48,7 @@ const rows = (t: SearchPageResultType, r: ProwlerSearchPageResults) => {
 };
 
 const update = () => {
-  if (node.value.data?.json?.results) {
+  if (node.value?.data?.json?.results) {
     results.value = node.value.data?.json?.results as ProwlerSearchPageResults;
   } else {
     results.value = defaultResults;

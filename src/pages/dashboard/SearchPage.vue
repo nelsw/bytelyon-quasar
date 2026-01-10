@@ -5,7 +5,9 @@ import SerpResultTabs from 'components/tabs/SerpResultTabs.vue';
 import XFabAction from 'components/fab/XFabAction.vue';
 import JsonDialog from 'components/dialog/JsonDialog.vue';
 import ImgDialog from 'components/dialog/ImgDialog.vue';
-import type { QTreeNode } from 'quasar';
+import type { QTreeNode} from 'quasar';
+import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   id?: string;
@@ -34,27 +36,20 @@ const setModel = () => {
   model.value = n;
   console.log(JSON.stringify(model.value, null, 2));
 };
-// const $r = useRouter();
-// const $q = useQuasar();
-// const confirm = () => {
-//   let ok = false;
-//   const fn = () => {
-//     ok = true;
-//     console.log('fn', ok);
-//     void $r.push({ name: 'search', params: { id: props.id } });
-//   };
-//
-//   const opt = $q
-//     .dialog({
-//       title: 'Confirm',
-//       message: `Delete Search / ${props.id} / ${props.date}?`,
-//       cancel: true,
-//       persistent: true,
-//       color: 'red-13',
-//     })
-//     .onOk(fn);
-//   console.log(ok, opt);
-// };
+const $r = useRouter();
+const $q = useQuasar();
+const confirm = () => {
+  $q.dialog({
+    title: 'Confirm',
+    message: `Delete Search / ${props.id} / ${props.date}?`,
+    cancel: true,
+    persistent: true,
+    color: 'red-13',
+  }).onOk(() => {
+    void store.Delete(model.value?.data.id);
+    void $r.push({ name: 'search', params: { id: props.id } });
+  });
+};
 
 onMounted(setModel);
 watch(props, setModel);
@@ -64,56 +59,68 @@ watch(fabModel, () => (fabModel.value = true));
 
 <template>
   <q-page padding>
-  <SerpResultTabs v-if="id && date" v-model:node="model as QTreeNode" />
-  <q-page-sticky v-if="id && date && model" position="bottom-left" :offset="[18, 18]">
-    <q-fab
-      v-model="fabModel"
-      color="yellow-10"
-      direction="up"
-      square
-      persistent
-      label="Files"
-      text-color="grey-10"
-      vertical-actions-align="left"
-    >
-      <template #icon="{ opened }">
-        <q-icon
-          :class="{ 'example-fab-animate--hover': opened !== true }"
-          name="mdi-file-multiple"
+    <q-btn
+      color="red-13"
+      dense
+      flat
+      icon="mdi-delete-outline"
+      @click="confirm"
+    />
+    <SerpResultTabs v-if="id && date" v-model:node="model as QTreeNode" />
+    <q-page-sticky v-if="id && date && model" position="bottom-left" :offset="[18, 18]">
+      <q-fab
+        v-model="fabModel"
+        color="yellow-10"
+        direction="up"
+        square
+        persistent
+        label="Files"
+        text-color="grey-10"
+        vertical-actions-align="left"
+      >
+        <template #icon="{ opened }">
+          <q-icon
+            :class="{ 'example-fab-animate--hover': opened !== true }"
+            name="mdi-file-multiple"
+          />
+        </template>
+
+        <template #active-icon="{ opened }">
+          <q-icon :class="{ 'example-fab-animate': opened === true }" name="mdi-file-multiple" />
+        </template>
+
+        <x-fab-action
+          color="yellow-9"
+          icon="mdi-language-html5"
+          label="HTML"
+          @click="htmlModel = true"
         />
-      </template>
-
-      <template #active-icon="{ opened }">
-        <q-icon :class="{ 'example-fab-animate': opened === true }" name="mdi-file-multiple" />
-      </template>
-
-      <x-fab-action
-        color="yellow-9"
-        icon="mdi-language-html5"
-        label="HTML"
-        @click="htmlModel = true"
-      />
-      <x-fab-action
-        color="yellow-8"
-        icon="mdi-monitor-screenshot"
-        label="Screenshot"
-        @click="imgModel = true"
-      />
-      <x-fab-action color="yellow-7" icon="mdi-code-json" label="JSON" @click="jsonModel = true" />
-    </q-fab>
-  </q-page-sticky>
-  <ImgDialog
-    v-if="id && date && model"
-    v-model="imgModel"
-    :title="`${props.id} - ${props.date}`"
-    :src="model.data?.img"
-  />
-  <JsonDialog
-    v-if="id && date && model"
-    v-model="jsonModel"
-    :title="`${props.id} - ${props.date}`"
-    :content="model.data?.json.results"
-  />
-  <iframe v-if="id && date && model && htmlModel" :src="model.data?.html" style="display: none" />
+        <x-fab-action
+          color="yellow-8"
+          icon="mdi-monitor-screenshot"
+          label="Screenshot"
+          @click="imgModel = true"
+        />
+        <x-fab-action
+          color="yellow-7"
+          icon="mdi-code-json"
+          label="JSON"
+          @click="jsonModel = true"
+        />
+      </q-fab>
+    </q-page-sticky>
+    <ImgDialog
+      v-if="id && date && model"
+      v-model="imgModel"
+      :title="`${props.id} - ${props.date}`"
+      :src="model.data?.img"
+    />
+    <JsonDialog
+      v-if="id && date && model"
+      v-model="jsonModel"
+      :title="`${props.id} - ${props.date}`"
+      :content="model.data?.json.results"
+    />
+    <iframe v-if="id && date && model && htmlModel" :src="model.data?.html" style="display: none" />
   </q-page>
 </template>
