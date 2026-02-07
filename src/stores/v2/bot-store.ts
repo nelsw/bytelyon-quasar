@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import { JobType, type Job } from 'src/types/model';
+import { type Job, JobType } from 'src/types/model';
 import { ref } from 'vue';
 import { BotEnum } from 'src/types/base';
 
@@ -13,10 +13,21 @@ const options = {
 };
 
 const setup = () => {
-
   const searchModel = ref<Job[]>([]);
   const articleModel = ref<Job[]>([]);
   const sitemapModel = ref<Job[]>([]);
+
+  const save = async (j: Job): Promise<void> => {
+    return await api
+      .put(`http://localhost:8080/api/jobs`, j)
+      .then(async (res: AxiosResponse<Job>) => {
+        console.debug(`✅ Job saved ${JSON.stringify(res.data, null, 2)}`);
+        await load(j.Type);
+      })
+      .catch((err: AxiosError) => {
+        console.error(err.response?.statusText);
+      });
+  };
 
   const loadAll = async () => {
     const p3 = load(JobType.ARTICLE);
@@ -31,7 +42,7 @@ const setup = () => {
         console.error(err);
         return false;
       });
-  }
+  };
 
   const load = async (t: JobType): Promise<void> => {
     return await api
@@ -45,7 +56,7 @@ const setup = () => {
         } else if (t === JobType.SITEMAP) {
           sitemapModel.value = res.data;
         } else {
-          console.warn("unknown type when loading", t)
+          console.warn('unknown type when loading', t);
         }
       })
       .catch((err: AxiosError) => {
@@ -53,18 +64,17 @@ const setup = () => {
       });
   };
 
-  const find = (id: number, t: JobType): Job => {
+  const find = (id: number, t: JobType): Job | undefined => {
     if (t === JobType.SEARCH) {
-      return searchModel.value.find((j:Job) => j.ID === id) as Job;
+      return searchModel.value.find((j: Job) => j.ID === id) as Job;
     } else if (t === JobType.ARTICLE) {
       return articleModel.value.find((j: Job) => j.ID === id) as Job;
     } else if (t === JobType.SITEMAP) {
       return sitemapModel.value.find((j: Job) => j.ID === id) as Job;
-    } else {
-      console.warn('unknown type when loading', t);
-      return {} as Job;
     }
-  }
+    console.warn('unknown type when loading', t);
+    return undefined;
+  };
 
   const getBots = (e: BotEnum): Job[] => {
     switch (e) {
@@ -84,6 +94,7 @@ const setup = () => {
   };
 
   return {
+    save,
     load,
     loadAll,
     getBots,

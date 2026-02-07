@@ -1,11 +1,11 @@
 export interface Model {
   ID: number;
-  CreatedAt: Date;
-  UpdatedAt: Date;
-  DeletedAt: Date;
+  CreatedAt: number;
+  UpdatedAt: number;
+  DeletedAt: number | null;
 }
 
-export interface Article {
+export interface Article extends Model {
   JobID: number;
   URL: string;
   Title: string;
@@ -33,24 +33,22 @@ export const enum JobType {
 }
 
 export interface Job extends Model {
-  Enabled: boolean;
   Type: JobType;
   Frequency: number;
   Target: string;
   BlackList: string[];
 }
 
-export const NewJob = (t: JobType, tgt: string, bl: string[], f: number): Job => {
+export const NewJob = (t: JobType, s: string, ss: string[], n: number): Job => {
   return {
     ID: 0,
-    CreatedAt: new Date(),
-    UpdatedAt: new Date(),
-    DeletedAt: new Date(),
-    Enabled: true,
+    CreatedAt: 0,
+    UpdatedAt: 0,
+    DeletedAt: null,
     Type: t,
-    Frequency: f,
-    Target: tgt,
-    BlackList: bl,
+    Frequency: n,
+    Target: s,
+    BlackList: ss,
   };
 };
 
@@ -60,9 +58,4 @@ export interface Sitemap extends Model {
   Domain: string;
   Relative: string[];
   Remote: string[];
-}
-
-export interface Row extends Record<string, unknown> {
-  url: string;
-  backlink: boolean;
 }

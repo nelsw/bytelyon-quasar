@@ -4,39 +4,49 @@ import TargetInput from 'components/form/input/TargetInput.vue';
 import BlackListSelect from 'components/form/select/BlackListSelect.vue';
 import SubmitBtn from 'components/form/btn/SubmitBtn.vue';
 import { type Bot, BotEnum } from 'src/types/base';
-import { onMounted, onUpdated, ref } from 'vue';
-import { DefaultOption, FromValue, type Option } from 'src/types/dto';
-import { type Job } from 'src/types/model';
-
-const emit = defineEmits<{
-  submit: [string, string[], number];
-}>();
+import { computed, onMounted, ref } from 'vue';
+import { type Job, NewJob } from 'src/types/model';
+import { useBotStore } from 'stores/v2/bot-store';
 
 const props = defineProps<{
   bot: Bot;
-  color: string;
   job?: Job | undefined;
 }>();
 
-const tgt = ref<string>('');
-const lst = ref<string[]>([]);
-const frq = ref<Option>(DefaultOption);
+const $store = useBotStore();
 
-const onChange = () => {
-  if (!props.job) return;
-  tgt.value = props.job.Target;
-  lst.value = props.job.BlackList;
-  frq.value = FromValue(props.job.Frequency);
+const target = ref<string>('');
+const blackList = ref<string[]>([]);
+const frequency = ref<number>(1);
+
+const isUpdate = computed(() => props.job !== undefined);
+const color = computed(() => (props.job !== undefined ? 'amber-13' : 'green-13'));
+
+const onSubmit = async () => {
+  if (props.job === undefined) {
+    const jt = props.bot.jobType;
+    const nj = NewJob(jt, target.value, blackList.value, frequency.value);
+    await $store.save(nj);
+    return;
+  }
+  const j: Job = props.job;
+  j.Target = target.value;
+  j.BlackList = blackList.value;
+  j.Frequency = frequency.value;
+  await $store.save(j);
 };
 
-onUpdated(onChange);
-onMounted(onChange);
+onMounted(() => {
+  target.value = props.job?.Target || '';
+  blackList.value = props.job?.BlackList || [];
+  frequency.value = props.job?.Frequency || 1;
+});
 </script>
 
 <template>
-  <q-form id="my-form" @submit="emit('submit', tgt, lst, frq.value)">
+  <q-form id="my-form" @submit="onSubmit">
     <div class="flex justify-center align-center">
-      <q-icon v-if="job" name="mdi-pencil-box" size="6em" :color="color" />
+      <q-icon v-if="isUpdate" name="mdi-pencil-box" size="6em" :color="color" />
       <q-icon v-else name="mdi-new-box" size="6em" :color="color" />
     </div>
     <div class="flex justify-center align-center">
@@ -51,32 +61,29 @@ onMounted(onChange);
     </p>
     <p v-else class="text-body1 text-center q-mt-sm">Search desc</p>
 
-    <TargetInput v-model="tgt" :color="color" :bot-type="bot.type" :disable="job !== undefined" />
+    <TargetInput v-model="target" :color="color" :bot-type="bot.type" :disable="isUpdate" />
 
     <BlackListSelect
       v-if="bot.type !== BotEnum.Sitemaps"
-      v-model="lst"
+      v-model="blackList"
       class="q-mt-md"
       :color="color"
       :bot-type="bot.type"
     />
 
     <FrequencySelect
-      v-model="frq"
+      v-model="frequency"
       class="q-my-md"
       :color="color"
       hint="Instruct the boat to run on a schedule or 'On-Demand' (once & pause)."
     />
 
-    <SubmitBtn :color="color" :label="`${color === 'green-13' ? 'create' : 'update'}`" />
-    <div v-if="job !== undefined">
-      <q-btn
-        class="full-width q-mt-md"
-        label="Delete"
-        color="red-13"
-        size="md"
-        outline
-      />
+    <div v-if="isUpdate">
+      <SubmitBtn :color="color" label="create" />
+      <q-btn class="full-width q-mt-md" label="Delete" color="red-13" size="md" outline />
+    </div>
+    <div v-else>
+      <SubmitBtn :color="color" label="update" />
     </div>
   </q-form>
 </template>

@@ -11,7 +11,7 @@ const model = defineModel<boolean>({ required: true });
 </script>
 
 <template>
-  <q-drawer v-model="model" side="left" bordered :width="233" :breakpoint="600">
+  <q-drawer v-model="model" side="left" bordered :width="300" :breakpoint="600">
     <q-scroll-area style="height: 100%">
       <q-list dense separator class="text-subtitle2">
         <q-item
