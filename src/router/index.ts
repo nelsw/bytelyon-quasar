@@ -35,34 +35,13 @@ export default defineRouter(async function () {
   });
 
   Router.beforeEach((to) => {
-
     if (to.name === 'index') {
       document.title = 'ByteLyon';
-      return;
-    }
-
-    if (to.name === 'profile') {
+    } else if (to.name === 'profile') {
       document.title = 'ByteLyon • Profile';
-      return;
+    } else {
+      document.title = `ByteLyon • ${capitalize(to.params.bot as string)}`;
     }
-
-    const bot = capitalize(to.params.bot as string)
-    let title = `ByteLyon • ${bot}`;
-    if (to.params.job === undefined) {
-      document.title = title
-      return;
-    }
-
-    const job = capitalize(to.params.job as string)
-    title += ` > ${job}`;
-    if (to.params.result === undefined) {
-      document.title = title;
-      return;
-    }
-
-    const res = capitalize(to.params.result as string)
-    document.title += ` - ${res}`;
-
   });
 
 
