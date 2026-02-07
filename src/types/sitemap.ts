@@ -8,3 +8,8 @@ export interface Sitemap {
   start: string;
   url: string;
 }
+
+export interface Row extends Record<string, unknown> {
+  url: string;
+  backlink: boolean;
+}

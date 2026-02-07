@@ -1,4 +1,5 @@
 import type { QTreeNode } from 'quasar';
+import { JobType } from 'src/types/job';
 
 const nano = 1;
 const micro = nano * 1_000;
@@ -12,10 +13,12 @@ export interface Option {
   readonly value: string | number;
 }
 
+export const DailyOption: Option = { label: 'Daily', value: hour * 24 };
+
 export const Options: Option[] = [
-  { label: 'Never', value: 0 },
+  { label: 'Once', value: 0 },
   { label: 'Hourly', value: hour },
-  { label: 'Daily', value: hour * 24 },
+  DailyOption,
   { label: 'Weekly', value: hour * 24 * 7 },
 ];
 
@@ -46,17 +49,22 @@ export const domain = (url: string) => {
 };
 
 export enum BotEnum {
-  Search = 'Search',
-  News = 'News',
-  Sitemap = 'Sitemap',
+  Articles = 'articles',
+  Sitemaps = 'sitemaps',
+  Searches = 'searches',
 }
 
-export type BotType = BotEnum | string;
+export type BotType = BotEnum;
 
 export interface Bot {
+  jobType: JobType,
   type: BotType;
   icon: string;
   color: string;
+}
+
+export const UnknownBot = (): Bot => {
+  return {} as Bot;
 }
 
 export const index = (t: BotType): number =>
@@ -65,34 +73,48 @@ export const param = (t: BotType): string =>
   t.toString().charAt(0).toLowerCase() + t.toString().substring(1);
 export const label = (t: BotType): string => t.toString();
 
-const Serp: Bot = {
-  type: BotEnum.Search,
+export const Searches: Bot = {
+  jobType: JobType.SEARCH,
+  type: BotEnum.Searches,
   icon: 'mdi-web',
   color: 'indigo-14',
 };
-const News: Bot = {
-  type: BotEnum.News,
+export const Articles: Bot = {
+  jobType: JobType.ARTICLE,
+  type: BotEnum.Articles,
   icon: 'mdi-newspaper',
-  color: 'indigo-13',
+  color: 'deep-purple-13',
 };
-const Site: Bot = {
-  type: BotEnum.Sitemap,
-  icon: 'mdi-sitemap-outline',
-  color: 'indigo-12',
+export const Sitemaps: Bot = {
+  jobType: JobType.SITEMAP,
+  type: BotEnum.Sitemaps,
+  icon: 'mdi-sitemap',
+  color: 'purple-14',
 };
 
-export const Bots: Bot[] = [Serp, News, Site];
+export const Bots: Bot[] = [Articles, Sitemaps, Searches];
 
-export const Bot = (t: BotType): Bot | undefined => {
-  switch (t as BotEnum) {
-    case BotEnum.Search:
-      return Serp;
-    case BotEnum.News:
-      return News;
-    case BotEnum.Sitemap:
-      return Site;
+export const Bot = (t: BotType): Bot => {
+  switch (t) {
+    case BotEnum.Articles:
+      return Articles;
+    case BotEnum.Sitemaps:
+      return Sitemaps;
+    case BotEnum.Searches:
+      return Searches;
+  }
+};
+
+export const BotTypeSingular = (bot: Bot, capitalize: boolean): string => {
+  switch (bot) {
+    case Searches:
+      return capitalize ? 'Search' : 'search';
+    case Articles:
+      return capitalize ? 'Article' : 'article';
+    case Sitemaps:
+      return capitalize ? 'Sitemap' : 'sitemap';
     default:
-      return undefined;
+      return '';
   }
 };
 
@@ -130,11 +152,11 @@ export const DateIcon: string = 'mdi-table-clock';
 
 export const BotIcon = (s?: string): string => {
   switch (s?.split('/')[0]) {
-    case 'search':
+    case 'searches':
       return SearchIcon;
-    case 'sitemap':
+    case 'sitemaps':
       return SitemapIcon;
-    case 'news':
+    case 'articles':
       return NewsIcon;
     default:
       return '';

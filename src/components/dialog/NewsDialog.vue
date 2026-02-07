@@ -25,7 +25,7 @@ const onCancel = () => {
           </q-item-section>
 
           <q-item-section>
-            <q-item-label class="text-h5">News</q-item-label>
+            <q-item-label class="text-h5">Articles</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -39,7 +39,7 @@ const onCancel = () => {
             type="url"
             dense
             autofocus
-            hint="What news topic should we aggregate?"
+            hint="What article topic should we aggregate?"
           />
           <q-select
             v-model="unitModel"
@@ -48,7 +48,7 @@ const onCancel = () => {
             class="q-my-md"
             label="Repeat"
             dense
-            hint="How often should we aggregate news articles?"
+            hint="How often should we aggregate articles?"
           />
         </q-card-section>
         <q-separator />

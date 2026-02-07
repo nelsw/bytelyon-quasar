@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
 defineProps<{
-  color: string;
+  color?: string | undefined;
 }>();
-const position = defineModel<number>('position', {
-  default: 34,
+const model = defineModel<number>({
+  default: 50,
 });
 // const limits = defineModel<number[]>('limits', {
 //   default: [0, 98],
@@ -12,12 +12,12 @@ const position = defineModel<number>('position', {
 </script>
 
 <template>
-  <q-splitter v-model="position" class="my-splitter">
+  <q-splitter v-model="model" class="my-splitter">
     <template #before>
       <slot name="before" />
     </template>
     <template #separator>
-      <q-avatar :color="color" text-color="white" size="sm" icon="mdi-drag-vertical" />
+      <q-avatar :color="color || 'primary'" text-color="white" size="sm" icon="mdi-drag-vertical" />
     </template>
     <template #after>
       <slot name="after" />

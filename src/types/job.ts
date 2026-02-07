@@ -1,18 +1,29 @@
+import type { Model } from 'src/types/model';
 
 export const enum JobType {
-  NEWS = 'news',
   SEARCH = 'search',
   SITEMAP = 'sitemap',
+  ARTICLE = 'article',
 }
 
-export interface Job {
-  id: string;
-  name: string;
-  type: JobType;
-  frequency: unknown;
-  results: JobResults;
+export interface Job extends Model {
+  Enabled: boolean;
+  Type: JobType;
+  Frequency: number;
+  Target: string;
+  BlackList: string[];
 }
 
-export type JobResults = Map<string, string>
-
-
+export const NewJob = (t: JobType, tgt: string, bl: string[], f: number): Job => {
+  return {
+    ID: 0,
+    CreatedAt: null,
+    UpdatedAt: null,
+    DeletedAt: null,
+    Enabled: true,
+    Type: t,
+    Frequency: f,
+    Target: tgt,
+    BlackList: bl,
+  };
+};

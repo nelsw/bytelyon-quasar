@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
-import { BotColor, BotIcon, DateIcon, IdIcon } from 'src/types/base';
-
-
+import { BotColor, BotIcon, DateIcon, IdIcon, SearchColor } from 'src/types/base';
 
 const router = useRouter();
 const type = computed(() => {
-  const b = router.currentRoute.value.name?.toString().match(/news|sitemap|search/gi) !== null;
+  const b =
+    router.currentRoute.value.name?.toString().match(/articles|sitemaps|searches/gi) !== null;
   if (b) {
     return router.currentRoute.value.name as string;
   }
@@ -26,15 +25,13 @@ const icon = computed(() => {
   return BotIcon(type.value);
 });
 
-
-
 </script>
 
 <template>
-  <div class="flex justify-center items-center">
-    <div v-if="type !== ''" class="flex items-center">
-      <q-icon :name="icon" :color="color" size="xs" />
-      <div class="text-caption text-capitalize q-mx-sm">{{ type }}</div>
+  <div class="flex justify-center items-start">
+    <div v-if="type !== ''" class="flex justify-center items-center">
+      <q-icon :name="icon" :color="SearchColor" size="sm" />
+      <div class="text-subtitle1 text-capitalize q-mx-sm">{{ type }}</div>
     </div>
 
     <div v-if="id !== '' && id !== undefined" class="flex items-center">
@@ -43,7 +40,7 @@ const icon = computed(() => {
       <div class="text-caption q-ml-xs">{{ id }}</div>
     </div>
 
-    <div v-if="date !== ''&& date!==undefined" class="flex items-center">
+    <div v-if="date !== '' && date !== undefined" class="flex items-center">
       <q-icon name="mdi-slash-forward" color="grey-9" size="sm" class="q-mx-xs" />
       <q-icon :name="DateIcon" :color="color" size="xs" />
       <div class="text-caption q-ml-sm">{{ date }}</div>

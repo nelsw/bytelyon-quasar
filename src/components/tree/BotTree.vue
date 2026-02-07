@@ -64,10 +64,15 @@ onMounted(async () => {
     accordion
     dark
   >
-    <template v-slot:default-header="prop">
+    <template #default-header="prop">
       <div class="row items-center">
         <q-icon :name="nodeIcon(prop.node)" :color="nodeColor(prop.node)" class="q-mr-sm" />
         <div>{{ prop.node.label }}</div>
+      </div>
+    </template>
+    <template #default-body="prop">
+      <div class="row items-center">
+        <pre>{{prop.node}}</pre>
       </div>
     </template>
   </q-tree>

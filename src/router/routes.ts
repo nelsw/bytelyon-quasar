@@ -4,57 +4,31 @@ const routes: RouteRecordRaw[] = [
   {
     path: '',
     meta: { requiresAuth: false },
-    component: () => import('layouts/EmptyLayout.vue'),
-    children: [
-      { path: '', name: 'index', component: () => import('pages/LoginPage.vue') },
-      { path: '/login', name: 'login', component: () => import('pages/LoginPage.vue') },
-    ],
-  },
-  {
-    path: '/dashboard',
-    meta: { requiresAuth: true },
-    component: () => import('layouts/DashboardLayout.vue'),
+    component: () => import('layouts/BaseLayout.vue'),
     children: [
       {
         path: '',
-        name: 'Dashboard',
-        component: () => import('pages/dashboard/DashboardPage.vue'),
-      },
-      {
-        path: '/search/:id?/:date?',
-        name: 'search',
-        props: true,
+        name: 'index',
         meta: {
-          icon: 'mdi-search-web',
-          color: 'indigo-12',
+          title: 'ByteLyon',
         },
-        component: () => import('pages/dashboard/SearchPage.vue'),
+        component: () => import('pages/IndexPage.vue'),
       },
       {
-        path: '/sitemap/:id?/:date?',
-        name: 'sitemap',
-        props: true,
-        meta: {
-          icon: 'mdi-sitemap',
-          color: 'deep-purple-12',
-        },
-        component: () => import('pages/dashboard/SitemapPage.vue'),
+        path: '/:bot(articles|sitemaps|searches)',
+        name: 'bot',
+        component: () => import('pages/BotPage.vue'),
       },
       {
-        path: '/news/:id?/:date?',
-        name: 'news',
-        props: true,
-        meta: {
-          icon: 'mdi-newspaper',
-          color: 'purple-12',
-        },
-        component: () => import('pages/dashboard/NewsPage.vue'),
+        path: '/:bot(articles|sitemaps|searches)/:job(\\d+)',
+        name: 'job',
+        component: () => import('pages/JobPage.vue'),
       },
       {
-        path: '/account',
-        name: 'account',
-        component: () => import('pages/ProfilePage.vue'),
-      }
+        path: '/:bot(articles|sitemaps|searches)/:job(\\d+)/:result(\\d+)',
+        name: 'result',
+        component: () => import('pages/ResultPage.vue'),
+      },
     ],
   },
   // Always leave this as last one, but we can also remove it

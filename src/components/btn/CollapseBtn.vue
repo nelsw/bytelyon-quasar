@@ -2,9 +2,25 @@
 import { computed } from 'vue';
 import XTooltip from 'components/tooltip/XTooltip.vue';
 
+const props = defineProps<{
+  side?: string | undefined;
+}>();
+
 const model = defineModel<boolean>();
-const name = computed(() => (model.value ? 'mdi-arrow-collapse-left' : 'mdi-arrow-collapse-right'));
-const text =computed(() => (model.value ? 'Collapse' : 'Expand'));
+const name = computed(() => {
+  let truth = model.value;
+  if (props.side === 'right') {
+    truth = !truth;
+  }
+  return truth ? 'mdi-arrow-collapse-left' : 'mdi-arrow-collapse-right';
+});
+const text = computed(() => {
+  let truth = model.value;
+  if (props.side === 'right') {
+    truth = !truth;
+  }
+  return truth ? 'Collapse' : 'Expand';
+});
 </script>
 
 <template>

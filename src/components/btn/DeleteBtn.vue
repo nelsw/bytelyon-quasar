@@ -11,7 +11,7 @@ const model = defineModel<boolean>({
 </script>
 
 <template>
-  <q-btn color="negative" icon="mdi-delete-outline" size="sm" flat dense @click="model=true">
+  <q-btn color="negative" icon="mdi-delete" size="md" flat dense @click="model=true">
     <x-tooltip text="Delete" />
   </q-btn>
   <q-dialog v-model="model" persistent>

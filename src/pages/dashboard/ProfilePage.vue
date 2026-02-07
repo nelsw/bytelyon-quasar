@@ -27,7 +27,7 @@ onMounted(store.load);
         <q-item>
           <q-item-section avatar>
             <q-avatar>
-              <img src="~assets/guest-avatar.png" alt="Guest Avatar" />
+              <img src="../../assets/guest-avatar.png" alt="Guest Avatar" />
             </q-avatar>
           </q-item-section>
 
