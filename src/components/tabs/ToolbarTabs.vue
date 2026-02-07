@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { Bots, capitalize } from 'src/types/base';
+import { type BotEnum, Bot, Bots, capitalize } from 'src/types/base';
+import { computed } from 'vue';
 
-const emit = defineEmits<{
-  update: [string];
-}>();
+const model = defineModel<string>('');
+const color = computed(() => {
+  if (model.value === undefined || model.value === '') {
+    return undefined;
+  }
+  return Bot(model.value as BotEnum).color;
+});
 </script>
 
 <template>
-  <q-tabs class="text-grey-5" shrink stretch inline-label>
-    <q-route-tab
+  <q-tabs v-model="model" class="text-grey-5" :indicator-color="color" shrink stretch inline-label>
+    <q-tab
       v-for="b in Bots"
-      :key="b.type"
       :icon="b.icon"
+      :key="b.type"
       :label="capitalize(b.type)"
-      :to="`/${b.type}`"
-      @click="emit('update', b.type)"
-      :active-class="`text-${b.color}`"
+      :name="b.type"
     />
   </q-tabs>
 </template>

@@ -14,8 +14,8 @@ const model = defineModel<Option>();
     v-model="model"
     :color="color"
     :hint="hint"
-    :options="Options"
-    label="Frequency"
+    :options="Options(color === 'green-13')"
+    label="Repeats"
     dense
   >
     <template #prepend>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUpdated, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import DrawerBtn from 'components/btn/DrawerBtn.vue';
 import SettingsBtn from 'components/btn/SettingsBtn.vue';
 import LogoBtn from 'components/btn/LogoBtn.vue';
@@ -10,11 +10,15 @@ import { useRouteHelper } from 'src/composable/routeHelper';
 import JobDrawer from 'components/drawer/JobDrawer.vue';
 import TimeDrawer from 'components/drawer/TimeDrawer.vue';
 import { type Job } from 'src/types/model';
+import { useRouter } from 'vue-router';
 
 const timeDrawerModel = ref(false);
 const jobDrawerModel = ref(false);
 const timeDrawerVisible = ref(false);
 const jobDrawerVisible = ref(false);
+
+const tabModel = ref<string>('');
+
 const jobs = ref<Job[]>([]);
 
 const store = useBotStore();
@@ -26,38 +30,44 @@ const onUpdate = (s?: string) => {
     timeDrawerModel.value = false;
   }
 
-  const e:BotEnum = s ? (s as BotEnum) : r.botType()
+  const e: BotEnum = s ? (s as BotEnum) : r.botType();
 
-
-  jobs.value = store.getBots(e);
-  jobDrawerVisible.value = jobs.value.length > 0;
-  jobDrawerModel.value = jobs.value.length > 0;
+  const hasBots: boolean = store.hasBots(e);
+  if (hasBots) {
+    jobs.value = store.getBots(e);
+  }
+  jobDrawerVisible.value = hasBots;
+  jobDrawerModel.value = hasBots;
 
   // todo - right drawer
 };
 
-
-
-onUpdated(() => {
-  onUpdate();
+const router = useRouter();
+watch(tabModel, async () => {
+  if (tabModel.value === '') {
+    await router.push({ name: 'index' });
+    onUpdate();
+  } else {
+    await router.push({ name: 'bot', params: { bot: tabModel.value } });
+    onUpdate(tabModel.value);
+  }
 });
 
 onMounted(async () => {
   await store.loadAll();
-  onUpdate();
 });
 </script>
 
 <template>
   <q-layout view="hHh lpR lFr">
-    <JobDrawer v-model="jobDrawerModel" :jobs="jobs" :bot="r.bot()"/>
+    <JobDrawer v-model="jobDrawerModel" :jobs="jobs" :bot="r.bot()" />
     <TimeDrawer v-model="timeDrawerModel" />
     <q-header class="bg-dark" bordered>
       <q-toolbar class="bg-dark">
-        <LogoBtn random class="q-mr-sm" @click="onUpdate" />
+        <LogoBtn random class="q-mr-sm" @click="tabModel = ''" />
         <q-separator vertical />
         <q-space />
-        <ToolbarTabs @update="onUpdate" />
+        <ToolbarTabs v-model="tabModel" />
         <q-space />
         <q-separator vertical />
         <SettingsBtn class="q-ml-sm" />

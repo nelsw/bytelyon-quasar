@@ -5,7 +5,7 @@ import { computed } from 'vue';
 const props = defineProps<{
   botType: BotEnum;
   color: string;
-  autofocus?: boolean | undefined;
+  disable: boolean;
 }>();
 
 const model = defineModel<string>();
@@ -34,10 +34,11 @@ const hint = computed(() => {
 <template>
   <q-input
     v-model="model"
+    :autofocus="!disable"
     :color="color"
-    :label="label"
     :hint="hint"
-    :autofocus="autofocus"
+    :label="label"
+    :disable="disable"
     class="text-body1"
     dense
   >

@@ -53,6 +53,19 @@ const setup = () => {
       });
   };
 
+  const find = (id: number, t: JobType): Job => {
+    if (t === JobType.SEARCH) {
+      return searchModel.value.find((j:Job) => j.ID === id) as Job;
+    } else if (t === JobType.ARTICLE) {
+      return articleModel.value.find((j: Job) => j.ID === id) as Job;
+    } else if (t === JobType.SITEMAP) {
+      return sitemapModel.value.find((j: Job) => j.ID === id) as Job;
+    } else {
+      console.warn('unknown type when loading', t);
+      return {} as Job;
+    }
+  }
+
   const getBots = (e: BotEnum): Job[] => {
     switch (e) {
       case BotEnum.Articles:
@@ -75,6 +88,7 @@ const setup = () => {
     loadAll,
     getBots,
     hasBots,
+    find,
     articleModel,
     sitemapModel,
     searchModel,

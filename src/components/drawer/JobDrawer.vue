@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import { type Job } from 'src/types/model';
-import { watch } from 'vue';
 import { type Bot } from 'src/types/base';
 
-const props = defineProps<{
+defineProps<{
   jobs: Job[];
-  bot: Bot;
+  bot: Bot | undefined;
 }>();
 
 const model = defineModel<boolean>({ required: true });
-
-watch(props, () => {
-  console.log(props.jobs);
-});
 </script>
 
 <template>
@@ -25,8 +20,8 @@ watch(props, () => {
           clickable
           v-ripple
           active
-          :active-class="`text-${bot.color}`"
-          :to="`/${bot.type}/${j.ID}`"
+          :active-class="`text-${bot?.color}`"
+          :to="`/${bot?.type}/${j.ID}`"
         >
           <q-item-section> {{ j.Target }} </q-item-section>
         </q-item>
