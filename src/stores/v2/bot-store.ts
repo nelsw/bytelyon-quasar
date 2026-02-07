@@ -1,7 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import type { Job} from 'src/types/job';
-import { JobType } from 'src/types/job';
+import { JobType, type Job } from 'src/types/model';
 import { ref } from 'vue';
 import { BotEnum } from 'src/types/base';
 

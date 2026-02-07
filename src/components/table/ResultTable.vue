@@ -2,7 +2,15 @@
 import type { QTableColumn } from 'quasar';
 import { computed } from 'vue';
 import { truncateString } from 'src/types/base';
-import { type Result } from 'src/types/result';
+
+interface Result {
+  position: number;
+  title: string;
+  link: string;
+  source: string;
+  snippet: string;
+  price: number;
+}
 
 const props = defineProps<{
   name: string;
@@ -27,7 +35,6 @@ const columns = computed((): QTableColumn<Result>[] => {
         align: 'left',
         style: 'width: 0;',
       },
-
     ];
   } else if (props.name === 'Forums') {
     return [
@@ -52,7 +59,6 @@ const columns = computed((): QTableColumn<Result>[] => {
         field: 'title',
         align: 'left',
       },
-
     ];
   } else if (props.name === 'Sponsored') {
     return [
@@ -109,7 +115,7 @@ const columns = computed((): QTableColumn<Result>[] => {
       align: 'left',
     },
   ];
-})
+});
 const handleClick = (r: Result) => window.open(r.link, '_blank');
 </script>
 
@@ -136,7 +142,7 @@ const handleClick = (r: Result) => window.open(r.link, '_blank');
             {{ truncateString(col.value, 150) }}
           </span>
           <span v-else>
-            {{col.value}}
+            {{ col.value }}
           </span>
         </q-td>
       </q-tr>

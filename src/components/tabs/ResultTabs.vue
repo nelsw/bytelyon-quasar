@@ -1,6 +1,53 @@
 <script setup lang="ts">
-import { Name, type Results, ResultType, ResultTypes } from 'src/types/results';
 import ResultTable from 'components/table/ResultTable.vue';
+
+interface Result {
+  position: number;
+  title: string;
+  link: string;
+  source: string;
+  snippet: string;
+  price: number;
+}
+
+const enum ResultType {
+  SPONSORED,
+  ORGANIC,
+  VIDEOS,
+  FORUMS,
+  ARTICLES,
+}
+
+const Name = (t: ResultType) => {
+  switch (t) {
+    case ResultType.SPONSORED:
+      return 'Sponsored';
+    case ResultType.ORGANIC:
+      return 'Organic';
+    case ResultType.VIDEOS:
+      return 'Videos';
+    case ResultType.FORUMS:
+      return 'Forums';
+    case ResultType.ARTICLES:
+      return 'Articles';
+  }
+};
+
+const ResultTypes = [
+  ResultType.ORGANIC,
+  ResultType.SPONSORED,
+  ResultType.VIDEOS,
+  ResultType.FORUMS,
+  ResultType.ARTICLES,
+];
+
+interface Results {
+  sponsored: Result[];
+  organic: Result[];
+  video: Result[];
+  forum: Result[];
+  article: Result[];
+}
 
 defineProps<{
   results: Results;
@@ -54,11 +101,23 @@ const icon = (s: string): string => {
         :label="Name(t)"
         style="padding: 0"
       >
-        <ResultTable v-if="t === ResultType.ORGANIC" :name="Name(t)" :rows="results?.organic ?? []" />
-        <ResultTable v-if="t === ResultType.SPONSORED" :name="Name(t)" :rows="results?.sponsored ?? []" />
+        <ResultTable
+          v-if="t === ResultType.ORGANIC"
+          :name="Name(t)"
+          :rows="results?.organic ?? []"
+        />
+        <ResultTable
+          v-if="t === ResultType.SPONSORED"
+          :name="Name(t)"
+          :rows="results?.sponsored ?? []"
+        />
         <ResultTable v-if="t === ResultType.VIDEOS" :name="Name(t)" :rows="results?.video ?? []" />
         <ResultTable v-if="t === ResultType.FORUMS" :name="Name(t)" :rows="results?.forum ?? []" />
-        <ResultTable v-if="t === ResultType.ARTICLES" :name="Name(t)" :rows="results?.article ?? []" />
+        <ResultTable
+          v-if="t === ResultType.ARTICLES"
+          :name="Name(t)"
+          :rows="results?.article ?? []"
+        />
       </q-tab-panel>
     </q-tab-panels>
   </div>

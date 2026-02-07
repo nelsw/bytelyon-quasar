@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import {
-  NewsIcon,
-  SearchColor,
-  SearchIcon,
-  SitemapIcon,
-} from 'src/types/base';
+import { Bots } from 'src/types/base';
 import { useRouter } from 'vue-router';
 const $r = useRouter();
-const onClick = async (s: string) => await $r.push({ name: 'bot', params: { bot: s } });
 </script>
 
 <template>
@@ -19,33 +13,19 @@ const onClick = async (s: string) => await $r.push({ name: 'bot', params: { bot:
         bot
       </div>
     </div>
-    <q-card class="cursor-pointer" style="width: 200px" @click="onClick('articles')">
+    <q-card
+      v-for="b in Bots"
+      :key="b.type"
+      class="cursor-pointer"
+      style="width: 200px"
+      @click="$r.push({ name: 'bot', params: { bot: b.type } })"
+    >
       <q-card-section>
-        <q-icon :name="NewsIcon" :color="SearchColor" size="4em" style="padding: 50px" />
+        <q-icon :name="b.icon" :color="b.color" size="4em" style="padding: 50px" />
       </q-card-section>
       <q-separator />
       <q-card-actions class="flex justify-center">
-        <div class="q-pa-md text-h6">Article</div>
-      </q-card-actions>
-    </q-card>
-
-    <q-card class="cursor-pointer" style="width: 200px" @click="onClick('sitemaps')">
-      <q-card-section>
-        <q-icon :name="SitemapIcon" :color="SearchColor" size="4em" style="padding: 50px" />
-      </q-card-section>
-      <q-separator />
-      <q-card-actions class="flex justify-center">
-        <div class="q-pa-md text-h6">Sitemap</div>
-      </q-card-actions>
-    </q-card>
-
-    <q-card class="cursor-pointer" style="width: 200px" @click="onClick('searches')">
-      <q-card-section>
-        <q-icon :name="SearchIcon" :color="SearchColor" size="4em" style="padding: 50px" />
-      </q-card-section>
-      <q-separator />
-      <q-card-actions class="flex justify-center">
-        <div class="q-pa-md text-h6">Search</div>
+        <div class="q-pa-md text-h6">{{ b.label }}</div>
       </q-card-actions>
     </q-card>
   </div>

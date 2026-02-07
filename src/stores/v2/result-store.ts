@@ -1,7 +1,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
-import type { Search } from 'src/types/search';
+import type { Search } from 'src/types/model';
 
 const id = 'search-store';
 const options = {

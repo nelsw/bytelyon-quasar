@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Job } from 'src/types/job';
+import { type Job } from 'src/types/model';
 import { watch } from 'vue';
 import { type Bot } from 'src/types/base';
 

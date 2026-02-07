@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import type { Bot } from 'src/types/base';
-import { Articles } from 'src/types/base';
+import { BotEnum } from 'src/types/base';
 import { computed } from 'vue';
 
 const props = defineProps<{
   color: string;
-  bot: Bot;
+  botType: BotEnum;
 }>();
 
 const model = defineModel<string[]>();
 
 const hint = computed(() => {
-  if (props.bot.type === Articles.type) {
+  if (props.botType === BotEnum.Articles) {
     return 'Exclude articles that contain these keywords';
   } else {
     return 'Exclude result pages that contain these domains';

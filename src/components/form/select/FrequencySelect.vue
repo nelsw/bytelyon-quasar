@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Options, type Option } from 'src/types/frequency';
+import { Options, type Option } from 'src/types/dto';
 
 defineProps<{
   color: string;

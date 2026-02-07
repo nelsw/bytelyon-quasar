@@ -1,4 +1,5 @@
 import { useRoute, useRouter } from 'vue-router';
+import { Bot, type BotEnum } from 'src/types/base';
 
 const zeroOrNum = (s:string): number => {
   const n = parseInt(s);
@@ -17,11 +18,17 @@ export function useRouteHelper() {
   const jobParam = (): number => zeroOrNum(route.params.job as string)
   const resultParam = (): number => zeroOrNum(route.params.result as string);
 
+  const botType = (): BotEnum => route.params.bot as BotEnum;
+
+  const bot = (): Bot => Bot(route.params.bot as BotEnum);
+
   return {
     isIndex,
     isNotIndex,
     botParam,
     jobParam,
     resultParam,
+    botType,
+    bot,
   };
 }

@@ -1,10 +1,8 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
-import type { Article } from 'src/types/article';
-import type { Sitemap } from 'src/types/sitemap';
+import type { Article, Sitemap, Search } from 'src/types/model';
 import { BotEnum } from 'src/types/base';
-import type { Search } from 'src/types/search';
 
 const id = 'job-store';
 const options = {

@@ -14,3 +14,5 @@ export const Options: Option[] = [
   { label: 'Daily', value: day },
   { label: 'Weekly', value: week },
 ];
+
+export const DefaultOption:Option = Options[2] as Option;

@@ -1,9 +1,25 @@
 <script setup lang="ts">
 import type { QTableColumn } from 'quasar';
 import { computed } from 'vue';
-import { type Result } from 'src/types/result';
-import type { ProwlerSearchPageResult } from 'src/types/prowler';
 import { SearchColor } from 'src/types/base';
+
+export interface Result {
+  position: number;
+  title: string;
+  link: string;
+  source: string;
+  snippet: string;
+  price: number;
+}
+
+export interface ProwlerSearchPageResult {
+  link: string;
+  position: number;
+  snippet: string;
+  source: string;
+  price?: string;
+  title: string;
+}
 
 const props = defineProps<{
   name: string;
@@ -124,7 +140,6 @@ const handleClick = (r: Result) => window.open(r.link, '_blank');
     dense
     flat
     wrap-cells
-
   >
     <template v-slot:body="props">
       <q-tr :props="props" @click="handleClick(props.row)">

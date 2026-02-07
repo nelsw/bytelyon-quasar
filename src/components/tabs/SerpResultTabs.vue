@@ -1,10 +1,41 @@
 <script setup lang="ts">
 import ResultsTable from 'components/table/ResultsTable.vue';
-import type { ProwlerSearchPageResults } from 'src/types/prowler';
-import { SearchPageResultType, SearchPageResultType as Type } from 'src/types/prowler';
 import { onMounted, ref, watch } from 'vue';
 import type { QTreeNode } from 'quasar';
 import { SearchColor } from 'src/types/base';
+
+interface ProwlerSearchPageResult {
+  link: string;
+  position: number;
+  snippet: string;
+  source: string;
+  price?: string;
+  title: string;
+}
+
+interface ProwlerSearchPageResults {
+  also_asked: ProwlerSearchPageResult[];
+  article: ProwlerSearchPageResult[];
+  forum: ProwlerSearchPageResult[];
+  more_products: ProwlerSearchPageResult[];
+  organic: ProwlerSearchPageResult[];
+  popular_products: ProwlerSearchPageResult[];
+  related_query: ProwlerSearchPageResult[];
+  sponsored: ProwlerSearchPageResult[];
+  video: ProwlerSearchPageResult[];
+}
+
+enum SearchPageResultType {
+  Sponsored = 'Sponsored',
+  Organic = 'Organic',
+  AlsoAsked = 'AlsoAsked',
+  Article = 'Article',
+  Forum = 'Forum',
+  MoreProducts = 'MoreProducts',
+  PopularProducts = 'PopularProducts',
+  RelatedQuery = 'RelatedQuery',
+  Video = 'Video',
+}
 
 const defaultResults: ProwlerSearchPageResults = {
   also_asked: [],
@@ -26,23 +57,23 @@ const results = ref<ProwlerSearchPageResults>(defaultResults);
 
 const rows = (t: SearchPageResultType, r: ProwlerSearchPageResults) => {
   switch (t) {
-    case Type.Organic:
+    case SearchPageResultType.Organic:
       return r.organic;
-    case Type.Sponsored:
+    case SearchPageResultType.Sponsored:
       return r.sponsored;
-    case Type.Video:
+    case SearchPageResultType.Video:
       return r.video;
-    case Type.Forum:
+    case SearchPageResultType.Forum:
       return r.forum;
-    case Type.Article:
+    case SearchPageResultType.Article:
       return r.article;
-    case Type.PopularProducts:
+    case SearchPageResultType.PopularProducts:
       return r.popular_products;
-    case Type.AlsoAsked:
+    case SearchPageResultType.AlsoAsked:
       return r.also_asked;
-    case Type.RelatedQuery:
+    case SearchPageResultType.RelatedQuery:
       return r.related_query;
-    case Type.MoreProducts:
+    case SearchPageResultType.MoreProducts:
       return r.more_products;
   }
 };
@@ -66,7 +97,6 @@ onMounted(update);
 </script>
 
 <template>
-
   <q-splitter v-model="splitterModel" class="full-height" dark unit="px">
     <template v-slot:before>
       <q-tabs

@@ -2,8 +2,16 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import { type QTreeNode } from 'quasar';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
-import { BotColor, BotIcon, type Prowler } from 'src/types/base';
-
+export interface Prowler {
+  user_id?: string | undefined;
+  id: string;
+  type: string;
+  prowled?: string | undefined;
+  frequency: number;
+  duration?: number | undefined;
+  blacklist: string[];
+  disabled: boolean;
+}
 const id = 'bot-store';
 const options = {
   persist: {
@@ -29,8 +37,6 @@ const rootNode = (id: string, kids: QTreeNode[]): QTreeNode => {
   return {
     id: id,
     label: id.charAt(0).toUpperCase() + id.substring(1).toLowerCase(),
-    icon: BotIcon(id),
-    iconColor: BotColor(id),
     children: kids,
     lazy: false,
   };

@@ -5,11 +5,11 @@ import SettingsBtn from 'components/btn/SettingsBtn.vue';
 import LogoBtn from 'components/btn/LogoBtn.vue';
 import ToolbarTabs from 'components/tabs/ToolbarTabs.vue';
 import { useBotStore } from 'stores/v2/bot-store';
-import { Bot, type BotEnum } from 'src/types/base';
+import { type BotEnum } from 'src/types/base';
 import { useRouteHelper } from 'src/composable/routeHelper';
 import JobDrawer from 'components/drawer/JobDrawer.vue';
 import TimeDrawer from 'components/drawer/TimeDrawer.vue';
-import { type Job } from 'src/types/job';
+import { type Job } from 'src/types/model';
 
 const timeDrawerModel = ref(false);
 const jobDrawerModel = ref(false);
@@ -26,9 +26,7 @@ const onUpdate = (s?: string) => {
     timeDrawerModel.value = false;
   }
 
-  if (!s) s = r.botParam();
-
-  const e: BotEnum = s as BotEnum;
+  const e:BotEnum = s ? (s as BotEnum) : r.botType()
 
 
   jobs.value = store.getBots(e);
@@ -52,7 +50,7 @@ onMounted(async () => {
 
 <template>
   <q-layout view="hHh lpR lFr">
-    <JobDrawer v-model="jobDrawerModel" :jobs="jobs" :bot="Bot(r.botParam() as BotEnum)" />
+    <JobDrawer v-model="jobDrawerModel" :jobs="jobs" :bot="r.bot()"/>
     <TimeDrawer v-model="timeDrawerModel" />
     <q-header class="bg-dark" bordered>
       <q-toolbar class="bg-dark">

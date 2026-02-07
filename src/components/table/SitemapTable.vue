@@ -3,7 +3,7 @@ import { SitemapColor } from 'src/types/base';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { QInput, type QTableColumn } from 'quasar';
-import { type Row } from 'src/types/sitemap';
+import { type Row } from 'src/types/model';
 import { ref } from 'vue';
 import { csv } from 'src/composable/exportTable';
 

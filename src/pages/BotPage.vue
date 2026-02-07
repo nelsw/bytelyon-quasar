@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouteHelper } from 'src/composable/routeHelper';
-import type { BotEnum } from 'src/types/base';
 import { Bot } from 'src/types/base';
-import { NewJob } from 'src/types/job';
+import { NewJob } from 'src/types/model';
 import BotForm from 'components/form/BotForm.vue';
 
 const r = useRouteHelper();
 
 const onSubmit = (tgt: string, lst: string[], frq: number): void => {
-  const bot = Bot(r.botParam() as BotEnum);
-  const job = NewJob(bot.jobType, tgt, lst, frq);
+  const job = NewJob(Bot(r.botType()).jobType, tgt, lst, frq);
   console.debug('onSubmit', JSON.stringify(job, null, 2));
 };
 
@@ -20,6 +18,6 @@ const isNotResultPage = computed(() => r.resultParam() < 1);
 
 <template>
   <div v-if="isNotResultPage" class="absolute-center">
-    <BotForm :bot="Bot(r.botParam() as BotEnum)" :color="color" @submit="onSubmit" />
+    <BotForm :bot="r.bot()" :color="color" @submit="onSubmit" />
   </div>
 </template>
