@@ -6,6 +6,7 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
+import { capitalize } from 'src/types/base';
 
 /*
  * If not building with SSR mode, you can
@@ -34,19 +35,33 @@ export default defineRouter(async function () {
   });
 
   Router.beforeEach((to) => {
+
     if (to.name === 'index') {
       document.title = 'ByteLyon';
       return;
     }
 
-    const s:string = to.params.job as string;
-
-    if (to.name === 'result' || to.name === 'job') {
-      document.title = `ByteLyon • ${s}`;
+    if (to.name === 'profile') {
+      document.title = 'ByteLyon • Profile';
       return;
     }
 
-    document.title = `ByteLyon • ${s}`;
+    const bot = capitalize(to.params.bot as string)
+    let title = `ByteLyon • ${bot}`;
+    if (to.params.job === undefined) {
+      document.title = title
+      return;
+    }
+
+    const job = capitalize(to.params.job as string)
+    title += ` > ${job}`;
+    if (to.params.result === undefined) {
+      document.title = title;
+      return;
+    }
+
+    const res = capitalize(to.params.result as string)
+    document.title += ` - ${res}`;
 
   });
 
