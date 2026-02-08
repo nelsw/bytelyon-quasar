@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import type { Bots } from 'src/types/model';
+import type { Bots} from 'src/types/model';
+import { BotType } from 'src/types/model';
+import { onMounted } from 'vue';
+import { domain } from 'src/types/base';
 
 defineProps<{
   bots: Bots;
 }>();
 
 const model = defineModel<boolean>({ required: true });
+
+onMounted(() => {});
 </script>
 
 <template>
@@ -21,7 +26,9 @@ const model = defineModel<boolean>({ required: true });
           active-class="primary"
           :to="`/${b.Type}/${b.ID}`"
         >
-          <q-item-section> {{ b.Target }} </q-item-section>
+          <q-item-section>
+            {{ b.Type === BotType.Sitemap ? domain(b.Target) : b.Target }}
+          </q-item-section>
         </q-item>
       </q-list>
     </q-scroll-area>

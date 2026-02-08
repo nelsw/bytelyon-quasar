@@ -21,9 +21,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/BotPage.vue'),
       },
       {
-        path: '/:bot(search|sitemap|news)/:job(\\d+)/:result(\\d+)',
-        name: 'result',
+        path: '/search/:id(\\d+)',
+        name: 'search',
         component: () => import('pages/ResultPage.vue'),
+      },
+      {
+        path: '/sitemap/:id(\\d+)/:result(\\d+)',
+        name: 'sitemap',
+        component: () => import('pages/SitemapPage.vue'),
+      },
+      {
+        path: '/news/:id(\\d+)',
+        name: 'news',
+        component: () => import('pages/NewsPage.vue'),
       },
     ],
   },

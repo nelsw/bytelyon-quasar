@@ -5,7 +5,7 @@
     dense
     round
     flat
-    :to="{ name: 'index' }"
+    :to="{ name: 'settings' }"
     color="dark"
     size="md"
     icon="mdi-cog"

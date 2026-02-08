@@ -22,7 +22,7 @@ const setup = () => {
   const Save = async (b: Bot): Promise<void> => {
     return await api
       .put(`/bots`, b)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, 'Save Bot', b.ID > 0))
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `Bot ${b.ID > 0 ? 'Updated' : 'Created'}`))
       .then(Load)
       .catch((err: AxiosError) => $notify.err(err, 'Save Bot '));
   };
@@ -44,8 +44,8 @@ const setup = () => {
   const Delete = async (id: number): Promise<void> => {
     return await api
       .delete(`/bots/${id}`)
-      .then(() => $log.info(null, `Bot deleted [${id}]`))
-      .catch($log.err);
+      .then(() => $notify.ok(null, `Bot Deleted`))
+      .catch((err: AxiosError) => $notify.err(err, `Delete Bot ${id}`));
   }
 
   const Find = (t: BotType, id?: number): Bots | Bot | undefined => {

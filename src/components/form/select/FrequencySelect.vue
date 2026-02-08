@@ -41,7 +41,7 @@ const option = ref<Option>({ label: 'Hourly', value: hour });
 
 const options = computed(() => {
   const opts: Option[] = [once, hourly, daily, weekly];
-  if (props.color === 'green-13') {
+  if (props.color === 'amber-13') {
     opts.unshift(never);
   }
   return opts;

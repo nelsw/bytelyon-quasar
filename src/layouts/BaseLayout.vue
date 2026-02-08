@@ -3,54 +3,94 @@ import { onMounted, ref, watch } from 'vue';
 import DrawerBtn from 'components/btn/DrawerBtn.vue';
 import SettingsBtn from 'components/btn/SettingsBtn.vue';
 import LogoBtn from 'components/btn/LogoBtn.vue';
-import ToolbarTabs from 'components/tabs/ToolbarTabs.vue';
 import { useBotStore } from 'stores/v2/bot-store';
-import JobDrawer from 'components/drawer/JobDrawer.vue';
-import TimeDrawer from 'components/drawer/TimeDrawer.vue';
+import BotDrawer from 'components/drawer/BotDrawer.vue';
+import ResultDrawer from 'components/drawer/ResultDrawer.vue';
 import { useRouteX } from 'src/composable/useRoutex';
-import type { Bot, Bots, BotType } from 'src/types/model';
+import type { Bots, Result, Results } from 'src/types/model';
+import { BotType } from 'src/types/model';
+import { useResultStore } from 'stores/v2/result-store';
+import ToolbarTabs from 'components/tabs/ToolbarTabs.vue';
 
-const bots = ref<Bot[]>([]);
-const timeDrawerModel = ref(false);
-const jobDrawerModel = ref(false);
-const timeDrawerVisible = ref(false);
-const jobDrawerVisible = ref(false);
-
-const $store = useBotStore();
 const $x = useRouteX();
+const $store = useBotStore();
+const $resultStore = useResultStore();
+
+const bots = ref<Bots>([]);
+const results = ref<Results>([]);
+const jobDrawerModel = ref(false);
+const jobDrawerVisible = ref(false);
+const resultDrawerModel = ref(false);
+const resultDrawerVisible = ref(false);
+const toolbarTabModel = ref<string>('');
 
 const handleBotDrawer = (val: string | BotType) => {
+  if ((val === undefined || val === '') && $x.name()?.match(/^(search|sitemap|news)$/)) {
+    val = $x.name();
+  }
   bots.value = $store.Find(val as BotType) as Bots;
+  jobDrawerVisible.value = bots.value.length > 0;
   jobDrawerModel.value = bots.value.length > 0;
 };
 
+const handleResultDrawer = async (n: number) => {
+
+  if (($x.name() as BotType) === BotType.Sitemap && $x.id() > 0 && $x.resultParam() > 0) {
+    results.value = await $resultStore.Find<Result>($x.name() as BotType, n);
+    resultDrawerModel.value = results.value.length > 0;
+    resultDrawerVisible.value = results.value.length > 0;
+    return;
+  }
+  if ($x.botType() === undefined || $x.botType() === BotType.News || n === 0) {
+    resultDrawerModel.value = false;
+    resultDrawerVisible.value = false;
+    return;
+  }
+  results.value = await $resultStore.Find<Result>($x.botType(), n);
+  resultDrawerModel.value = results.value.length > 0;
+  resultDrawerVisible.value = results.value.length > 0;
+};
+
 watch($x.botParam, handleBotDrawer);
+watch($x.id, handleResultDrawer);
 onMounted(async () => {
   await $store.Load();
-  handleBotDrawer($x.botType())
+  handleBotDrawer($x.botType());
+  await handleResultDrawer($x.id());
 });
 </script>
 
 <template>
   <q-layout view="hHh lpR lFr">
-    <JobDrawer v-model="jobDrawerModel" :bots="bots" />
-    <TimeDrawer v-model="timeDrawerModel" />
+    <BotDrawer v-model="jobDrawerModel" :bots="bots" />
+    <ResultDrawer v-model="resultDrawerModel" :results="results" />
     <q-header class="bg-dark" bordered>
       <q-toolbar class="bg-dark">
-        <LogoBtn random class="q-mr-sm" @click="$x.toName('index')" />
-        <q-separator vertical />
+        <LogoBtn
+          random
+          @click="
+            $x.toName('index');
+            toolbarTabModel = '';
+          "
+        />
         <q-space />
-        <ToolbarTabs />
+        <ToolbarTabs v-model="toolbarTabModel" />
         <q-space />
-        <q-separator vertical />
-        <SettingsBtn class="q-ml-sm" />
+        <SettingsBtn />
       </q-toolbar>
     </q-header>
-    <q-page-container>
-      <q-page>
-        <router-view />
+    <q-footer class="my-footer bg-dark" bordered >
+      <q-toolbar class="bg-dark">
         <DrawerBtn v-if="jobDrawerVisible" side="left" v-model="jobDrawerModel" />
-        <DrawerBtn v-if="timeDrawerVisible" side="right" v-model="timeDrawerModel" />
+        <q-space />
+        <div class="text-grey text-subtitle1">ByteLyon</div>
+        <q-space />
+        <DrawerBtn v-if="resultDrawerVisible" side="right" v-model="resultDrawerModel" />
+      </q-toolbar>
+    </q-footer>
+    <q-page-container>
+      <q-page padding>
+        <router-view />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -67,5 +107,8 @@ body.body--dark.q-drawer {
 }
 .q-icon.q-btn-dropdown__arrow.q-btn-dropdown__arrow-container {
   display: none;
+}
+.q-footer.bg-dark {
+  border-color: #ffffff1e !important;
 }
 </style>

@@ -6,6 +6,8 @@ export interface Model {
 }
 
 export type Bots = Bot[];
+export type Result = Search | Sitemap | News;
+export type Results = Result[];
 
 export interface Bot extends Model {
   Type: BotType;
@@ -21,6 +23,10 @@ export const enum BotType {
 }
 
 export const BotTypes = [BotType.Search, BotType.Sitemap, BotType.News];
+
+export type NewsType = News;
+export type SearchType = Search;
+export type SitemapType = Sitemap;
 
 export const BotTypeIcon = (b: BotType): string => {
   switch (b) {

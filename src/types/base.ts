@@ -10,8 +10,9 @@ export const truncateString = (s: string, l: number) =>
 
 export const domain = (url: string) => {
   if (url.startsWith('https://')) {
-    url = url.substring(url.indexOf('"https://"') + 1);
+    url = url.substring(8);
   }
+  console.log(url)
   return url;
 };
 

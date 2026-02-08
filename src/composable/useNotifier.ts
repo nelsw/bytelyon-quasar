@@ -3,13 +3,13 @@ import { useLogger } from 'src/composable/useLogger';
 const $log = useLogger();
 const useNotifier = () => {
 
-  const ok = (u:unknown, s:string, update:boolean) => {
+  const ok = (u:unknown, s:string) => {
     $log.info(u, s);
     Notify.create({
-      message: `${s} ${update ? 'Updated' : 'Created'} successfully`,
+      message: s,
       color: 'dark',
       icon: 'mdi-check',
-      textColor: `${update ? 'amber' : 'green'}-13`,
+      textColor: 'primary',
     });
   }
 

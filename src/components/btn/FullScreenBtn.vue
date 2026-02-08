@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 defineProps<{
   fullscreen: boolean;
   color?: string;
@@ -7,10 +6,5 @@ defineProps<{
 </script>
 
 <template>
-  <q-btn
-    :icon="`mdi-fullscreen${fullscreen ? '-exit' : ''}`"
-    :color="`${color ?? 'blue-grey-5'}`"
-    dense
-    flat
-  />
+  <q-btn :icon="`mdi-fullscreen${fullscreen ? '-exit' : ''}`" text-color="primary" dense flat />
 </template>

@@ -26,6 +26,7 @@ export function useRouteX() {
 
   const botType = (): BotType => botParam() as BotType;
   const id = (): number => zeroOrNum($route.params.id as string);
+  const result = (): number => zeroOrNum($route.params.result as string);
   const to = async (r: RouteLocationRaw) => await $router.push(r);
 
   const toPath = async (s?: string | BotType) => {
@@ -36,6 +37,8 @@ export function useRouteX() {
   const toName = async (s: string) => {
     await to({ name: s });
   };
+
+  const name = ():string => $route.name as string;
 
   return {
     isIndex,
@@ -49,5 +52,7 @@ export function useRouteX() {
     toPath,
     toName,
     id,
+    name,
+    result,
   };
 }

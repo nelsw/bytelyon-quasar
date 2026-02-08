@@ -1,39 +1,65 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import { ref } from 'vue';
-import type { Search } from 'src/types/model';
+import type { BotType } from 'src/types/model';
+import useNotifier from 'src/composable/useNotifier';
+import { useLogger } from 'src/composable/useLogger';
 
-const id = 'search-store';
-const options = {
+const $log = useLogger();
+const $notify = useNotifier();
+
+const setup = () => {
+
+  const Find = async <T>(t: BotType, id:number): Promise<T[]> => {
+    return await api
+      .get<T[]>(`/${t}/bot/${id}`)
+      .then((res: AxiosResponse<T[]>) => res.data)
+      .catch((err: AxiosError) => {
+        $log.err(err, `Find Bot Results ${t} ${id}`);
+        return [];
+      });
+  };
+
+  const Delete = async (t: BotType, id:number, notify:boolean): Promise<boolean> => {
+    return await api
+      .delete(`/${t}/id/${id}`)
+      .then(() => {
+        if (notify) {
+          $notify.ok(null, `Deleted Successfully`);
+        }
+        return true;
+      })
+      .catch((err: AxiosError) => {
+        if (notify) {
+          $notify.err(err, `Delete Bot Result ${t} ${id}`);
+        }
+        return false;
+      });
+  }
+
+  const DeleteAll = async (t: BotType, ids: number[]): Promise<number[]> => {
+    const ok:number[] = [];
+    for (const id of ids) {
+      if (await Delete(t, id, false)) {
+        ok.push(id);
+      }
+    }
+    return ok;
+  };
+
+  return {
+    Find,
+    Delete,
+    DeleteAll,
+  };
+};
+
+export const useResultStore = defineStore('result-store', setup, {
   persist: {
     debug: true,
     storage: sessionStorage,
   },
-};
-
-const setup = () => {
-  const model = ref<Search[]>([]);
-
-  const load = async (): Promise<void> => {
-    await api
-      .get<Search[]>(`http://localhost:8080/api/articles`)
-      .then((res: AxiosResponse<Search[]>) => {
-        console.debug(`✅ Searches Loaded`, res.data.length);
-        model.value = res.data;
-      })
-      .catch((err: AxiosError) => {
-        console.error(err.response?.statusText);
-      });
-  };
-
-  return {
-    load,
-    model,
-  };
-};
-
-export const useSearchStore = defineStore(id, setup, options);
+});
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useSearchStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useResultStore, import.meta.hot));
 }
