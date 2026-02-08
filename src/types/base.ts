@@ -1,4 +1,4 @@
-import { JobType } from 'src/types/model';
+import { BotType } from 'src/types/model';
 
 export const clone = <T>(t: T): T => JSON.parse(JSON.stringify(t));
 
@@ -22,7 +22,7 @@ export enum BotEnum {
 }
 
 export interface Bot {
-  jobType: JobType;
+  jobType: BotType;
   type: BotEnum;
   icon: string;
   color: string;
@@ -31,21 +31,21 @@ export interface Bot {
 
 export const Bots: Bot[] = [
   {
-    jobType: JobType.ARTICLE,
+    jobType: BotType.News,
     type: BotEnum.Articles,
     icon: 'mdi-newspaper',
     color: 'deep-purple-13',
     label: 'Article',
   },
   {
-    jobType: JobType.SEARCH,
+    jobType: BotType.Search,
     type: BotEnum.Searches,
     icon: 'mdi-web',
     color: 'indigo-14',
     label: 'Search',
   },
   {
-    jobType: JobType.SITEMAP,
+    jobType: BotType.Sitemap,
     type: BotEnum.Sitemaps,
     icon: 'mdi-sitemap',
     color: 'purple-14',

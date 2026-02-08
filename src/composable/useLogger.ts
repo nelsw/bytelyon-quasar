@@ -6,10 +6,7 @@ enum Symbol {
 }
 
 const build = (s: Symbol, u: unknown, ...args: string[]): string => {
-  let msg: string = `${s} ◦ `;
-  if (args.length > 0) {
-    msg += args[0];
-  }
+  let msg: string = `${s} ${args.join(' ')} `;
   if (u) {
     msg += JSON.stringify(u, null, 2);
   }

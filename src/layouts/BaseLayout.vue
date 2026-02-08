@@ -5,69 +5,42 @@ import SettingsBtn from 'components/btn/SettingsBtn.vue';
 import LogoBtn from 'components/btn/LogoBtn.vue';
 import ToolbarTabs from 'components/tabs/ToolbarTabs.vue';
 import { useBotStore } from 'stores/v2/bot-store';
-import { type BotEnum } from 'src/types/base';
-import { useRouteHelper } from 'src/composable/routeHelper';
 import JobDrawer from 'components/drawer/JobDrawer.vue';
 import TimeDrawer from 'components/drawer/TimeDrawer.vue';
-import { type Job } from 'src/types/model';
-import { useRouter } from 'vue-router';
+import { useRouteX } from 'src/composable/useRoutex';
+import type { Bot, Bots, BotType } from 'src/types/model';
 
+const bots = ref<Bot[]>([]);
 const timeDrawerModel = ref(false);
 const jobDrawerModel = ref(false);
 const timeDrawerVisible = ref(false);
 const jobDrawerVisible = ref(false);
 
-const tabModel = ref<string>('');
+const $store = useBotStore();
+const $x = useRouteX();
 
-const jobs = ref<Job[]>([]);
-
-const store = useBotStore();
-const r = useRouteHelper();
-
-const onUpdate = (s?: string) => {
-  if (r.isIndex()) {
-    jobDrawerModel.value = false;
-    timeDrawerModel.value = false;
-  }
-
-  const e: BotEnum = s ? (s as BotEnum) : r.botType();
-
-  const hasBots: boolean = store.hasBots(e);
-  if (hasBots) {
-    jobs.value = store.getBots(e);
-  }
-  jobDrawerVisible.value = hasBots;
-  jobDrawerModel.value = hasBots;
-
-  // todo - right drawer
+const handleBotDrawer = (val: string | BotType) => {
+  bots.value = $store.Find(val as BotType) as Bots;
+  jobDrawerModel.value = bots.value.length > 0;
 };
 
-const router = useRouter();
-watch(tabModel, async () => {
-  if (tabModel.value === '') {
-    await router.push({ name: 'index' });
-    onUpdate();
-  } else {
-    await router.push({ name: 'bot', params: { bot: tabModel.value } });
-    onUpdate(tabModel.value);
-  }
-});
-
+watch($x.botParam, handleBotDrawer);
 onMounted(async () => {
-  await store.loadAll();
+  await $store.Load();
+  handleBotDrawer($x.botType())
 });
 </script>
 
 <template>
   <q-layout view="hHh lpR lFr">
-    <JobDrawer v-model="jobDrawerModel" :jobs="jobs" :bot="r.bot()" />
+    <JobDrawer v-model="jobDrawerModel" :bots="bots" />
     <TimeDrawer v-model="timeDrawerModel" />
     <q-header class="bg-dark" bordered>
       <q-toolbar class="bg-dark">
-        <LogoBtn random class="q-mr-sm" @click="tabModel = ''" />
+        <LogoBtn random class="q-mr-sm" @click="$x.toName('index')" />
         <q-separator vertical />
         <q-space />
-        <ToolbarTabs v-model="tabModel" />
+        <ToolbarTabs />
         <q-space />
         <q-separator vertical />
         <SettingsBtn class="q-ml-sm" />

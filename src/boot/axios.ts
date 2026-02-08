@@ -14,7 +14,7 @@ declare module 'vue' {
 }
 
 const api = axios.create({
-  // baseURL: process.env.API,
+  baseURL: process.env.API,
 });
 
 export default defineBoot(({ app }) => {

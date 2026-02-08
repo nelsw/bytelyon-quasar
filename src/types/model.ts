@@ -5,16 +5,36 @@ export interface Model {
   DeletedAt: number | null;
 }
 
-export interface Article extends Model {
-  JobID: number;
-  URL: string;
-  Title: string;
-  Source: string;
-  Published: number;
+export type Bots = Bot[];
+
+export interface Bot extends Model {
+  Type: BotType;
+  Frequency: number;
+  Target: string;
+  BlackList: string[];
 }
 
+export const enum BotType {
+  Search = 'search',
+  Sitemap = 'sitemap',
+  News = 'news',
+}
+
+export const BotTypes = [BotType.Search, BotType.Sitemap, BotType.News];
+
+export const BotTypeIcon = (b: BotType): string => {
+  switch (b) {
+    case BotType.Search:
+      return 'mdi-web';
+    case BotType.Sitemap:
+      return 'mdi-sitemap';
+    case BotType.News:
+      return 'mdi-newspaper';
+  }
+};
+
 export interface Search extends Model {
-  JobID: number;
+  BotID: number;
   Pages: Page[];
 }
 
@@ -26,20 +46,23 @@ export interface Page extends Model {
   JSON: unknown;
 }
 
-export const enum JobType {
-  SEARCH = 'search',
-  SITEMAP = 'sitemap',
-  ARTICLE = 'article',
+export interface Sitemap extends Model {
+  BotID: number;
+  URL: string;
+  Domain: string;
+  Relative: string[];
+  Remote: string[];
 }
 
-export interface Job extends Model {
-  Type: JobType;
-  Frequency: number;
-  Target: string;
-  BlackList: string[];
+export interface News extends Model {
+  BotID: number;
+  URL: string;
+  Title: string;
+  Source: string;
+  Published: number;
 }
 
-export const NewJob = (t: JobType, s: string, ss: string[], n: number): Job => {
+export const NewBot = (t: BotType, s: string, ss: string[], n: number): Bot => {
   return {
     ID: 0,
     CreatedAt: 0,
@@ -51,11 +74,3 @@ export const NewJob = (t: JobType, s: string, ss: string[], n: number): Job => {
     BlackList: ss,
   };
 };
-
-export interface Sitemap extends Model {
-  JobID: number;
-  URL: string;
-  Domain: string;
-  Relative: string[];
-  Remote: string[];
-}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Bots } from 'src/types/base';
 import { useRouter } from 'vue-router';
+import { BotTypeIcon, BotTypes } from 'src/types/model';
 const $r = useRouter();
 </script>
 
@@ -14,18 +14,18 @@ const $r = useRouter();
       </div>
     </div>
     <q-card
-      v-for="b in Bots"
-      :key="b.type"
+      v-for="b in BotTypes"
+      :key="b"
       class="cursor-pointer"
       style="width: 200px"
-      @click="$r.push({ name: 'bot', params: { bot: b.type } })"
+      @click="$r.push({ name: 'bot', params: { bot: b } })"
     >
       <q-card-section>
-        <q-icon :name="b.icon" :color="b.color" size="4em" style="padding: 50px" />
+        <q-icon :name="BotTypeIcon(b)" color="primary" size="4em" style="padding: 50px" />
       </q-card-section>
       <q-separator />
       <q-card-actions class="flex justify-center">
-        <div class="q-pa-md text-h6">{{ b.label }}</div>
+        <div class="q-pa-md text-h6 text-capitalize">{{ b }}</div>
       </q-card-actions>
     </q-card>
   </div>

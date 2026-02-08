@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { BotEnum } from 'src/types/base';
 import { computed } from 'vue';
+import { BotType } from 'src/types/model';
 
 const props = defineProps<{
-  botType: BotEnum;
+  botType: BotType;
   color: string;
   disable: boolean;
 }>();
@@ -11,9 +11,9 @@ const props = defineProps<{
 const model = defineModel<string>();
 
 const label = computed(() => {
-  if (props.botType === BotEnum.Articles) {
+  if (props.botType === BotType.News) {
     return 'Topic';
-  } else if (props.botType === BotEnum.Sitemaps) {
+  } else if (props.botType === BotType.Sitemap) {
     return 'URL';
   } else {
     return 'Query';
@@ -21,9 +21,9 @@ const label = computed(() => {
 });
 
 const hint = computed(() => {
-  if (props.botType === BotEnum.Articles) {
+  if (props.botType === BotType.News) {
     return 'Collect articles for this news Topic';
-  } else if (props.botType === BotEnum.Sitemaps) {
+  } else if (props.botType === BotType.Sitemap) {
     return 'Map all pages & links for this website URL';
   } else {
     return 'Scrape the SERP & result pages this search Query';

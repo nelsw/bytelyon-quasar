@@ -37,9 +37,9 @@ export default defineRouter(async function () {
   Router.beforeEach((to) => {
     if (to.name === 'index') {
       document.title = 'ByteLyon';
-    } else if (to.name === 'profile') {
-      document.title = 'ByteLyon • Profile';
-    } else {
+    } else if (to.name === 'settings') {
+      document.title = 'ByteLyon • Settings';
+    } else if (to.params.bot !== undefined) {
       document.title = `ByteLyon • ${capitalize(to.params.bot as string)}`;
     }
   });

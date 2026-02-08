@@ -1,8 +1,9 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import { type Job, JobType } from 'src/types/model';
 import { ref } from 'vue';
-import { BotEnum } from 'src/types/base';
+import type { Bot, Bots, BotType } from 'src/types/model';
+import { useLogger } from 'src/composable/useLogger';
+import useNotifier from 'src/composable/useNotifier';
 
 const id = 'bot-store';
 const options = {
@@ -12,97 +13,53 @@ const options = {
   },
 };
 
+const $log = useLogger();
+const $notify = useNotifier();
 const setup = () => {
-  const searchModel = ref<Job[]>([]);
-  const articleModel = ref<Job[]>([]);
-  const sitemapModel = ref<Job[]>([]);
 
-  const save = async (j: Job): Promise<void> => {
+  const model = ref<Bot[]>([]);
+
+  const Save = async (b: Bot): Promise<void> => {
     return await api
-      .put(`http://localhost:8080/api/jobs`, j)
-      .then(async (res: AxiosResponse<Job>) => {
-        console.debug(`✅ Job saved ${JSON.stringify(res.data, null, 2)}`);
-        await load(j.Type);
-      })
-      .catch((err: AxiosError) => {
-        console.error(err.response?.statusText);
-      });
+      .put(`/bots`, b)
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, 'Save Bot', b.ID > 0))
+      .then(Load)
+      .catch((err: AxiosError) => $notify.err(err, 'Save Bot '));
   };
 
-  const loadAll = async () => {
-    const p3 = load(JobType.ARTICLE);
-    const p1 = load(JobType.SITEMAP);
-    const p2 = load(JobType.SEARCH);
-    return await Promise.all([p1, p2, p3])
-      .then(() => {
-        console.debug('✅ All Jobs Loaded');
-        return true;
-      })
-      .catch((err: AxiosError) => {
-        console.error(err);
-        return false;
-      });
-  };
+  const Load = async (t?: BotType|void): Promise<void> => {
 
-  const load = async (t: JobType): Promise<void> => {
+    let url: string = '/bots';
+    if (t !== undefined) {
+      url += `/type/${t}`;
+    }
+
     return await api
-      .get<Job[]>(`http://localhost:8080/api/jobs/type/${t}`)
-      .then((res: AxiosResponse<Job[]>) => {
-        console.debug(`✅ ${t} Jobs Loaded`, t, res.data.length);
-        if (t === JobType.SEARCH) {
-          searchModel.value = res.data;
-        } else if (t === JobType.ARTICLE) {
-          articleModel.value = res.data;
-        } else if (t === JobType.SITEMAP) {
-          sitemapModel.value = res.data;
-        } else {
-          console.warn('unknown type when loading', t);
-        }
-      })
-      .catch((err: AxiosError) => {
-        console.error(err.response?.statusText);
-      });
+      .get<Bot[]>(url)
+      .then((res: AxiosResponse<Bot[]>) => model.value = res.status === 200 ? res.data : [])
+      .then(() => $log.info(null, `Bots loaded [${model.value.length}]`))
+      .catch((err: AxiosError) => $log.err(err, 'while loading Bots'));
   };
 
-  const find = (id: number, t: JobType): Job | undefined => {
-    if (t === JobType.SEARCH) {
-      return searchModel.value.find((j: Job) => j.ID === id) as Job;
-    } else if (t === JobType.ARTICLE) {
-      return articleModel.value.find((j: Job) => j.ID === id) as Job;
-    } else if (t === JobType.SITEMAP) {
-      return sitemapModel.value.find((j: Job) => j.ID === id) as Job;
-    }
-    console.warn('unknown type when loading', t);
-    return undefined;
-  };
+  const Delete = async (id: number): Promise<void> => {
+    return await api
+      .delete(`/bots/${id}`)
+      .then(() => $log.info(null, `Bot deleted [${id}]`))
+      .catch($log.err);
+  }
 
-  const getBots = (e: BotEnum): Job[] => {
-    switch (e) {
-      case BotEnum.Articles:
-        return articleModel.value;
-      case BotEnum.Searches:
-        return searchModel.value;
-      case BotEnum.Sitemaps:
-        return sitemapModel.value;
-      default:
-        return [];
-    }
-  };
-
-  const hasBots = (e: BotEnum): boolean => {
-    return getBots(e)?.length > 0;
+  const Find = (t: BotType, id?: number): Bots | Bot | undefined => {
+    const bots:Bots = model.value.filter((b:Bot) => b.Type === t)
+    if (id === undefined || id < 1) return bots;
+    return bots.find((b:Bot) => b.ID === id)
   };
 
   return {
-    save,
-    load,
-    loadAll,
-    getBots,
-    hasBots,
-    find,
-    articleModel,
-    sitemapModel,
-    searchModel,
+    Save,
+    Load,
+    Delete,
+    Find,
+    model,
   };
 };
 

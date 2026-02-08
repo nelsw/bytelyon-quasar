@@ -3,29 +3,25 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '',
-    meta: { requiresAuth: false },
     component: () => import('layouts/BaseLayout.vue'),
     children: [
       {
         path: '',
         name: 'index',
-        meta: {
-          title: 'ByteLyon',
-        },
         component: () => import('pages/IndexPage.vue'),
       },
       {
-        path: '/:bot(articles|sitemaps|searches)',
+        path: '/settings',
+        name: 'settings',
+        component: () => import('pages/IndexPage.vue'),
+      },
+      {
+        path: '/:bot(search|sitemap|news)/:id(\\d+)?',
         name: 'bot',
         component: () => import('pages/BotPage.vue'),
       },
       {
-        path: '/:bot(articles|sitemaps|searches)/:job(\\d+)',
-        name: 'job',
-        component: () => import('pages/JobPage.vue'),
-      },
-      {
-        path: '/:bot(articles|sitemaps|searches)/:job(\\d+)/:result(\\d+)',
+        path: '/:bot(search|sitemap|news)/:job(\\d+)/:result(\\d+)',
         name: 'result',
         component: () => import('pages/ResultPage.vue'),
       },

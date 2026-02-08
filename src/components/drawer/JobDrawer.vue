@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { type Job } from 'src/types/model';
-import { type Bot } from 'src/types/base';
+import type { Bots } from 'src/types/model';
 
 defineProps<{
-  jobs: Job[];
-  bot: Bot | undefined;
+  bots: Bots;
 }>();
 
 const model = defineModel<boolean>({ required: true });
@@ -15,15 +13,15 @@ const model = defineModel<boolean>({ required: true });
     <q-scroll-area style="height: 100%">
       <q-list dense separator class="text-subtitle2">
         <q-item
-          v-for="j in jobs"
-          :key="j.ID"
+          v-for="b in bots"
+          :key="b.ID"
           clickable
           v-ripple
           active
-          :active-class="`text-${bot?.color}`"
-          :to="`/${bot?.type}/${j.ID}`"
+          active-class="primary"
+          :to="`/${b.Type}/${b.ID}`"
         >
-          <q-item-section> {{ j.Target }} </q-item-section>
+          <q-item-section> {{ b.Target }} </q-item-section>
         </q-item>
       </q-list>
     </q-scroll-area>

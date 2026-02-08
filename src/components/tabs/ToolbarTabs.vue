@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import { type BotEnum, Bot, Bots, capitalize } from 'src/types/base';
-import { computed } from 'vue';
+import { capitalize } from 'src/types/base';
+import { BotTypeIcon, BotTypes } from 'src/types/model';
+import { ref, watch } from 'vue';
+import { useRouteX } from 'src/composable/useRoutex';
 
-const model = defineModel<string>('');
-const color = computed(() => {
-  if (model.value === undefined || model.value === '') {
-    return undefined;
+const $x = useRouteX();
+
+const model = ref<string>($x.botParam());
+
+watch(model, async (val: string) => await $x.to({name: 'bot', params: {bot: val}}));
+watch($x.botParam, (val: string) => {
+  if (val === undefined) {
+    model.value = '';
+  } else if (val !== model.value) {
+    model.value = val;
   }
-  return Bot(model.value as BotEnum).color;
 });
 </script>
 
 <template>
-  <q-tabs v-model="model" class="text-grey-5" :indicator-color="color" shrink stretch inline-label>
-    <q-tab
-      v-for="b in Bots"
-      :icon="b.icon"
-      :key="b.type"
-      :label="capitalize(b.type)"
-      :name="b.type"
-    />
+  <q-tabs v-model="model" class="text-grey-5" indicator-color="primary" shrink stretch inline-label>
+    <q-tab v-for="b in BotTypes" :icon="BotTypeIcon(b)" :key="b" :label="capitalize(b)" :name="b" />
   </q-tabs>
 </template>
