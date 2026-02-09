@@ -6,11 +6,14 @@ export interface Model {
 }
 
 export type Bots = Bot[];
-export type Result = Search | Sitemap | News;
-export type Results = Result[];
-
-export interface Bot extends Model {
-  Type: BotType;
+export type BotData = BotDatum[];
+export type BotDatum = Search | Sitemap | News;
+export interface BotTable {
+  Bot: Bot;
+  rows: string[] | News[];
+}
+export interface Bot<T = BotType> extends Model {
+  Type: T;
   Frequency: number;
   Target: string;
   BlackList: string[];
@@ -24,10 +27,6 @@ export const enum BotType {
 
 export const BotTypes = [BotType.Search, BotType.Sitemap, BotType.News];
 
-export type NewsType = News;
-export type SearchType = Search;
-export type SitemapType = Sitemap;
-
 export const BotTypeIcon = (b: BotType): string => {
   switch (b) {
     case BotType.Search:
@@ -39,7 +38,12 @@ export const BotTypeIcon = (b: BotType): string => {
   }
 };
 
+// export interface BotData extends Model {
+//   Bot: Bot;
+// }
+
 export interface Search extends Model {
+  Bot: Bot;
   BotID: number;
   Pages: Page[];
 }
@@ -53,6 +57,7 @@ export interface Page extends Model {
 }
 
 export interface Sitemap extends Model {
+  Bot: Bot;
   BotID: number;
   URL: string;
   Domain: string;
@@ -61,22 +66,24 @@ export interface Sitemap extends Model {
 }
 
 export interface News extends Model {
+  Bot: Bot;
   BotID: number;
   URL: string;
   Title: string;
   Source: string;
   Published: number;
+  Description: string;
 }
 
-export const NewBot = (t: BotType, s: string, ss: string[], n: number): Bot => {
+export const NewBot = <T = BotType>(t:T): Bot<T> => {
   return {
     ID: 0,
     CreatedAt: 0,
     UpdatedAt: 0,
     DeletedAt: null,
     Type: t,
-    Frequency: n,
-    Target: s,
-    BlackList: ss,
+    Frequency: 1,
+    Target: '',
+    BlackList: [],
   };
 };

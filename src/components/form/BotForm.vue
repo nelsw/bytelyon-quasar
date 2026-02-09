@@ -17,9 +17,9 @@ const target = ref<string>('');
 const blackList = ref<string[]>([]);
 const frequency = ref<number>(1);
 
-const color = computed(() => (props.bot.ID > 0 ? 'amber-13' : 'green-13'));
-const isCreate = computed(() => props.bot.ID === 0);
-const isUpdate = computed(() => props.bot.ID > 0);
+const color = computed(() => (props.bot.CreatedAt > 0 ? 'amber-13' : 'green-13'));
+const isCreate = computed(() => props.bot.CreatedAt === 0);
+const isUpdate = computed(() => props.bot.CreatedAt > 0);
 
 const onSubmit = async () => {
   const b: Bot = props.bot;
@@ -79,7 +79,8 @@ onMounted(onChange);
     </div>
     <div v-else>
       <SubmitBtn :color="color" label="update" />
-      <q-btn class="full-width q-mt-md" label="Delete" color="red-13" size="md" outline />
+<!--      todo - remove from model-->
+      <q-btn class="full-width q-mt-md" label="Delete" color="pink" size="md" outline @click="$store.Delete(bot.ID)"/>
     </div>
   </q-form>
 </template>

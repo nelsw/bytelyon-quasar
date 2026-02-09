@@ -13,7 +13,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/settings',
         name: 'settings',
-        component: () => import('pages/IndexPage.vue'),
+        component: () => import('pages/SettingsPage.vue'),
       },
       {
         path: '/:bot(search|sitemap|news)/:id(\\d+)?',
@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/search/:id(\\d+)',
         name: 'search',
-        component: () => import('pages/ResultPage.vue'),
+        component: () => import('pages/SearchPage.vue'),
       },
       {
         path: '/sitemap/:id(\\d+)/:result(\\d+)',

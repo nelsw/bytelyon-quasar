@@ -2,11 +2,11 @@
   <q-btn
     flat
     square
-    :to="{ name: 'settings' }"
+    href="mailto:Kowalski7012@gmail.com"
     color="dark"
-    icon="mdi-cog"
+    icon="mdi-email"
     text-color="grey-8"
-    label="Settings"
+    label="Contact"
     class="full-width"
     align="left"
     no-caps

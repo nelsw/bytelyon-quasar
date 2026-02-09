@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { Results } from 'src/types/model';
+import type { News, Search, Sitemap } from 'src/types/model';
 import { useRouteX } from 'src/composable/useRoutex';
 
 defineProps<{
   results: Results;
 }>();
-
+export type Result = Search | Sitemap | News;
+export type Results = Result[];
 const $x = useRouteX();
 
 const model = defineModel<boolean>({ required: true });
@@ -20,9 +21,8 @@ const model = defineModel<boolean>({ required: true });
           :key="m.ID"
           clickable
           v-ripple
-          active
           active-class="primary"
-          :to="`/${$x.botType()}/${$x.id()}/${m.ID}`"
+          :to="`/${$x.botType() ?? $x.name()}/${$x.id()}/${m.ID}`"
         >
           <q-item-section> {{ new Date(m.CreatedAt).toLocaleString() }} </q-item-section>
         </q-item>

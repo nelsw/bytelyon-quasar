@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import { SitemapColor } from 'src/types/base';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { QInput, type QTableColumn } from 'quasar';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { csv } from 'src/composable/exportTable';
-export interface Row extends Record<string, unknown> {
+import type { Sitemap } from 'src/types/model';
+import { BotType } from 'src/types/model';
+import { useRouteX } from 'src/composable/useRoutex';
+
+export interface row {
   url: string;
-  backlink: boolean;
 }
-const columns = ref<QTableColumn<Row>[]>([
-  {
-    name: 'backlink',
-    label: 'Backlink',
-    field: 'backlink',
-    align: 'center',
-    style: 'width: 0;',
-  },
+const columns: QTableColumn<row>[] = [
   {
     name: 'url',
     label: 'URL',
@@ -24,89 +19,123 @@ const columns = ref<QTableColumn<Row>[]>([
     align: 'left',
     style: 'width: 0;',
   },
+];
 
-  {
-    name: 'actions',
-    label: 'Open',
-    field: 'url',
-    align: 'center',
-    style: 'width: 0;',
-  },
-]);
+const $x = useRouteX();
 
-defineProps<{
-  rows: Array<Row>;
-  loading: boolean;
-}>();
-
+const rel = ref<row[]>([]);
+const rem = ref<row[]>([]);
+const rows = ref<row[]>([]);
 const filter = ref<string>('');
+const toggle = ref<boolean>(false);
+const sitemap = ref<Sitemap>();
+const onDelete = async () => {
+  await $x.to({ name: 'bot', params: { bot: BotType.Sitemap } });
+};
+onMounted(async () => {
+  // const sitemaps = await $resStore.Find<Sitemap>(BotType.Sitemap, $x.id());
+  //
+  // // sitemap.value = sitemaps.find((s: Sitemap) => s.ID === $x.result()) as Sitemap;
+  // rel.value = sitemap.value.Relative.map((s: string) => {
+  //   return { url: s };
+  // });
+  // rem.value = sitemap.value.Relative.map((s: string) => {
+  //   return { url: s };
+  // });
+  // rows.value = [...rel.value, ...rem.value];
+});
+watch(toggle, (val: boolean) => {
+  if (val) {
+    rows.value = [...rel.value, ...rem.value];
+  } else {
+    rows.value = rel.value;
+  }
+});
 </script>
 
 <template>
-  <q-table
-    :rows="rows"
-    :columns="columns"
-    :filter="filter"
-    :rows-per-page-options="[20, 50, 100, 0]"
-    :color="SitemapColor"
-    :loading="loading"
-    row-key="name"
-    dense
-    flat
-  >
-    <template #top="props">
-      <div class="flex col-grow items-center">
-        <q-input
-          ref="my-input"
-          style="margin-bottom: 10px"
-          class="q-mr-sm"
-          v-model="filter"
-          :color="SitemapColor"
-          placeholder="Filter"
-          dense
-          autofocus
-          clearable
-        >
-          <template #prepend>
-            <q-icon name="mdi-filter-variant" :color="SitemapColor" />
-          </template>
-        </q-input>
-        <q-separator vertical spaced inset />
-        <q-space />
-
-        <q-separator vertical spaced inset />
-        <q-btn :color="SitemapColor" dense flat icon="mdi-download" @click="csv(columns, rows)" />
+  <q-page padding>
+    <q-table
+      :rows="rows"
+      :columns="columns"
+      :filter="filter"
+      :rows-per-page-options="[20, 50, 100, 0]"
+      color="primary"
+      row-key="name"
+      dense
+      flat
+      bordered
+    >
+      <template #top="props">
         <FullScreenBtn
-          :color="SitemapColor"
+          color="primary"
           :fullscreen="props.inFullscreen"
           @click="props.toggleFullscreen"
         />
-      </div>
-    </template>
-    <template #body-cell-backlink="props">
-      <q-td :props="props">
-        <q-checkbox v-model="props.row.backlink" disable :color="SitemapColor" />
-      </q-td>
-    </template>
-    <template #body="props">
-      <q-tr :props="props">
-        <q-td colspan="1" style="text-align: center">
-          <q-checkbox v-model="props.row.backlink" disable dense :color="SitemapColor" />
-        </q-td>
-        <q-td colspan="1" style="text-align: left">
-          <span class="text-caption">
-            {{ props.row.url }}
-          </span>
-        </q-td>
+        <q-separator vertical spaced inset />
+        <div class="flex col-grow items-center">
+          <q-input
+            ref="my-input"
+            v-model="filter"
+            color="primary"
+            placeholder="Filter"
+            dense
+            autofocus
+            clearable
+            borderless
+          >
+            <template #prepend>
+              <q-icon name="mdi-filter-variant" color="primary" />
+            </template>
+          </q-input>
+          <div class="absolute-center">
+            <span class="text-h5 text-weight-medium">{{ sitemap?.Domain }}</span>
+            <span v-if="sitemap?.CreatedAt">
+              <span class="text-body2 q-ml-sm">{{
+                new Date(sitemap?.CreatedAt).toLocaleString()
+              }}</span>
+            </span>
+          </div>
 
-        <q-td colspan="1" style="text-align: center">
-          <span class="text-caption">
-            <OpenInNewBtn :url="props.row.url" :color="SitemapColor" />
-          </span>
-        </q-td>
-      </q-tr>
-    </template>
-  </q-table>
+          <q-space />
+          <q-toggle
+            v-model="toggle"
+            checked-icon="mdi-check"
+            color="positive"
+            left-label
+            label="External URLs"
+            unchecked-icon="mdi-close"
+            icon-color="dark"
+            dense
+            size="sm"
+            class="q-mr-sm"
+          />
+          <q-separator vertical spaced inset />
+          <q-btn color="primary" dense flat icon="mdi-download" @click="csv(columns, rows)" />
+          <q-separator vertical spaced inset />
+          <q-btn color="pink" dense flat icon="mdi-delete" @click="onDelete" />
+        </div>
+      </template>
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th></q-th>
+          <q-th v-for="col in props.cols" :key="col.name" :props="props">
+            {{ col.label }}
+          </q-th>
+        </q-tr>
+      </template>
+      <template #body="props">
+        <q-tr :props="props">
+          <q-td auto-width>
+            <OpenInNewBtn :url="props.row.url" color="primary" />
+          </q-td>
+          <q-td>
+            {{ props.row.url }}
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
+  </q-page>
 </template>
 
 <style scoped lang="scss"></style>

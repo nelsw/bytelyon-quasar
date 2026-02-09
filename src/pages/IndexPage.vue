@@ -1,32 +1,75 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { BotTypeIcon, BotTypes } from 'src/types/model';
-const $r = useRouter();
-</script>
+import { ref } from 'vue';
+import LogoBtn from 'components/btn/LogoBtn.vue';
+import BotTree from 'components/tree/BotTree.vue';
+import SettingsBtn from 'components/btn/SettingsBtn.vue';
+import HomePage from 'pages/HomePage.vue';
+import BotPage from 'pages/BotPage.vue';
+import type { Bot, BotTable, Search, Sitemap } from 'src/types/model';
+import { BotType } from 'src/types/model';
+import SitemapPage from 'pages/SitemapPage.vue';
+import NewsPage from 'pages/NewsPage.vue';
+import EmailBtn from 'components/btn/EmailBtn.vue';
 
+const splitterModel = ref(300);
+
+const selected = ref<string>('');
+const bot = ref<Bot>();
+const data = ref<Search | Sitemap | BotTable>();
+const onUpdateBot = (b: Bot) => {
+  bot.value = b;
+  data.value = undefined;
+};
+const onUpdateData = (d: Search | Sitemap | BotTable) => {
+  bot.value = undefined;
+  data.value = d;
+};
+</script>
 <template>
-  <div class="full-width flex justify-center absolute-center q-gutter-md">
-    <div class="full-width justify-center text-subtitle1">
-      <div class="text-h3 text-center">
-        Create a
-        <q-icon name="mdi-new-box" size="2em" color="green-13" />
-        bot
-      </div>
-    </div>
-    <q-card
-      v-for="b in BotTypes"
-      :key="b"
-      class="cursor-pointer"
-      style="width: 200px"
-      @click="$r.push({ name: 'bot', params: { bot: b } })"
+  <q-page style="height: 100vh">
+    <q-splitter
+      v-model="splitterModel"
+      :limits="[225, 500]"
+      class="full-height"
+      separator-class="bg-grey-9"
+      separator-style="width:.5px;"
+      unit="px"
     >
-      <q-card-section>
-        <q-icon :name="BotTypeIcon(b)" color="primary" size="4em" style="padding: 50px" />
-      </q-card-section>
-      <q-separator />
-      <q-card-actions class="flex justify-center">
-        <div class="q-pa-md text-h6 text-capitalize">{{ b }}</div>
-      </q-card-actions>
-    </q-card>
-  </div>
+      <template #before>
+        <div class="bg-dark full-height">
+          <div class="flex q-pa-md q-gutter-md cursor-pointer" @click="selected = ''">
+            <LogoBtn />
+            <span class="text-h5 text-grey-5 text-weight-medium">ByteLyon</span>
+          </div>
+          <q-separator />
+
+          <div class="bg-dark">
+            <BotTree
+              v-model:selected="selected"
+              @update:bot="onUpdateBot"
+              @update:data="onUpdateData"
+            />
+          </div>
+
+          <div class="absolute-bottom bg-dark">
+            <q-separator />
+            <SettingsBtn />
+            <EmailBtn />
+          </div>
+        </div>
+      </template>
+      <template #after>
+        <HomePage v-if="selected === ''" v-model:selected="selected" />
+        <BotPage v-else-if="bot !== undefined" :bot="bot" />
+        <SitemapPage
+          v-else-if="data !== undefined && (data as Sitemap).Bot.Type === BotType.Sitemap"
+          :data="data as Sitemap"
+        />
+        <NewsPage
+          v-else-if="data !== undefined && (data as BotTable) !== undefined"
+          :table="data as BotTable"
+        />
+      </template>
+    </q-splitter>
+  </q-page>
 </template>

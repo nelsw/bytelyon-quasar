@@ -22,7 +22,6 @@ onMounted(() => {});
           :key="b.ID"
           clickable
           v-ripple
-          active
           active-class="primary"
           :to="`/${b.Type}/${b.ID}`"
         >

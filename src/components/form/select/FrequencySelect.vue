@@ -37,7 +37,7 @@ const props = defineProps<{
 }>();
 
 const model = defineModel<number>({ required: true });
-const option = ref<Option>({ label: 'Hourly', value: hour });
+const option = ref<Option>({ label: 'Once (Now)', value: 1 });
 
 const options = computed(() => {
   const opts: Option[] = [once, hourly, daily, weekly];

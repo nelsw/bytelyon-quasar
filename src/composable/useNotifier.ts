@@ -7,20 +7,29 @@ const useNotifier = () => {
     $log.info(u, s);
     Notify.create({
       message: s,
-      color: 'dark',
+      color: 'green-13',
       icon: 'mdi-check',
-      textColor: 'primary',
+      position: 'top-right',
+      textColor: 'dark',
     });
   }
 
-  const err = (e:Error, s: string) => {
-    $log.err(e, s);
+  const err = (e:Error, ...args: string[]) => {
+    $log.err(e, ...args);
+    let msg = `Failed to ${args[0]};<br>`;
+    if (args.length > 1) {
+      msg += `${args[1]}`;
+    } else {
+      msg += `Contact the ByteLyon tamer.`;
+    }
     Notify.create({
       classes: 'text-center',
       html: true,
-      message: `Failed to ${s};<br>Contact the ByteLyon tamer.`,
+      message: msg,
       icon: 'mdi-alert-circle',
       textColor: 'red-13',
+      position: 'top-right',
+      color: 'dark',
     });
   };
 
