@@ -56,5 +56,3 @@ export const Bots: Bot[] = [
 export const Bot = (t: BotEnum): Bot => Bots.find((b: Bot) => b.type === t) as Bot;
 
 export const SearchColor: string = 'indigo-14';
-export const NewsColor: string = 'indigo-13';
-export const SitemapColor: string = 'indigo-12';

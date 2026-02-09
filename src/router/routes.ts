@@ -3,39 +3,8 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '',
-    component: () => import('layouts/BaseLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: 'index',
-        component: () => import('pages/IndexPage.vue'),
-      },
-      {
-        path: '/settings',
-        name: 'settings',
-        component: () => import('pages/SettingsPage.vue'),
-      },
-      {
-        path: '/:bot(search|sitemap|news)/:id(\\d+)?',
-        name: 'bot',
-        component: () => import('pages/BotPage.vue'),
-      },
-      {
-        path: '/search/:id(\\d+)',
-        name: 'search',
-        component: () => import('pages/SearchPage.vue'),
-      },
-      {
-        path: '/sitemap/:id(\\d+)/:result(\\d+)',
-        name: 'sitemap',
-        component: () => import('pages/SitemapPage.vue'),
-      },
-      {
-        path: '/news/:id(\\d+)',
-        name: 'news',
-        component: () => import('pages/NewsPage.vue'),
-      },
-    ],
+    name: 'index',
+    component: () => import('pages/IndexPage.vue'),
   },
   // Always leave this as last one, but we can also remove it
   {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import MaxDialog from 'components/dialog/MaxDialog.vue';
 import { ref } from 'vue';
-import XTooltip from 'components/tooltip/XTooltip.vue';
 
 const props = defineProps<{
   title?: string;
@@ -24,9 +23,7 @@ const copyText = async () => {
 <template>
   <MaxDialog v-model="model">
     <template v-slot:title>
-      <q-btn icon="mdi-content-copy" @click="copyText" dense flat>
-        <x-tooltip text="Copy <code>json</code> to clipboard" />
-      </q-btn>
+      <q-btn icon="mdi-content-copy" @click="copyText" dense flat />
       <div class="text-h5" v-html="title" />
     </template>
     <template v-slot:content>
