@@ -35,7 +35,7 @@ export interface Page extends Model {
   SearchID: number;
   URL: string;
   Title: string;
-  JSON: unknown;
+  JSON: object | null;
 }
 
 export interface Sitemap extends Model {

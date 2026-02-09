@@ -9,7 +9,7 @@ const useNotifier = () => {
       message: s,
       color: 'dark',
       icon: 'mdi-check',
-      position: 'top-right',
+      position: 'bottom',
       textColor: 'primary',
     });
   }
@@ -28,7 +28,7 @@ const useNotifier = () => {
       message: msg,
       icon: 'mdi-alert-circle',
       textColor: 'red-13',
-      position: 'top-right',
+      position: 'bottom',
       color: 'dark',
     });
   };

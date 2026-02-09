@@ -9,6 +9,7 @@ import DeleteBtn from 'components/btn/DeleteBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
+import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
 
 defineProps<{
   data: Search;
@@ -79,6 +80,17 @@ onMounted(() => {
       <template #top="props">
         <DeleteBtn @click="onDelete" />
         <q-separator vertical spaced inset />
+        <ViewJsonBtn
+          v-if="data.Pages.length > 0 && data?.Pages[0]?.URL.includes('google.com')"
+          :title="`Google SERP json | ${data.Bot.Target}`"
+          :content="data?.Pages[0]?.JSON"
+        />
+        <q-separator
+          v-if="data.Pages.length > 0 && data?.Pages[0]?.URL.includes('google.com')"
+          vertical
+          spaced
+          inset
+        />
         <FilterInput v-model="filter" />
         <div class="absolute-center">
           <span class="text-h5 text-weight-medium">{{ data.Bot.Target }}</span>
