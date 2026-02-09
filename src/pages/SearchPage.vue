@@ -82,7 +82,7 @@ onMounted(() => {
         <q-separator vertical spaced inset />
         <ViewJsonBtn
           v-if="data.Pages.length > 0 && data?.Pages[0]?.URL.includes('google.com')"
-          :title="`Google SERP json | ${data.Bot.Target}`"
+          :title="data?.Pages[0]?.Title"
           :content="data?.Pages[0]?.JSON"
         />
         <q-separator

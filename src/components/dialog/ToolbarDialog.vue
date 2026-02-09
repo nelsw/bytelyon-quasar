@@ -4,6 +4,7 @@ import { ref } from 'vue';
 defineProps<{
   title: string;
   heading?: string;
+  copy?: boolean;
 }>();
 
 const emit = defineEmits<{ copy: [void] }>();
@@ -20,26 +21,33 @@ const maximized = ref(true);
     transition-duration="1000"
   >
     <q-card class="bg-dark text-white">
-      <q-bar>
-        <q-btn icon="mdi-content-copy" label="Copy json to clipboard" @click="emit('copy')" dense flat />
-        <q-space />
+      <q-bar class="flex justify-between">
+        <q-btn
+          v-if="copy"
+          icon="mdi-content-copy"
+          label="Copy json"
+          @click="emit('copy')"
+          dense
+          flat
+        />
         <div class="text-h5" v-html="title" />
-        <q-space />
-        <q-btn
-          dense
-          flat
-          icon="mdi-window-minimize"
-          @click="maximized = false"
-          :disable="!maximized"
-        />
-        <q-btn
-          dense
-          flat
-          icon="mdi-window-maximize"
-          @click="maximized = true"
-          :disable="maximized"
-        />
-        <q-btn dense flat icon="mdi-close" v-close-popup />
+        <div>
+          <q-btn
+            dense
+            flat
+            icon="mdi-window-minimize"
+            @click="maximized = false"
+            :disable="!maximized"
+          />
+          <q-btn
+            dense
+            flat
+            icon="mdi-window-maximize"
+            @click="maximized = true"
+            :disable="maximized"
+          />
+          <q-btn dense flat icon="mdi-close" v-close-popup />
+        </div>
       </q-bar>
 
       <q-card-section v-if="heading">
