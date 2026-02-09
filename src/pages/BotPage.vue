@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Bot} from 'src/types/model';
 import { BotType } from 'src/types/model';
-import TargetInput from 'components/form/input/TargetInput.vue';
-import SubmitBtn from 'components/form/btn/SubmitBtn.vue';
-import FrequencySelect from 'components/form/select/FrequencySelect.vue';
-import BlackListSelect from 'components/form/select/BlackListSelect.vue';
-import { useBotStore } from 'stores/v2/bot-store';
+import TargetInput from 'components/input/TargetInput.vue';
+import SubmitBtn from 'components/btn/SubmitBtn.vue';
+import FrequencySelect from 'components/select/FrequencySelect.vue';
+import BlackListSelect from 'components/select/BlackListSelect.vue';
+import { useBotStore } from 'stores/bot-store';
 import { computed, onMounted, onUpdated, ref } from 'vue';
 
 const props = defineProps<{

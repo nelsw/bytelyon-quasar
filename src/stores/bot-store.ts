@@ -1,149 +1,61 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { type QTreeNode } from 'quasar';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
-export interface Prowler {
-  user_id?: string | undefined;
-  id: string;
-  type: string;
-  prowled?: string | undefined;
-  frequency: number;
-  duration?: number | undefined;
-  blacklist: string[];
-  disabled: boolean;
-}
-const id = 'bot-store';
-const options = {
+import type { Bot, Bots } from 'src/types/model';
+import { useLogger } from 'src/composable/useLogger';
+import useNotifier from 'src/composable/useNotifier';
+import { useNodeStore } from 'stores/node-store';
+
+const $log = useLogger();
+const $notify = useNotifier();
+
+const setup = () => {
+  const $nodes = useNodeStore();
+
+  const model = ref<Bots>([]);
+
+  const Save = async (b: Bot): Promise<void> => {
+    return await api
+      .put(`/bots`, b)
+      .then((res: AxiosResponse<Bot>) =>
+        $notify.ok(res.data, `Bot ${b.CreatedAt > 0 ? 'Updated' : 'Created'}`),
+      )
+      .catch((err: AxiosError<{ error: string }>) => {
+        $notify.err(err, '$bots', err.response?.data?.error || '');
+      })
+      .finally($nodes.Load);
+  };
+
+  const Load = async (): Promise<Bots> => {
+    await api
+      .get<Bots>('/bots')
+      .then((res: AxiosResponse<Bots>) => (model.value = res.status === 200 ? res.data : []))
+      .then(() => $log.info(null, `Bots loaded [${model.value.length}]`))
+      .catch((err: AxiosError) => $log.err(err, 'while loading Bots'));
+    return model.value;
+  };
+
+  const Delete = async (id: number): Promise<void> => {
+    return await api
+      .delete(`/bots/id/${id}`)
+      .then(() => $notify.ok(null, `Bot Deleted`))
+      .catch($log.err)
+      .finally($nodes.Load);
+  };
+
+  return {
+    Save,
+    Load,
+    Delete,
+  };
+};
+
+export const useBotStore = defineStore('bot-store', setup, {
   persist: {
     debug: true,
     storage: sessionStorage,
   },
-};
-
-const botIdx = (s: string): number => {
-  switch (s) {
-    case 'search':
-      return 0;
-    case 'news':
-      return 1;
-    case 'sitemap':
-      return 2;
-    default:
-      return -1;
-  }
-};
-
-const rootNode = (id: string, kids: QTreeNode[]): QTreeNode => {
-  return {
-    id: id,
-    label: id.charAt(0).toUpperCase() + id.substring(1).toLowerCase(),
-    children: kids,
-    lazy: false,
-  };
-};
-
-const setup = () => {
-  const model = ref<QTreeNode[]>([
-    rootNode('search', []),
-    rootNode('news', []),
-    rootNode('sitemap', []),
-  ]);
-
-  const load = async (t: string) => {
-    return await api
-      .get<QTreeNode[]>('/prowler', { params: { type: t } })
-      .then((res: AxiosResponse<QTreeNode[]>) => {
-        model.value[botIdx(t)] = rootNode(t, res.data);
-        console.debug('✅ Nodes Loaded', t, res.data.length);
-        return res.data;
-      })
-      .catch((err: AxiosError) => {
-        console.error(err.response?.statusText);
-        return [] as QTreeNode[];
-      });
-  };
-
-  const loadAll = async () => {
-    const p3 = load('search');
-    const p1 = load('news');
-    const p2 = load('sitemap');
-    return await Promise.all([p1, p2, p3])
-      .then(() => {
-        console.debug('✅ Nodes Loaded');
-        return true;
-      })
-      .catch((err: AxiosError) => {
-        console.error(err);
-        return false;
-      });
-  };
-
-  const find = (type: string, id?: string, date?: string): QTreeNode | null => {
-    const nodes: QTreeNode[] = model.value[botIdx(type)]?.children as QTreeNode[];
-    let node: QTreeNode | null = null;
-    if (id) {
-      node = nodes?.find((n) => n.label === id) as QTreeNode;
-      if (date) {
-        node = node?.children?.find((n) => n.label === date) as QTreeNode;
-      }
-    }
-    return node;
-  };
-
-  // const DeleteNode = async (node: QTreeNode) => {
-  //   return await api
-  //     .delete(`/prowler`, { params: { id: id } })
-  //     .then(() => {
-  //       console.debug(`✅ BotStore#Delete: ${id}`);
-  //       return true;
-  //     })
-  //     .catch((err: AxiosError) => {
-  //       console.error(err);
-  //       return false;
-  //     });
-  // };
-
-  const Delete = async (id: string) => {
-    return await api
-      .delete(`/prowler`, { params: { id: id } })
-      .then(() => {
-        console.debug(`✅ BotStore#Delete: ${id}`);
-        return true;
-      })
-      .catch((err: AxiosError) => {
-        console.debug(`❌ BotStore#Delete: ${id}`);
-        console.error(err);
-        return false;
-      });
-  };
-
-  const Save = async (o: Prowler) => {
-    return await api
-      .put(`/prowler`, o)
-      .then(async (res: AxiosResponse<Prowler>) => {
-        console.debug(`✅ BotStore#Save: ${JSON.stringify(res, null, 2)}`);
-        await load(o.type);
-        return true;
-      })
-      .catch((err: AxiosError) => {
-        console.debug(`BotStore#Save: ${JSON.stringify(err, null, 2)}`);
-        console.error(err);
-        console.error(err.response?.statusText);
-        return false;
-      });
-  };
-
-  return {
-    model,
-    load,
-    find,
-    loadAll,
-    Delete,
-    Save,
-  };
-};
-
-export const useBotStore = defineStore(id, setup, options);
+});
 
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useBotStore, import.meta.hot));

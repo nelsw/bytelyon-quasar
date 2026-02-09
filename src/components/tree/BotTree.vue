@@ -4,7 +4,7 @@ import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import type { Bot, BotTable } from 'src/types/model';
 import FilterInput from 'components/input/FilterInput.vue';
 import { useLogger } from 'src/composable/useLogger';
-import { useNodeStore } from 'stores/v2/node-store';
+import { useNodeStore } from 'stores/node-store';
 
 const emit = defineEmits<{
   'update:bot': [Bot];

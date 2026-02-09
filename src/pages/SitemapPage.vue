@@ -5,7 +5,7 @@ import { onMounted, ref, watch } from 'vue';
 import { csv } from 'src/composable/exportTable';
 import type { Sitemap } from 'src/types/model';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
-import { useBotStore } from 'stores/v2/bot-store';
+import { useBotStore } from 'stores/bot-store';
 import { useRouter } from 'vue-router';
 
 export interface row {

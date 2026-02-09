@@ -6,7 +6,7 @@ import { BotType, NewBot } from 'src/types/model';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { useLogger } from 'src/composable/useLogger';
 import { domain } from 'src/types/base';
-import { useBotStore } from 'stores/v2/bot-store';
+import { useBotStore } from 'stores/bot-store';
 import { Loading } from 'quasar';
 export interface LazyLoadDetails {
   /**

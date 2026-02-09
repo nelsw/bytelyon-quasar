@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNodeStore } from 'stores/v2/node-store';
+import { useNodeStore } from 'stores/node-store';
 
 const $nodes = useNodeStore();
 </script>
