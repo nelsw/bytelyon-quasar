@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed } from 'vue';
 
 interface Option {
   label: string;
@@ -37,7 +37,6 @@ const props = defineProps<{
 }>();
 
 const model = defineModel<number>({ required: true });
-const option = ref<Option>({ label: 'Once (Now)', value: 1 });
 
 const options = computed(() => {
   const opts: Option[] = [once, hourly, daily, weekly];
@@ -46,18 +45,18 @@ const options = computed(() => {
   }
   return opts;
 });
-
-onMounted(() => {
-  if (props.color !== 'green-13') {
-    option.value = toOption(model.value);
-  }
-});
-
-watch(option, () => (model.value = option.value.value));
 </script>
 
 <template>
-  <q-select v-model="option" :color="color" :hint="hint" :options="options" label="Repeats" dense>
+  <q-select
+    :model-value="toOption(model)"
+    :color="color"
+    :hint="hint"
+    :options="options"
+    label="Repeats"
+    dense
+    @update:modelValue="(o: Option) => (model = o.value)"
+  >
     <template #prepend>
       <q-icon name="mdi-clock-outline" :color="color" />
     </template>

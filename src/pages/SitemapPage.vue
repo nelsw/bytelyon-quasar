@@ -4,9 +4,9 @@ import { QInput, type QTableColumn } from 'quasar';
 import { onMounted, ref, watch } from 'vue';
 import { csv } from 'src/composable/exportTable';
 import type { Sitemap } from 'src/types/model';
-import { BotType } from 'src/types/model';
-import { useRouteX } from 'src/composable/useRoutex';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
+import { useBotStore } from 'stores/v2/bot-store';
+import { useRouter } from 'vue-router';
 
 export interface row {
   URL: string;
@@ -27,7 +27,8 @@ const columns: QTableColumn<row>[] = [
   },
 ];
 
-const $x = useRouteX();
+const $router = useRouter();
+const $bots = useBotStore();
 
 const rel = ref<row[]>([]);
 const rem = ref<row[]>([]);
@@ -35,16 +36,20 @@ const rows = ref<row[]>([]);
 const filter = ref<string>('');
 const toggle = ref<boolean>(false);
 const onDelete = async () => {
-  await $x.to({ name: 'bot', params: { bot: BotType.Sitemap } });
+  // todo - fix this; it will delete the bot, and not the result
+  await $bots.Delete(props.data.BotID);
+  await $router.push({name: 'index'});
 };
 
 onMounted(() => {
   rel.value = props.data.Relative.map((URL: string) => {
     return { URL };
   });
-  rem.value = props.data.Remote.map((URL: string) => {
-    return { URL };
-  });
+  if (props.data.Remote !== null) {
+    rem.value = props.data.Remote.map((URL: string) => {
+      return { URL };
+    });
+  }
   rows.value = rel.value;
 });
 watch(toggle, (val: boolean) => {
@@ -101,6 +106,7 @@ watch(toggle, (val: boolean) => {
 
           <q-space />
           <q-toggle
+            v-if="rem.length > 0"
             v-model="toggle"
             checked-icon="mdi-check"
             color="primary"
@@ -111,7 +117,7 @@ watch(toggle, (val: boolean) => {
             size="sm"
             class="q-mr-sm"
           />
-          <q-separator vertical spaced inset />
+          <q-separator v-if="rem.length > 0" vertical spaced inset />
           <q-btn color="primary" dense flat icon="mdi-download" @click="csv(columns, rows)" />
           <q-separator vertical spaced inset />
           <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />

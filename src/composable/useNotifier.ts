@@ -7,10 +7,10 @@ const useNotifier = () => {
     $log.info(u, s);
     Notify.create({
       message: s,
-      color: 'green-13',
+      color: 'dark',
       icon: 'mdi-check',
       position: 'top-right',
-      textColor: 'dark',
+      textColor: 'primary',
     });
   }
 

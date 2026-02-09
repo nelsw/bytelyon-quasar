@@ -12,7 +12,6 @@ export const domain = (url: string) => {
   if (url.startsWith('https://')) {
     url = url.substring(8);
   }
-  console.log(url)
   return url;
 };
 

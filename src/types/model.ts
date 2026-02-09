@@ -38,10 +38,6 @@ export const BotTypeIcon = (b: BotType): string => {
   }
 };
 
-// export interface BotData extends Model {
-//   Bot: Bot;
-// }
-
 export interface Search extends Model {
   Bot: Bot;
   BotID: number;

@@ -11,7 +11,7 @@ const props = defineProps<{
   bot: Bot;
 }>();
 
-const $store = useBotStore();
+const $bots = useBotStore();
 
 const target = ref<string>('');
 const blackList = ref<string[]>([]);
@@ -26,7 +26,7 @@ const onSubmit = async () => {
   b.Target = target.value;
   b.BlackList = blackList.value;
   b.Frequency = frequency.value;
-  await $store.Save(b);
+  await $bots.Save(b);
 };
 
 const onChange = () => {
@@ -80,7 +80,7 @@ onMounted(onChange);
     <div v-else>
       <SubmitBtn :color="color" label="update" />
 <!--      todo - remove from model-->
-      <q-btn class="full-width q-mt-md" label="Delete" color="pink" size="md" outline @click="$store.Delete(bot.ID)"/>
+      <q-btn class="full-width q-mt-md" label="Delete" color="pink" size="md" outline @click="$bots.Delete(bot.ID)"/>
     </div>
   </q-form>
 </template>

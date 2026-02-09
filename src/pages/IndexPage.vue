@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import LogoBtn from 'components/btn/LogoBtn.vue';
 import BotTree from 'components/tree/BotTree.vue';
 import SettingsBtn from 'components/btn/SettingsBtn.vue';
@@ -10,8 +10,10 @@ import { BotType } from 'src/types/model';
 import SitemapPage from 'pages/SitemapPage.vue';
 import NewsPage from 'pages/NewsPage.vue';
 import EmailBtn from 'components/btn/EmailBtn.vue';
+import { useLogger } from 'src/composable/useLogger';
+import RefreshBtn from 'components/btn/RefreshBtn.vue';
 
-const splitterModel = ref(300);
+const splitterModel = ref(350);
 
 const selected = ref<string>('');
 const bot = ref<Bot>();
@@ -24,6 +26,10 @@ const onUpdateData = (d: Search | Sitemap | BotTable) => {
   bot.value = undefined;
   data.value = d;
 };
+const $log = useLogger();
+watch(data, (val) => {
+  $log.debug(val, `index page watch data `);
+});
 </script>
 <template>
   <q-page style="height: 100vh">
@@ -37,9 +43,13 @@ const onUpdateData = (d: Search | Sitemap | BotTable) => {
     >
       <template #before>
         <div class="bg-dark full-height">
-          <div class="flex q-pa-md q-gutter-md cursor-pointer" @click="selected = ''">
-            <LogoBtn />
-            <span class="text-h5 text-grey-5 text-weight-medium">ByteLyon</span>
+          <div class="flex q-pa-md">
+            <div class="flex q-gutter-md no-pointer-events">
+              <LogoBtn />
+              <span class="text-h5 text-grey-5 text-weight-medium">ByteLyon</span>
+            </div>
+            <q-space />
+            <RefreshBtn />
           </div>
           <q-separator />
 
@@ -59,7 +69,7 @@ const onUpdateData = (d: Search | Sitemap | BotTable) => {
         </div>
       </template>
       <template #after>
-        <HomePage v-if="selected === ''" v-model:selected="selected" />
+        <HomePage v-if="bot === undefined && data === undefined" v-model:selected="selected" />
         <BotPage v-else-if="bot !== undefined" :bot="bot" />
         <SitemapPage
           v-else-if="data !== undefined && (data as Sitemap).Bot.Type === BotType.Sitemap"

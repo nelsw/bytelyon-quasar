@@ -4,52 +4,49 @@ import { ref } from 'vue';
 import type { Bot, Bots } from 'src/types/model';
 import { useLogger } from 'src/composable/useLogger';
 import useNotifier from 'src/composable/useNotifier';
+import { useNodeStore } from 'stores/v2/node-store';
 
 const $log = useLogger();
 const $notify = useNotifier();
+
 const setup = () => {
+  const $nodes = useNodeStore();
 
   const model = ref<Bots>([]);
-  interface error {
-    error: string;
-  }
+
   const Save = async (b: Bot): Promise<void> => {
     return await api
       .put(`/bots`, b)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `Bot ${b.CreatedAt > 0 ? 'Updated' : 'Created'}`))
-      .then(Load)
-      .catch((err: AxiosError<error>) => {
-        $notify.err(err, 'Save Bot', err.response?.data?.error || '');
-      });
+      .then((res: AxiosResponse<Bot>) =>
+        $notify.ok(res.data, `Bot ${b.CreatedAt > 0 ? 'Updated' : 'Created'}`),
+      )
+      .catch((err: AxiosError<{ error: string }>) => {
+        $notify.err(err, '$bots', err.response?.data?.error || '');
+      })
+      .finally($nodes.Load);
   };
 
-  const Load = async (): Promise<void> => {
-    return await api
+  const Load = async (): Promise<Bots> => {
+    await api
       .get<Bots>('/bots')
       .then((res: AxiosResponse<Bots>) => (model.value = res.status === 200 ? res.data : []))
       .then(() => $log.info(null, `Bots loaded [${model.value.length}]`))
       .catch((err: AxiosError) => $log.err(err, 'while loading Bots'));
+    return model.value;
   };
 
   const Delete = async (id: number): Promise<void> => {
     return await api
       .delete(`/bots/id/${id}`)
       .then(() => $notify.ok(null, `Bot Deleted`))
-      .catch($log.err);
-  }
-
-  // const Find = (t: BotType, id?: string): Bots | Bot | undefined => {
-  //   const bots:Bots = model.value.filter((b:Bot) => b.Type === t)
-  //   if (id === undefined) return bots;
-  //   return bots.find((b:Bot) => b.ID === id)
-  // };
+      .catch($log.err)
+      .finally($nodes.Load);
+  };
 
   return {
     Save,
     Load,
     Delete,
-    // Find,
-    model,
   };
 };
 

@@ -6,7 +6,8 @@ import { BotType, NewBot } from 'src/types/model';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { useLogger } from 'src/composable/useLogger';
 import { domain } from 'src/types/base';
-
+import { useBotStore } from 'stores/v2/bot-store';
+import { Loading } from 'quasar';
 export interface LazyLoadDetails {
   /**
    * The node to which the new nodes (the children) will be appended
@@ -30,88 +31,71 @@ export interface LazyLoadDetails {
 const $log = useLogger();
 
 const setup = () => {
+  const $bots = useBotStore();
   const searchModel: QTreeNode = reactive({
     id: BotType.Search,
     label: 'Search',
     icon: 'mdi-web',
     children: [],
+    bot: NewBot(BotType.Search),
   });
   const sitemapModel: QTreeNode = reactive({
     id: BotType.Sitemap,
     label: 'Sitemap',
     icon: 'mdi-sitemap',
     children: [],
+    bot: NewBot(BotType.Sitemap),
   });
   const newsModel: QTreeNode = reactive({
     id: BotType.News,
     label: 'News',
     icon: 'mdi-newspaper',
     children: [],
+    bot: NewBot(BotType.News),
   });
 
   const model: QTreeNode[] = reactive([searchModel, sitemapModel, newsModel]);
 
-  const Load = async (): Promise<QTreeNode[]> => {
+  const Load = async (): Promise<void> => {
 
-    model.forEach((node) => node.children=[])
+    Loading.show({ spinnerColor: 'primary' });
+    await new Promise((r) => setTimeout(r, 1000));
+    model.forEach((node) => (node.children = []));
     model.splice(0, 3);
     model.push(searchModel, sitemapModel, newsModel);
 
-    const bots: Bots = await api
-      .get<Bots>('/bots')
-      .then((res: AxiosResponse<Bots>) => {
-        const b: Bots = res.status === 200 ? res.data : [];
-        $log.info(null, `Bots loaded [${b.length}]`);
-        return b;
-      })
-      .catch((err: AxiosError) => {
-        $log.err(err, 'while loading Bots');
-        return [];
-      });
-
-    const nodes: QTreeNode[] = bots.map((bot: Bot): QTreeNode => {
-      return {
-        id: uid(),
-        label: bot.Type === BotType.Sitemap ? domain(bot.Target) : bot.Target,
-        bot: bot,
-        children: [],
-        lazy: true,
-      };
-    });
-
-    for (const node of nodes) {
-      if (node.bot.Type === BotType.Search) {
-        searchModel?.children?.push(node);
-      } else if (node.bot.Type === BotType.Sitemap) {
-        sitemapModel?.children?.push(node);
-      } else if (node.bot.Type === BotType.News) {
-        newsModel?.children?.push(node);
+    await $bots.Load().then((bots: Bots) =>
+      bots.map((bot: Bot): QTreeNode => {
+        return {
+          id: uid(),
+          label: bot.Type === BotType.Sitemap ? domain(bot.Target) : bot.Target,
+          bot: bot,
+          children: [],
+          lazy: true,
+        };
+      }),
+    ).then((nodes: QTreeNode[]) => {
+      for (const node of nodes) {
+        if (node.bot.Type === BotType.Search) {
+          searchModel?.children?.push(node);
+        } else if (node.bot.Type === BotType.Sitemap) {
+          sitemapModel?.children?.push(node);
+        } else if (node.bot.Type === BotType.News) {
+          newsModel?.children?.push(node);
+        }
       }
-    }
-
-    const defaultBotNode = (bt: BotType): QTreeNode => {
-      return {
-        label: 'New',
-        id: uid(),
-        icon: 'mdi-plus',
-        iconColor: 'green-13',
-        bot: NewBot(bt),
-        selectable: false,
-        children: [],
-      };
-    };
-
-    if (searchModel?.children?.length === 0) {
-      searchModel?.children?.push(defaultBotNode(BotType.Search));
-    }
-    if (sitemapModel?.children?.length === 0) {
-      sitemapModel?.children.push(defaultBotNode(BotType.Sitemap));
-    }
-    if (newsModel?.children?.length === 0) {
-      newsModel?.children.push(defaultBotNode(BotType.News));
-    }
-
-    return model;
+      for (const node of model) {
+        if (node?.children?.length === 0) {
+          node?.children?.push({
+            label: 'New',
+            id: uid(),
+            icon: 'mdi-plus',
+            iconColor: 'green-13',
+            selectable: false,
+          });
+        }
+      }
+    }).finally(Loading.hide);
   };
 
   const LazyLoad = async (d: LazyLoadDetails): Promise<void> => {
@@ -123,7 +107,6 @@ const setup = () => {
         return b;
       })
       .then((data: BotData) => {
-
         if (d.node.bot.Type === BotType.News) {
           const groups = Object.groupBy(data as News[], (news: News) =>
             new Date(news.Published).toLocaleDateString(),
@@ -163,16 +146,22 @@ const setup = () => {
       });
   };
 
-
-
-  const test = () => {
+  const DeleteSitemap = () => {
     searchModel.label = 'Search Test';
   };
+
+  const DeleteNewsGroup = () => {
+    searchModel.label = 'Search Test';
+  };
+
+  const test = () => {};
 
   return {
     Load,
     LazyLoad,
     model,
+    DeleteNewsGroup,
+    DeleteSitemap,
     test,
   };
 };
