@@ -53,7 +53,7 @@ const setup = () => {
   };
 };
 
-export const useResultStore = defineStore('result-store', setup, {
+export const useDataStore = defineStore('data-store', setup, {
   persist: {
     debug: true,
     storage: sessionStorage,
@@ -61,5 +61,5 @@ export const useResultStore = defineStore('result-store', setup, {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useResultStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useDataStore, import.meta.hot));
 }

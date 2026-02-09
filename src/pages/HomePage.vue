@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { BotTypeIcon, BotTypes } from 'src/types/model';
-const selected = defineModel<string>('selected');
+import { useNodeStore } from 'stores/node-store';
+import type { Bot } from 'src/types/model';
+
+const emit = defineEmits<{ 'update:bot': [Bot]; }>();
+const $nodes = useNodeStore();
 </script>
 
 <template>
@@ -14,18 +17,18 @@ const selected = defineModel<string>('selected');
         </div>
       </div>
       <q-card
-        v-for="b in BotTypes"
-        :key="b"
+        v-for="node in $nodes.model"
+        :key="node.id"
         class="cursor-pointer"
         style="width: 200px"
-        @click="selected = b"
+        @click="emit('update:bot', node.bot)"
       >
         <q-card-section>
-          <q-icon :name="BotTypeIcon(b)" color="primary" size="4em" style="padding: 50px" />
+          <q-icon :name="node.icon" color="primary" size="4em" style="padding: 50px" />
         </q-card-section>
         <q-separator />
         <q-card-actions class="flex justify-center">
-          <div class="q-pa-md text-h6 text-capitalize">{{ b }}</div>
+          <div class="q-pa-md text-h6 text-capitalize">{{ node.id }}</div>
         </q-card-actions>
       </q-card>
     </div>

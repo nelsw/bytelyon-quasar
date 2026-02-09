@@ -46,9 +46,9 @@ watch(filter, (val) => {
 </script>
 
 <template>
-  <FilterInput v-model="filter" />
+  <FilterInput v-model="filter" class="q-pt-md q-px-md" />
   <q-separator inset />
-  <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+  <transition appear  enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
     <q-tree
       v-if="!loading"
       ref="my-tree"

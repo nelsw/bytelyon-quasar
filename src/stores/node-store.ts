@@ -1,32 +1,25 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
-import { type QTreeNode, uid } from 'quasar';
+import { Loading, type QTreeLazyLoadParams, type QTreeNode, uid } from 'quasar';
 import type { Bot, BotData, BotDatum, Bots, News } from 'src/types/model';
-import { BotType, NewBot } from 'src/types/model';
+import { BotType } from 'src/types/model';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { useLogger } from 'src/composable/useLogger';
 import { domain } from 'src/types/base';
 import { useBotStore } from 'stores/bot-store';
-import { Loading } from 'quasar';
-export interface LazyLoadDetails {
-  /**
-   * The node to which the new nodes (the children) will be appended
-   */
-  node: QTreeNode;
-  /**
-   * The key of the node getting the newly loaded child nodes
-   */
-  key: string;
-  /**
-   * The callback to be carried out when the loading is successful
-   * @param children Array of nodes
-   */
-  done: (children?: readonly QTreeNode[]) => void;
-  /**
-   * The callback to be carried out should the loading fails
-   */
-  fail: () => void;
-}
+
+export const NewBot = <T = BotType>(t: T): Bot<T> => {
+  return {
+    ID: 0,
+    CreatedAt: 0,
+    UpdatedAt: 0,
+    DeletedAt: null,
+    Type: t,
+    Frequency: 1,
+    Target: '',
+    BlackList: [],
+  };
+};
 
 const $log = useLogger();
 
@@ -57,48 +50,52 @@ const setup = () => {
   const model: QTreeNode[] = reactive([searchModel, sitemapModel, newsModel]);
 
   const Load = async (): Promise<void> => {
-
     Loading.show({ spinnerColor: 'primary' });
     await new Promise((r) => setTimeout(r, 1000));
+
     model.forEach((node) => (node.children = []));
     model.splice(0, 3);
     model.push(searchModel, sitemapModel, newsModel);
 
-    await $bots.Load().then((bots: Bots) =>
-      bots.map((bot: Bot): QTreeNode => {
-        return {
-          id: uid(),
-          label: bot.Type === BotType.Sitemap ? domain(bot.Target) : bot.Target,
-          bot: bot,
-          children: [],
-          lazy: true,
-        };
-      }),
-    ).then((nodes: QTreeNode[]) => {
-      for (const node of nodes) {
-        if (node.bot.Type === BotType.Search) {
-          searchModel?.children?.push(node);
-        } else if (node.bot.Type === BotType.Sitemap) {
-          sitemapModel?.children?.push(node);
-        } else if (node.bot.Type === BotType.News) {
-          newsModel?.children?.push(node);
-        }
-      }
-      for (const node of model) {
-        if (node?.children?.length === 0) {
-          node?.children?.push({
-            label: 'New',
+    await $bots
+      .Load()
+      .then((bots: Bots) =>
+        bots.map((bot: Bot): QTreeNode => {
+          return {
             id: uid(),
-            icon: 'mdi-plus',
-            iconColor: 'green-13',
-            selectable: false,
-          });
+            label: bot.Type === BotType.Sitemap ? domain(bot.Target) : bot.Target,
+            bot: bot,
+            children: [],
+            lazy: true,
+          };
+        }),
+      )
+      .then((nodes: QTreeNode[]) => {
+        for (const node of nodes) {
+          if (node.bot.Type === BotType.Search) {
+            searchModel?.children?.push(node);
+          } else if (node.bot.Type === BotType.Sitemap) {
+            sitemapModel?.children?.push(node);
+          } else if (node.bot.Type === BotType.News) {
+            newsModel?.children?.push(node);
+          }
         }
-      }
-    }).finally(Loading.hide);
+        for (const node of model) {
+          if (node?.children?.length === 0) {
+            node?.children?.push({
+              label: 'New',
+              id: uid(),
+              icon: 'mdi-plus',
+              iconColor: 'green-13',
+              selectable: false,
+            });
+          }
+        }
+      })
+      .finally(Loading.hide);
   };
 
-  const LazyLoad = async (d: LazyLoadDetails): Promise<void> => {
+  const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
     return await api
       .get<BotData>(`/${d.node.bot.Type}/bot/${d.node.bot.ID}`)
       .then((res: AxiosResponse<BotData>) => {
@@ -107,37 +104,42 @@ const setup = () => {
         return b;
       })
       .then((data: BotData) => {
-        if (d.node.bot.Type === BotType.News) {
-          const groups = Object.groupBy(data as News[], (news: News) =>
-            new Date(news.Published).toLocaleDateString(),
-          );
-
-          return Object.entries(groups).map((value) => {
-            return {
-              id: uid(),
-              label: value[0],
-              data: {
-                Bot: d.node.bot,
-                rows: value[1] ?? [],
-              },
-            };
-          });
+        switch (d.node.bot.Type) {
+          /*
+              Search & Sitemap
+           */
+          case BotType.Search:
+          case BotType.Sitemap:
+            return data.map((d: BotDatum) => {
+              return {
+                id: uid(),
+                label: new Date(d.CreatedAt * 1000).toLocaleString(),
+                data: d,
+              };
+            });
+          /*
+                News
+             */
+          case BotType.News:
+            return Object.entries(
+              Object.groupBy(data as News[], (news: News) =>
+                new Date(news.Published).toLocaleDateString(),
+              ),
+            ).map((value) => {
+              return {
+                id: uid(),
+                label: value[0],
+                data: {
+                  Bot: d.node.bot,
+                  rows: value[1] ?? [],
+                },
+              };
+            });
         }
-
-        if (d.node.bot.Type === BotType.Sitemap) {
-          return data.map((d: BotDatum) => {
-            return {
-              id: uid(),
-              label: new Date(d.CreatedAt * 1000).toLocaleString(),
-              data: d,
-            };
-          });
-        }
-
         return [];
       })
       .then((nodes: QTreeNode[]) => {
-        $log.debug(nodes, `LazyLoad ${d.key}`);
+        $log.debug(null, `LazyLoad ${d.key} [${nodes.length}]`);
         d.done(nodes);
       })
       .catch((err: AxiosError) => {

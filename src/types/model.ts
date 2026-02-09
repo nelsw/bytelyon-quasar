@@ -25,19 +25,6 @@ export const enum BotType {
   News = 'news',
 }
 
-export const BotTypes = [BotType.Search, BotType.Sitemap, BotType.News];
-
-export const BotTypeIcon = (b: BotType): string => {
-  switch (b) {
-    case BotType.Search:
-      return 'mdi-web';
-    case BotType.Sitemap:
-      return 'mdi-sitemap';
-    case BotType.News:
-      return 'mdi-newspaper';
-  }
-};
-
 export interface Search extends Model {
   Bot: Bot;
   BotID: number;
@@ -45,10 +32,9 @@ export interface Search extends Model {
 }
 
 export interface Page extends Model {
+  SearchID: number;
   URL: string;
   Title: string;
-  IMG: string;
-  HTML: string;
   JSON: unknown;
 }
 
@@ -71,15 +57,4 @@ export interface News extends Model {
   Description: string;
 }
 
-export const NewBot = <T = BotType>(t:T): Bot<T> => {
-  return {
-    ID: 0,
-    CreatedAt: 0,
-    UpdatedAt: 0,
-    DeletedAt: null,
-    Type: t,
-    Frequency: 1,
-    Target: '',
-    BlackList: [],
-  };
-};
+

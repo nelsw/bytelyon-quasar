@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { QTableColumn } from 'quasar';
-import { QInput } from 'quasar';
 import type { BotTable } from 'src/types/model';
 import { type News } from 'src/types/model';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { onMounted, ref } from 'vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
+import FilterInput from 'components/input/FilterInput.vue';
+import DeleteBtn from 'components/btn/DeleteBtn.vue';
+import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 
 defineProps<{
   table: BotTable;
@@ -17,6 +19,13 @@ const columns: QTableColumn<News>[] = [
     label: 'ID',
     field: 'ID',
     align: 'left',
+  },
+  {
+    name: 'Open',
+    label: 'Open',
+    field: 'URL',
+    align: 'center',
+    style: 'width: 0;',
   },
   {
     name: 'Published',
@@ -88,30 +97,9 @@ onMounted(() => {
       rowsPerPageLabel="Articles per page"
     >
       <template #top="props">
-        <q-btn
-          :color="`${selected.length > 0 ? 'pink-13' : 'grey-9'}`"
-          dense
-          flat
-          :icon="`mdi-delete${selected.length === 0 ? '-outline' : ''}`"
-          :disable="selected.length === 0"
-          @click="onDelete"
-        />
+        <DeleteBtn :disable="selected.length === 0" @click="onDelete" />
         <q-separator vertical spaced inset />
-        <q-input
-          ref="my-input"
-          v-model="filter"
-          color="primary"
-          placeholder="Filter"
-          autofocus
-          clearable
-          clear-icon="mdi-close"
-          dense
-          borderless
-        >
-          <template #prepend>
-            <q-icon name="mdi-filter-variant" color="primary" />
-          </template>
-        </q-input>
+        <FilterInput :filter="filter" />
         <div class="absolute-center">
           <span class="text-h5 text-weight-medium">{{ table.Bot.Target }}</span>
           <span v-if="table.rows.length > 0" class="text-body2 q-ml-sm">{{
@@ -119,24 +107,7 @@ onMounted(() => {
           }}</span>
         </div>
         <q-space />
-        <q-btn flat dense icon="mdi-view-column-outline" color="primary">
-          <q-menu>
-            <q-list class="my-list" v-for="k in columnNames" :key="k">
-              <q-item clickable v-close-popup dense>
-                <q-item-section>
-                  <q-checkbox
-                    :val="k"
-                    :label="k"
-                    color="primary"
-                    v-model="visibleCols"
-                    checked-icon="mdi-eye-outline"
-                    unchecked-icon="mdi-eye-off-outline"
-                  />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
+        <ColumnsBtn v-model="visibleCols" :names="columnNames" />
         <q-separator vertical spaced inset />
         <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
       </template>
@@ -147,7 +118,6 @@ onMounted(() => {
               <q-checkbox v-model="props.selected" size="xs" color="pink" dense />
             </div>
           </q-th>
-          <q-th>Open</q-th>
           <q-th v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.label }}
           </q-th>
@@ -157,16 +127,11 @@ onMounted(() => {
         <q-tr :props="props">
           <q-td auto-width>
             <div class="flex items-center q-ml-sm">
-              <q-checkbox v-model="props.selected" size="xs" color="pink" dense />
-            </div>
-          </q-td>
-          <q-td auto-width>
-            <div class="flex items-center">
-              <OpenInNewBtn :url="props.row.URL" />
+              <q-checkbox v-model="props.selected" size="xs" color="pink-13" dense />
             </div>
           </q-td>
           <q-td v-for="col in props.cols" :key="col.name" :props="props" auto-width>
-            <span v-if="col.name === 'Published'">{{ col.value }}</span>
+            <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" />
             <span v-else>{{ col.value }}</span>
           </q-td>
         </q-tr>

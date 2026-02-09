@@ -6,7 +6,7 @@ const model = defineModel<string>()
 <template>
   <q-input
     ref="my-input"
-    class="q-pt-md q-px-md"
+
     v-model="model"
     color="primary"
     placeholder="Filter"

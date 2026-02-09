@@ -6,12 +6,12 @@ const model = defineModel<boolean>({ default: false });
 <template>
   <q-dialog
     v-model="model"
-    persistent
     transition-show="slide-up"
     transition-hide="slide-down"
+    transition-duration="500"
     full-width
   >
-    <q-card class="my-card text-white" style="width: 700px; max-width: 80vw">
+    <q-card class="my-card text-white" style="width: 500px; max-width: 80vw">
       <q-bar>
         <slot name="title" />
 

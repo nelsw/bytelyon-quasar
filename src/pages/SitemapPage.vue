@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
-import { QInput, type QTableColumn } from 'quasar';
+import { type QTableColumn } from 'quasar';
 import { onMounted, ref, watch } from 'vue';
 import { csv } from 'src/composable/exportTable';
 import type { Sitemap } from 'src/types/model';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import { useBotStore } from 'stores/bot-store';
 import { useRouter } from 'vue-router';
+import FilterInput from 'components/input/FilterInput.vue';
+import DeleteBtn from 'components/btn/DeleteBtn.vue';
 
 export interface row {
   URL: string;
@@ -18,12 +20,17 @@ const props = defineProps<{
 
 const columns: QTableColumn<row>[] = [
   {
+    name: 'Open',
+    label: 'Open',
+    field: 'URL',
+    align: 'center',
+    style: 'width: 0;',
+  },
+  {
     name: 'URL',
     label: 'URL',
     field: 'URL',
     align: 'left',
-    style: 'width: 0;',
-    sortable: true,
   },
 ];
 
@@ -38,7 +45,7 @@ const toggle = ref<boolean>(false);
 const onDelete = async () => {
   // todo - fix this; it will delete the bot, and not the result
   await $bots.Delete(props.data.BotID);
-  await $router.push({name: 'index'});
+  await $router.push({ name: 'index' });
 };
 
 onMounted(() => {
@@ -78,23 +85,10 @@ watch(toggle, (val: boolean) => {
       bordered
     >
       <template #top="props">
-        <q-btn color="pink" dense flat icon="mdi-delete" @click="onDelete" />
+        <DeleteBtn @click="onDelete" />
         <q-separator vertical spaced inset />
+        <FilterInput :filter="filter" />
         <div class="flex col-grow items-center">
-          <q-input
-            ref="my-input"
-            v-model="filter"
-            color="primary"
-            placeholder="Filter"
-            dense
-            autofocus
-            clearable
-            borderless
-          >
-            <template #prepend>
-              <q-icon name="mdi-filter-variant" color="primary" />
-            </template>
-          </q-input>
           <div class="absolute-center">
             <span class="text-h5 text-weight-medium">{{ data.Domain }}</span>
             <span v-if="data.CreatedAt">
@@ -103,41 +97,30 @@ watch(toggle, (val: boolean) => {
               }}</span>
             </span>
           </div>
-
-          <q-space />
-          <q-toggle
-            v-if="rem.length > 0"
-            v-model="toggle"
-            checked-icon="mdi-check"
-            color="primary"
-            left-label
-            label="External URLs"
-            unchecked-icon="mdi-close"
-            dense
-            size="sm"
-            class="q-mr-sm"
-          />
-          <q-separator v-if="rem.length > 0" vertical spaced inset />
-          <q-btn color="primary" dense flat icon="mdi-download" @click="csv(columns, rows)" />
-          <q-separator vertical spaced inset />
-          <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
         </div>
-      </template>
-      <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th>Open</q-th>
-          <q-th v-for="col in props.cols" :key="col.name" :props="props">
-            {{ col.label }}
-          </q-th>
-        </q-tr>
+        <q-space />
+        <q-toggle
+          v-if="rem.length > 0"
+          v-model="toggle"
+          checked-icon="mdi-check"
+          color="primary"
+          left-label
+          label="External URLs"
+          unchecked-icon="mdi-close"
+          dense
+          size="sm"
+          class="q-mr-sm"
+        />
+        <q-separator v-if="rem.length > 0" vertical spaced inset />
+        <q-btn color="primary" dense flat icon="mdi-download" @click="csv(columns, rows)" />
+        <q-separator vertical spaced inset />
+        <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
       </template>
       <template #body="props">
         <q-tr :props="props">
-          <q-td auto-width>
-            <OpenInNewBtn :url="props.row.URL" color="primary" />
-          </q-td>
-          <q-td>
-            {{ props.row.URL }}
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" />
+            <span v-else>{{ col.value }}</span>
           </q-td>
         </q-tr>
       </template>

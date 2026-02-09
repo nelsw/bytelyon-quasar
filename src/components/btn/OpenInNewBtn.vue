@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 defineProps<{
   url: string;
   color?: string | undefined;
@@ -7,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-  <q-btn  flat target="_blank" :href="url" no-caps size="sm">
+  <q-btn flat target="_blank" :href="url" no-caps size="sm" color="primary" dense>
     <q-icon name="mdi-open-in-new" color="primary" size="xs" />
   </q-btn>
 </template>
