@@ -14,14 +14,26 @@ const setup = () => {
 
   const model = ref<Bots>([]);
 
-  const Save = async (b: Bot): Promise<void> => {
+  const Save = async (b: Bot): Promise<void> => (b.ID < 1 ? Create(b) : Update(b));
+
+  const Create = async (b: Bot): Promise<void> => {
     return await api
-      .put(`/bots`, b)
+      .post(`/bots`, b)
       .then((res: AxiosResponse<Bot>) =>
-        $notify.ok(res.data, `Bot ${b.CreatedAt > 0 ? 'Updated' : 'Created'}`),
+        $notify.ok(res.data, `Bot Created`),
       )
       .catch((err: AxiosError<{ error: string }>) => {
-        $notify.err(err, '$bots', err.response?.data?.error || '');
+        $notify.err(err, `Create Bot`, err.response?.data?.error || '');
+      })
+      .finally($nodes.Load);
+  };
+
+  const Update = async (b: Bot): Promise<void> => {
+    return await api
+      .put(`/bots`, b)
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `Bot Updated`))
+      .catch((err: AxiosError<{ error: string }>) => {
+        $notify.err(err, `Update Bot`, err.response?.data?.error || '');
       })
       .finally($nodes.Load);
   };

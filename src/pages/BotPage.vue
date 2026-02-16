@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Bot} from 'src/types/model';
+import type { Bot } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import TargetInput from 'components/input/TargetInput.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
@@ -25,15 +25,18 @@ const isUpdate = computed(() => props.bot.CreatedAt > 0);
 const onSubmit = async () => {
   const b: Bot = props.bot;
   b.Target = target.value;
+  if (b.Type === BotType.Sitemap && !b.Target.startsWith('https://')) {
+    b.Target = `https://${b.Target}`;
+  }
   b.BlackList = blackList.value;
   b.Frequency = frequency.value;
   await $bots.Save(b);
 };
 
 const onChange = () => {
-  target.value = props.bot.Target;
-  blackList.value = props.bot.BlackList;
-  frequency.value = props.bot.Frequency;
+  target.value = props.bot.CreatedAt > 0 ? props.bot.Target : '';
+  blackList.value = props.bot.CreatedAt > 0 ? props.bot.BlackList : [];
+  frequency.value = props.bot.CreatedAt > 0 ? props.bot.Frequency : 1;
 };
 
 onUpdated(onChange);

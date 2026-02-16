@@ -36,9 +36,10 @@ const hint = computed(() => {
     v-model="model"
     :autofocus="!disable"
     :color="color"
+    :disable="disable"
     :hint="hint"
     :label="label"
-    :disable="disable"
+    :prefix="label === 'URL' && !disable ? 'https://' : ''"
     class="text-body1"
     dense
   >

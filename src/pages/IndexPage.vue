@@ -30,7 +30,7 @@ const onUpdateData = (d: Search | Sitemap | BotTable) => {
   <q-page style="height: 100vh">
     <q-splitter
       v-model="splitterModel"
-      :limits="[225, 500]"
+      :limits="[250, 500]"
       class="full-height"
       separator-class="bg-grey-9"
       separator-style="width:.5px;"
