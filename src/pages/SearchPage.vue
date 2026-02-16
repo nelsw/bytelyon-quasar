@@ -95,7 +95,7 @@ onMounted(() => {
         <div class="absolute-center">
           <span class="text-h5 text-weight-medium">{{ data.Bot.Target }}</span>
           <span class="text-body2 q-ml-sm">{{
-            new Date(data.CreatedAt * 1000).toLocaleString()
+            new Date(data.CreatedAt || '').toLocaleString()
           }}</span>
         </div>
         <q-space />

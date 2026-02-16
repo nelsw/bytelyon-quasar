@@ -1,8 +1,7 @@
 export interface Model {
   ID: number;
-  CreatedAt: number;
-  UpdatedAt: number;
-  DeletedAt: number | null;
+  CreatedAt: string | null;
+  UpdatedAt: string | null;
 }
 
 export type Bots = Bot[];

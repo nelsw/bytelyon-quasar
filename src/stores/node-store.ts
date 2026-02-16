@@ -11,9 +11,8 @@ import { useBotStore } from 'stores/bot-store';
 export const NewBot = <T = BotType>(t: T): Bot<T> => {
   return {
     ID: 0,
-    CreatedAt: 0,
-    UpdatedAt: 0,
-    DeletedAt: null,
+    CreatedAt: null,
+    UpdatedAt: null,
     Type: t,
     Frequency: 1,
     Target: '',
@@ -113,7 +112,7 @@ const setup = () => {
             return data.map((d: BotDatum) => {
               return {
                 id: uid(),
-                label: new Date(d.CreatedAt * 1000).toLocaleString(),
+                label: new Date(d.CreatedAt || '').toLocaleString(),
                 data: d,
               };
             });

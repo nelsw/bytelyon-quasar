@@ -93,7 +93,7 @@ watch(toggle, (val: boolean) => {
             <span class="text-h5 text-weight-medium">{{ data.Domain }}</span>
             <span v-if="data.CreatedAt">
               <span class="text-body2 q-ml-sm">{{
-                new Date(data.CreatedAt * 1000).toLocaleString()
+                new Date(data.CreatedAt).toLocaleString()
               }}</span>
             </span>
           </div>
