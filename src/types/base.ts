@@ -36,5 +36,3 @@ export const path = (url: string) => {
   }
   return url.substring(slash, query);
 };
-
-export const SearchColor: string = 'indigo-14';

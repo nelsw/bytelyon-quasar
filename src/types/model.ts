@@ -56,4 +56,8 @@ export interface News extends Model {
   Description: string;
 }
 
+export interface SitemapRow extends Record<string, unknown>{
+  URL: string;
+  IsExternal: boolean;
+}
 
