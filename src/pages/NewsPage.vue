@@ -8,8 +8,9 @@ import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import FilterInput from 'components/input/FilterInput.vue';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
+import { useDataStore } from 'stores/data-store';
 
-defineProps<{
+const props = defineProps<{
   table: BotTable;
 }>();
 
@@ -57,14 +58,13 @@ const columns: QTableColumn<News>[] = [
 
 const selected = ref<News[]>([]);
 const filter = ref<string>('');
+const $store = useDataStore();
 
 const onDelete = async () => {
-  // const arr = await $resStore.DeleteAll(
-  //   BotType.News,
-  //   selected.value.map((i: News) => i.ID),
-  // );
-  // props.rows.value = rows.value.filter((i: News) => arr.indexOf(i.ID) === -1);
-  // selected.value = selected.value.filter((i: News) => arr.indexOf(i.ID) !== -1);
+  await $store.DeleteAll(
+    props.table.Bot.Type,
+    selected.value.map((i: News) => i.ID),
+  );
 };
 
 const columnNames = ref<string[]>([]);
@@ -139,4 +139,3 @@ onMounted(() => {
     </q-table>
   </q-page>
 </template>
-<style lang="scss"></style>

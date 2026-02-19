@@ -5,10 +5,10 @@ import { onMounted, ref, watch } from 'vue';
 import { csv } from 'src/composable/exportTable';
 import type { Sitemap } from 'src/types/model';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
-import { useBotStore } from 'stores/bot-store';
 import { useRouter } from 'vue-router';
 import FilterInput from 'components/input/FilterInput.vue';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
+import { useDataStore } from 'stores/data-store';
 
 export interface row {
   URL: string;
@@ -35,16 +35,16 @@ const columns: QTableColumn<row>[] = [
 ];
 
 const $router = useRouter();
-const $bots = useBotStore();
+const $store = useDataStore();
 
 const rel = ref<row[]>([]);
 const rem = ref<row[]>([]);
 const rows = ref<row[]>([]);
 const filter = ref<string>('');
 const toggle = ref<boolean>(false);
+
 const onDelete = async () => {
-  // todo - fix this; it will delete the bot, and not the result
-  await $bots.Delete(props.data.BotID);
+  await $store.Delete(props.data.Bot.Type, props.data.ID, true)
   await $router.push({ name: 'index' });
 };
 
@@ -127,5 +127,3 @@ watch(toggle, (val: boolean) => {
     </q-table>
   </q-page>
 </template>
-
-<style scoped lang="scss"></style>

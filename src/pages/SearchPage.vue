@@ -10,8 +10,9 @@ import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
+import { useDataStore } from 'stores/data-store';
 
-defineProps<{
+const props = defineProps<{
   data: Search;
 }>();
 
@@ -52,7 +53,10 @@ const filter = ref<string>('');
 const columnNames = ref<string[]>([]);
 const visibleCols = ref<string[]>([]);
 
-const onDelete = async () => {};
+const $store = useDataStore();
+const onDelete = async () => {
+  await $store.Delete(props.data.Bot.Type, props.data.ID, true)
+};
 
 onMounted(() => {
   columnNames.value = columns.map((col) => col.name);
