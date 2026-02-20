@@ -48,20 +48,22 @@ watch(filter, (val) => {
 <template>
   <FilterInput v-model="filter" class="q-pt-md q-px-md" />
   <q-separator inset />
-  <transition appear  enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-    <q-tree
-      v-if="!loading"
-      ref="my-tree"
-      class="q-pa-md"
-      :nodes="$nodes.model"
-      :filter="filter"
-      node-key="id"
-      selected-color="primary"
-      v-model:selected="selected"
-      accordion
-      no-selection-unset
-      @lazy-load="$nodes.LazyLoad"
-    />
+  <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+    <q-scroll-area style="height: calc(100% - 7vh);">
+      <q-tree
+        v-if="!loading"
+        ref="my-tree"
+        class="q-pa-md"
+        :nodes="$nodes.model"
+        :filter="filter"
+        node-key="id"
+        selected-color="primary"
+        v-model:selected="selected"
+        accordion
+        no-selection-unset
+        @lazy-load="$nodes.LazyLoad"
+      />
+    </q-scroll-area>
   </transition>
 </template>
 

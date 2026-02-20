@@ -1,14 +1,11 @@
 <template>
   <q-btn
     flat
-    square
+    round
+    dense
     :to="{ name: 'settings' }"
     color="dark"
     icon="mdi-cog"
     text-color="grey-8"
-    label="Settings"
-    class="full-width"
-    align="left"
-    no-caps
   />
 </template>

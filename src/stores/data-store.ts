@@ -43,6 +43,9 @@ const setup = () => {
         ok.push(id);
       }
     }
+    if (ok.length === ids.length) {
+      $notify.ok(null, `Delete Successful`);
+    }
     return ok;
   };
 

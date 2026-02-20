@@ -1,14 +1,3 @@
 <template>
-  <q-btn
-    flat
-    square
-    href="mailto:Kowalski7012@gmail.com"
-    color="dark"
-    icon="mdi-email"
-    text-color="grey-8"
-    label="Contact"
-    class="full-width"
-    align="left"
-    no-caps
-  />
+  <q-btn text-color="grey-8" href="mailto:Kowalski7012@gmail.com"  icon="mdi-email" />
 </template>

@@ -54,7 +54,6 @@ const options = computed(() => {
     :hint="hint"
     :options="options"
     label="Repeats"
-    dense
     hide-dropdown-icon
     @update:modelValue="(o: Option) => (model = o.value)"
   >

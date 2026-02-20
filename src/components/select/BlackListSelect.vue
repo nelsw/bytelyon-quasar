@@ -26,7 +26,6 @@ const hint = computed(() => {
     input-debounce="0"
     label="Exclusions"
     new-value-mode="add-unique"
-    dense
     hide-dropdown-icon
     multiple
     use-chips

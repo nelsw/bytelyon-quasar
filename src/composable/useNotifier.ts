@@ -12,6 +12,7 @@ const useNotifier = () => {
       position: 'bottom',
       textColor: 'primary',
     });
+    return true;
   }
 
   const err = (e:Error, ...args: string[]) => {

@@ -17,7 +17,10 @@ export function useLogger() {
   const debug = (u: unknown, ...args: string[]) => console.debug(build(Symbol.bug, u, ...args));
   const info = (u: unknown, ...args: string[]) => console.info(build(Symbol.info, u, ...args));
   const warn = (u: unknown, ...args: string[]) => console.warn(build(Symbol.warn, u, ...args));
-  const err = (e: Error, ...args: string[]) => console.warn(build(Symbol.err, e, ...args));
+  const err = (e: Error, ...args: string[]) => {
+    console.warn(build(Symbol.err, e, ...args));
+    return false;
+  };
 
   return {
     debug,

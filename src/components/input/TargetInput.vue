@@ -41,7 +41,6 @@ const hint = computed(() => {
     :label="label"
     :prefix="label === 'URL' && !disable ? 'https://' : ''"
     class="text-body1"
-    dense
   >
     <template #prepend>
       <q-icon name="mdi-help-circle-outline" :color="color" />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DeleteBtn from 'components/btn/DeleteBtn.vue';
+import TrashBtn from 'components/btn/TrashBtn.vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import FilterInput from 'components/input/FilterInput.vue';
@@ -63,7 +63,7 @@ const onExport = () => {
     flat
   >
     <template #top="props">
-      <DeleteBtn @click="emit('delete')" />
+      <TrashBtn @click="emit('delete')" />
       <q-separator vertical spaced inset />
       <FilterInput :filter="filter" />
       <div class="flex col-grow items-center">

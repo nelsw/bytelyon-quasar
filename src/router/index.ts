@@ -6,7 +6,6 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
-import { capitalize } from 'src/types/base';
 
 /*
  * If not building with SSR mode, you can
@@ -33,17 +32,6 @@ export default defineRouter(async function () {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
-
-  Router.beforeEach((to) => {
-    if (to.name === 'index') {
-      document.title = 'ByteLyon';
-    } else if (to.name === 'settings') {
-      document.title = 'ByteLyon • Settings';
-    } else if (to.params.bot !== undefined) {
-      document.title = `ByteLyon • ${capitalize(to.params.bot as string)}`;
-    }
-  });
-
 
   return new Promise((resolve) => resolve(Router));
 });

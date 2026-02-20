@@ -14,9 +14,9 @@ const setup = () => {
 
   const model = ref<Bots>([]);
 
-  const Save = async (b: Bot): Promise<void> => (b.ID < 1 ? Create(b) : Update(b));
+  const Save = async (b: Bot): Promise<boolean | void> => (b.ID < 1 ? Create(b) : Update(b));
 
-  const Create = async (b: Bot): Promise<void> => {
+  const Create = async (b: Bot): Promise<boolean | void> => {
     return await api
       .post(`/bots`, b)
       .then((res: AxiosResponse<Bot>) =>
@@ -28,7 +28,7 @@ const setup = () => {
       .finally($nodes.Load);
   };
 
-  const Update = async (b: Bot): Promise<void> => {
+  const Update = async (b: Bot): Promise<boolean | void> => {
     return await api
       .put(`/bots`, b)
       .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `Bot Updated`))
@@ -47,7 +47,7 @@ const setup = () => {
     return model.value;
   };
 
-  const Delete = async (id: number): Promise<void> => {
+  const Delete = async (id: number): Promise<boolean> => {
     return await api
       .delete(`/bots/id/${id}`)
       .then(() => $notify.ok(null, `Bot Deleted`))

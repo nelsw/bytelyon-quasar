@@ -6,13 +6,11 @@ import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { onMounted, ref } from 'vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import FilterInput from 'components/input/FilterInput.vue';
-import DeleteBtn from 'components/btn/DeleteBtn.vue';
+import TrashBtn from 'components/btn/TrashBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import { useDataStore } from 'stores/data-store';
 
-const props = defineProps<{
-  table: BotTable;
-}>();
+const model = defineModel<BotTable>({ required: true });
 
 const columns: QTableColumn<News>[] = [
   {
@@ -61,10 +59,13 @@ const filter = ref<string>('');
 const $store = useDataStore();
 
 const onDelete = async () => {
-  await $store.DeleteAll(
-    props.table.Bot.Type,
+  const ok = await $store.DeleteAll(
+    model.value.Bot.Type,
     selected.value.map((i: News) => i.ID),
   );
+  if (!ok) return;
+  model.value.rows = model.value.rows.filter((n) => !selected.value.includes(n as News)) as News[];
+  selected.value = [];
 };
 
 const columnNames = ref<string[]>([]);
@@ -72,7 +73,9 @@ const visibleCols = ref<string[]>([]);
 
 onMounted(() => {
   columnNames.value = columns.map((col) => col.name);
-  visibleCols.value = columnNames.value.filter((s) => s !== 'ID');
+  visibleCols.value = columnNames.value
+    .filter((s) => s !== 'ID')
+    .filter((s) => s !== 'Description');
 });
 </script>
 
@@ -82,7 +85,7 @@ onMounted(() => {
       v-model:selected="selected"
       :columns="columns"
       :filter="filter"
-      :rows="table.rows"
+      :rows="model.rows"
       :rows-per-page-options="[20, 50, 100, 0]"
       :pagination="{ sortBy: 'Published', descending: true }"
       row-key="ID"
@@ -97,13 +100,13 @@ onMounted(() => {
       rowsPerPageLabel="Articles per page"
     >
       <template #top="props">
-        <DeleteBtn :disable="selected.length === 0" @click="onDelete" />
+        <TrashBtn :disable="selected.length === 0" @click="onDelete" />
         <q-separator vertical spaced inset />
         <FilterInput :filter="filter" />
         <div class="absolute-center">
-          <span class="text-h5 text-weight-medium">{{ table.Bot.Target }}</span>
-          <span v-if="table.rows.length > 0" class="text-body2 q-ml-sm">{{
-            new Date((table.rows[0] as News).Published).toLocaleDateString()
+          <span class="text-h5 text-weight-medium">{{ model.Bot.Target }}</span>
+          <span v-if="model.rows.length > 0" class="text-body2 q-ml-sm">{{
+            new Date((model.rows[0] as News).Published).toLocaleDateString()
           }}</span>
         </div>
         <q-space />
@@ -130,7 +133,7 @@ onMounted(() => {
               <q-checkbox v-model="props.selected" size="xs" color="pink-13" dense />
             </div>
           </q-td>
-          <q-td v-for="col in props.cols" :key="col.name" :props="props" auto-width>
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
             <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" />
             <span v-else>{{ col.value }}</span>
           </q-td>

@@ -2,11 +2,11 @@
 import LogoImg from 'components/img/LogoImg.vue';
 defineProps<{
   random?: boolean | undefined;
-}>()
+}>();
 </script>
 
 <template>
-  <q-btn dense flat :to="{ name: 'index' }" color="dark" size="md" round >
+  <q-btn :to="{ name: 'index' }" color="dark" size="md" round dense flat>
     <q-avatar size="md">
       <LogoImg :random="random" />
     </q-avatar>

@@ -8,9 +8,10 @@ import type { Bot, BotTable, Search, Sitemap } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import SitemapPage from 'pages/SitemapPage.vue';
 import NewsPage from 'pages/NewsPage.vue';
-import EmailBtn from 'components/btn/EmailBtn.vue';
 import RefreshBtn from 'components/btn/RefreshBtn.vue';
 import SearchPage from 'pages/SearchPage.vue';
+import EmailBtn from 'components/btn/EmailBtn.vue';
+import SettingsBtn from 'components/btn/SettingsBtn.vue';
 
 const splitterModel = ref(350);
 const selected = ref<string>('');
@@ -25,30 +26,33 @@ const onUpdateData = (d: Search | Sitemap | BotTable) => {
   bot.value = undefined;
   data.value = d;
 };
+const onUpdated = (b: Bot) => {
+  bot.value = b;
+  selected.value = b.Type;
+};
+const onDeleted = () => (bot.value = undefined);
 </script>
 <template>
-  <q-page style="height: 100vh">
+  <q-page class="absolute-full">
     <q-splitter
       v-model="splitterModel"
-      :limits="[250, 500]"
+      :limits="[205, 500]"
       class="full-height"
       separator-class="bg-grey-9"
       separator-style="width:.5px;"
       unit="px"
     >
       <template #before>
-        <div class="bg-dark full-height">
+        <div class="bg-dark">
           <div class="flex q-pa-md">
             <div class="flex q-gutter-md no-pointer-events">
               <LogoBtn />
               <span class="text-h5 text-grey-5 text-weight-medium">ByteLyon</span>
             </div>
-            <q-space />
-            <RefreshBtn />
           </div>
           <q-separator />
 
-          <div class="bg-dark">
+          <div style="height: calc(100vh - 66px)">
             <BotTree
               v-model:selected="selected"
               @update:bot="onUpdateBot"
@@ -58,28 +62,28 @@ const onUpdateData = (d: Search | Sitemap | BotTable) => {
 
           <div class="absolute-bottom bg-dark">
             <q-separator />
-            <EmailBtn />
+            <q-btn-group push spread flat square>
+              <EmailBtn />
+              <SettingsBtn />
+              <RefreshBtn />
+            </q-btn-group>
           </div>
         </div>
       </template>
       <template #after>
-        <HomePage
-          v-if="bot === undefined && data === undefined"
-          @update:bot="
-            (b) => {
-              bot = b;
-              selected = b.Type;
-            }
-          "
+        <HomePage v-if="bot === undefined && data === undefined" @update:bot="onUpdated" />
+        <BotPage
+          v-else-if="bot !== undefined && data === undefined"
+          :bot="bot"
+          @deleted="onDeleted"
         />
-        <BotPage v-else-if="bot !== undefined && data === undefined" :bot="bot" />
         <SitemapPage
           v-else-if="(data as Sitemap).Bot.Type === BotType.Sitemap"
           :data="data as Sitemap"
         />
         <NewsPage
           v-else-if="(data as BotTable).Bot.Type === BotType.News"
-          :table="data as BotTable"
+          v-model="data as BotTable"
         />
         <SearchPage
           v-else-if="(data as BotTable).Bot.Type === BotType.Search"

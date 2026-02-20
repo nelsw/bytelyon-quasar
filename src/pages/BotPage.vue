@@ -7,6 +7,11 @@ import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import { useBotStore } from 'stores/bot-store';
 import { computed, onMounted, onUpdated, ref } from 'vue';
+import DeleteBtn from 'components/btn/DeleteBtn.vue';
+
+const emit = defineEmits<{
+  deleted: [void];
+}>();
 
 const props = defineProps<{
   bot: Bot;
@@ -33,6 +38,10 @@ const onSubmit = async () => {
   await $bots.Save(b);
 };
 
+const onDelete = async () => {
+  if (await $bots.Delete(props.bot.ID)) emit('deleted');
+};
+
 const onChange = () => {
   target.value = props.bot.ID > 0 ? props.bot.Target : '';
   blackList.value = props.bot.ID > 0 ? props.bot.BlackList : [];
@@ -57,10 +66,8 @@ onMounted(onChange);
       <p v-if="bot.Type === BotType.News" class="text-body1 text-center q-mt-sm">
         Aggregate news articles from popular & <br />reputable digital publishers & RSS feeds.
       </p>
-      <p v-else-if="bot.Type === BotType.Search" class="text-body1 text-center q-mt-sm">
-        Sitemap desc
-      </p>
-      <p v-else class="text-body1 text-center q-mt-sm">Search desc</p>
+      <p v-else-if="bot.Type === BotType.Search" class="text-body1 text-center q-mt-sm"></p>
+      <p v-else class="text-body1 text-center q-mt-sm"></p>
 
       <TargetInput v-model="target" :color="color" :bot-type="bot.Type" :disable="isUpdate" />
 
@@ -79,21 +86,8 @@ onMounted(onChange);
         hint="Instruct the boat to run on a schedule or 'On-Demand' (once & pause)."
       />
 
-      <div v-if="isCreate">
-        <SubmitBtn :color="color" label="create" />
-      </div>
-      <div v-else>
-        <SubmitBtn :color="color" label="update" />
-        <!--      todo - remove from model-->
-        <q-btn
-          class="full-width q-mt-md"
-          label="Delete"
-          color="pink"
-          size="md"
-          outline
-          @click="$bots.Delete(bot.ID)"
-        />
-      </div>
+      <SubmitBtn :color="color" :label="isCreate ? 'Create' : 'Update'" />
+      <DeleteBtn v-if="isUpdate" @click="onDelete" />
     </q-form>
   </div>
 </template>

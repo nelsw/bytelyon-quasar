@@ -1,8 +1,3 @@
-<script setup lang="ts">
-defineProps<{
-  disable?: boolean;
-}>();
-</script>
 <template>
-  <q-btn :color="disable ? 'grey-9' : 'pink-13'" icon="mdi-delete-outline" dense flat />
+  <q-btn class="full-width q-mt-md" label="Delete" color="pink" size="md" outline />
 </template>

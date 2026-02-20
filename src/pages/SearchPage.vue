@@ -5,7 +5,7 @@ import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import { onMounted, ref } from 'vue';
 import { domain, path } from 'src/types/base';
 import FilterInput from 'components/input/FilterInput.vue';
-import DeleteBtn from 'components/btn/DeleteBtn.vue';
+import TrashBtn from 'components/btn/TrashBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
@@ -82,7 +82,7 @@ onMounted(() => {
       :visible-columns="visibleCols"
     >
       <template #top="props">
-        <DeleteBtn @click="onDelete" />
+        <TrashBtn @click="onDelete" />
         <q-separator vertical spaced inset />
         <ViewJsonBtn
           v-if="data.Pages.length > 0 && data?.Pages[0]?.URL.includes('google.com')"
