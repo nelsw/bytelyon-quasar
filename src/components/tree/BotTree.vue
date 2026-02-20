@@ -49,7 +49,7 @@ watch(filter, (val) => {
   <FilterInput v-model="filter" class="q-pt-md q-px-md" />
   <q-separator inset />
   <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-    <q-scroll-area style="height: calc(100% - 7vh);">
+    <q-scroll-area style="height: calc(100% - 7vh)">
       <q-tree
         v-if="!loading"
         ref="my-tree"
@@ -68,13 +68,13 @@ watch(filter, (val) => {
 </template>
 
 <style lang="scss">
-.q-tree > div:nth-child(1) > div:nth-child(1) > i:nth-child(2) {
-  display: none !important;
-}
-.q-tree > div:nth-child(2) > div:nth-child(1) > i:nth-child(2) {
-  display: none !important;
-}
-.q-tree > div:nth-child(3) > div:nth-child(1) > i:nth-child(2) {
-  display: none !important;
-}
+//.q-tree > div:nth-child(1) > div:nth-child(1) > i:nth-child(2) {
+//  display: none !important;
+//}
+//.q-tree > div:nth-child(2) > div:nth-child(1) > i:nth-child(2) {
+//  display: none !important;
+//}
+//.q-tree > div:nth-child(3) > div:nth-child(1) > i:nth-child(2) {
+//  display: none !important;
+//}
 </style>
