@@ -11,7 +11,6 @@ import NewsPage from 'pages/NewsPage.vue';
 import RefreshBtn from 'components/btn/RefreshBtn.vue';
 import SearchPage from 'pages/SearchPage.vue';
 import EmailBtn from 'components/btn/EmailBtn.vue';
-import SettingsBtn from 'components/btn/SettingsBtn.vue';
 
 const splitterModel = ref(350);
 const selected = ref<string>('');
@@ -52,7 +51,7 @@ const onDeleted = () => (bot.value = undefined);
           </div>
           <q-separator />
 
-          <div style="height: calc(100vh - 66px)">
+          <div style="height: calc(100vh - 102px)">
             <BotTree
               v-model:selected="selected"
               @update:bot="onUpdateBot"
@@ -64,7 +63,6 @@ const onDeleted = () => (bot.value = undefined);
             <q-separator />
             <q-btn-group push spread flat square>
               <EmailBtn />
-              <SettingsBtn />
               <RefreshBtn />
             </q-btn-group>
           </div>

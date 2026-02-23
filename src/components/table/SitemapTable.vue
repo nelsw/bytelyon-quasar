@@ -37,7 +37,7 @@ const emit = defineEmits<{
 const filter = ref<string>('');
 const toggle = ref<boolean>(false);
 const visibleRows = computed(() =>
-  props.rows.filter((row: SitemapRow) => row.IsExternal === toggle.value),
+  toggle.value ? props.rows : props.rows.filter((row: SitemapRow) => !row.IsExternal),
 );
 const hasExternalUrls = computed(
   () => props.rows.filter((row: SitemapRow) => row.IsExternal === toggle.value).length > 0,
