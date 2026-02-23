@@ -1,150 +1,102 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useSitemapStore } from 'stores/sitemap-store';
-import { type QTableColumn } from 'quasar';
-import { type Sitemap } from 'src/types/sitemap';
-import DeleteBtn from 'components/btn/DeleteBtn.vue';
-import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
-import UrlTabs from 'components/tabs/UrlTabs.vue';
-import XTooltip from 'components/tooltip/XTooltip.vue';
-import MenuList from 'components/list/MenuList.vue';
+import TrashBtn from 'components/btn/TrashBtn.vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
-import MenuBtn from 'components/btn/MenuBtn.vue';
-import { decodeTime } from 'ulid';
+import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
+import FilterInput from 'components/input/FilterInput.vue';
+import type { QTableColumn } from 'quasar';
+import { computed, ref } from 'vue';
+import type { SitemapRow } from 'src/types/model';
+import { csv } from 'src/composable/exportTable';
 
-defineProps<{
-  rows: Sitemap[];
-  domain: string;
-}>();
-
-const store = useSitemapStore();
-const columns: QTableColumn<Sitemap>[] = [
+const columns: QTableColumn<SitemapRow>[] = [
   {
-    name: 'id',
-    label: 'ID',
-    field: 'id',
-    align: 'left',
-  },
-  {
-    name: 'created',
-    label: 'Created',
-    field: 'id',
-    align: 'left',
-    format: (value) => new Date(decodeTime(value)).toLocaleString(),
-    sort: (a, b) => decodeTime(a) - decodeTime(b),
-  },
-  {
-    name: '$',
-    label: '',
-    field: 'id',
-    style: 'width: 20%;',
-  },
-  {
-    name: 'domain',
-    label: 'Site',
-    field: 'domain',
-    align: 'left',
-    sort: (a, b) => a.localeCompare(b),
-  },
-  {
-    name: '$',
-    label: '',
-    field: 'id',
-    style: 'width: 20%;',
-  },
-  {
-    name: 'relative',
-    label: 'Pages',
-    field: 'relative',
+    name: 'Open',
+    label: 'Open',
+    field: 'URL',
     align: 'center',
-    format: (value) => value?.length ?? '0',
-  },
-  {
-    name: 'remote',
-    label: 'Links',
-    field: 'remote',
-    align: 'center',
-    format: (value) => value?.length ?? '0',
-  },
-  {
-    name: '$',
-    label: '',
-    field: 'id',
-    style: 'width: 20%;',
-  },
-  {
-    name: 'duration',
-    label: 'Duration',
-    field: 'duration',
-    align: 'center',
-    format: (value) => `${value}s`,
-  },
-  {
-    name: '$',
-    label: '',
-    field: 'id',
-    style: 'width: 20%;',
-  },
-  {
-    name: 'actions',
-    label: 'Actions',
-    field: 'id',
     style: 'width: 0;',
-    align: 'center',
+  },
+  {
+    name: 'URL',
+    label: 'URL',
+    field: 'URL',
+    align: 'left',
   },
 ];
-const columnNames = ref<string[]>([]);
-const visibleCols = ref<string[]>([]);
-onMounted(() => {
-  columnNames.value = columns.map((col) => col.name);
-  visibleCols.value = columnNames.value.filter((s) => s !== 'url');
-});
+
+const props = defineProps<{
+  domain: string;
+  createdAt: string | null;
+  rows: SitemapRow[];
+}>();
+
+const emit = defineEmits<{
+  delete: [void];
+}>();
+
+const filter = ref<string>('');
+const toggle = ref<boolean>(false);
+const visibleRows = computed(() =>
+  toggle.value ? props.rows : props.rows.filter((row: SitemapRow) => !row.IsExternal),
+);
+const hasExternalUrls = computed(
+  () => props.rows.filter((row: SitemapRow) => row.IsExternal === toggle.value).length > 0,
+);
+const onExport = () => {
+  csv(columns, props.rows);
+};
 </script>
 
 <template>
   <q-table
     :columns="columns"
-    :visible-columns="visibleCols"
-    :pagination="{ sortBy: 'id' }"
-    :rows="rows"
-    :rows-per-page-options="[1000]"
-    :table-row-style-fn="() => 'cursor: pointer;'"
-    row-key="id"
-    hide-pagination
-    flat
+    :filter="filter"
+    :pagination="{ sortBy: 'URL', descending: false }"
+    :rows-per-page-options="[20, 50, 100, 0]"
+    :rows="visibleRows"
+    color="primary"
+    row-key="URL"
+    rowsPerPageLabel="URLs per page"
+    binary-state-sort
+    bordered
     dense
-    class="bg-grey-10 q-ma-sm"
+    flat
   >
-    <template #top-left>
-      <div class="flex justify-center items-center">
-        <q-icon name="mdi-application-outline" size="md" @click="store.load()" />
-        <span class="q-mx-sm text-h6">{{ domain }}</span>
+    <template #top="props">
+      <TrashBtn @click="emit('delete')" />
+      <q-separator vertical spaced inset />
+      <FilterInput :filter="filter" />
+      <div class="flex col-grow items-center">
+        <div class="absolute-center">
+          <span class="text-h5 text-weight-medium">{{ domain }}</span>
+          <span v-if="createdAt">
+            <span class="text-body2 q-ml-sm">{{ new Date(createdAt).toLocaleString() }}</span>
+          </span>
+        </div>
       </div>
-    </template>
-    <template #top-right="props">
-      <MenuBtn icon="mdi-view-column-outline">
-        <template #tooltip>
-          <x-tooltip text="Columns" />
-        </template>
-        <template #menu-content>
-          <MenuList v-model="visibleCols" :names="columnNames" />
-        </template>
-      </MenuBtn>
+      <q-space />
+      <q-toggle
+        v-if="hasExternalUrls"
+        v-model="toggle"
+        checked-icon="mdi-check"
+        color="primary"
+        left-label
+        label="External URLs"
+        unchecked-icon="mdi-close"
+        dense
+        size="sm"
+        class="q-mr-sm"
+      />
+      <q-separator v-if="hasExternalUrls" vertical spaced inset />
+      <q-btn color="primary" dense flat icon="mdi-download" @click="onExport" />
+      <q-separator vertical spaced inset />
       <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
     </template>
     <template #body="props">
-      <q-tr :props="props" @click="props.expand = !props.expand">
+      <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <div v-if="col.name === 'actions'">
-            <OpenInNewBtn :url="props.row.url" />
-            <DeleteBtn @delete="store.remove(props.row.domain, props.row.id)" />
-          </div>
-          <span v-else-if="col.name !== '$'" v-html="col.value" />
-        </q-td>
-      </q-tr>
-      <q-tr v-show="props.expand" :props="props">
-        <q-td colspan="100%" style="padding: 0">
-          <UrlTabs :pages="props.row?.relative ?? []" :links="props.row?.remote ?? []" />
+          <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" />
+          <span v-else>{{ col.value }}</span>
         </q-td>
       </q-tr>
     </template>

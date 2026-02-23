@@ -1,28 +1,22 @@
 <script setup lang="ts">
-import MaxDialog from 'components/dialog/MaxDialog.vue';
-import XTooltip from 'components/tooltip/XTooltip.vue';
+import { computed, ref } from 'vue';
+import ToolbarDialog from 'components/dialog/ToolbarDialog.vue';
 
-defineProps<{
+const props = defineProps<{
   title: string;
   url: string;
-}>()
-
-const model = defineModel<boolean>({ default: false });
+}>();
+const model = ref<boolean>(false);
+const color = computed(() => (props.url === '' ? 'grey-9' : 'cyan-6'));
 </script>
 
 <template>
-  <q-btn dense flat target="_blank" no-caps size="sm" @click="model=true">
-    <q-icon name="mdi-image-outline" color="cyan-14" size="xs" />
-    <x-tooltip text="View<br>Image" />
+  <q-btn @click="model = true" :color="color" size="sm" dense flat>
+    <q-icon :color="color" name="mdi-monitor-screenshot" size="xs" />
   </q-btn>
-  <MaxDialog v-model="model">
-    <template v-slot:title>
-      <div class="text-h5">
-        {{title}}
-      </div>
-    </template>
-    <template v-slot:content>
+  <ToolbarDialog v-model="model" :title="title">
+    <template #content>
       <q-img :src="url" />
     </template>
-  </MaxDialog>
+  </ToolbarDialog>
 </template>

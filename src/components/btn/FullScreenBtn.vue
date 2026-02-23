@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import XTooltip from 'components/tooltip/XTooltip.vue';
-
 defineProps<{
   fullscreen: boolean;
   color?: string;
@@ -8,12 +6,5 @@ defineProps<{
 </script>
 
 <template>
-  <q-btn
-    :icon="`mdi-fullscreen${fullscreen ? '-exit' : ''}`"
-    :color="`${color ?? 'blue-grey-5'}`"
-    dense
-    flat
-  >
-    <x-tooltip :text="`${fullscreen ? 'Exit' : 'Enter'}<br>Fullscreen`" />
-  </q-btn>
+  <q-btn :icon="`mdi-fullscreen${fullscreen ? '-exit' : ''}`" text-color="primary" dense flat />
 </template>

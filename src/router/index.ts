@@ -6,7 +6,6 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
-import { useTokenStore } from 'stores/token-store';
 
 /*
  * If not building with SSR mode, you can
@@ -17,7 +16,7 @@ import { useTokenStore } from 'stores/token-store';
  * with the Router instance.
  */
 
-export default defineRouter(async function ({ store }) {
+export default defineRouter(async function () {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
@@ -32,18 +31,6 @@ export default defineRouter(async function ({ store }) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
-  });
-
-  Router.beforeEach((to, from, next) => {
-    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-
-    const tokenStore = useTokenStore(store);
-
-    if (requiresAuth && !tokenStore.authorized) {
-      next({ path: '/login', query: { next: to.fullPath } });
-    } else {
-      next();
-    }
   });
 
   return new Promise((resolve) => resolve(Router));
