@@ -1,3 +1,5 @@
+import type { AxiosBasicCredentials } from 'axios';
+
 export interface Model {
   ID: number;
   CreatedAt: string | null;
@@ -61,3 +63,12 @@ export interface SitemapRow extends Record<string, unknown>{
   IsExternal: boolean;
 }
 
+export type Creds = AxiosBasicCredentials
+
+export interface Email {
+  ID: string;
+}
+
+export interface Err {
+  error: string;
+}

@@ -11,6 +11,7 @@ import NewsPage from 'pages/NewsPage.vue';
 import RefreshBtn from 'components/btn/RefreshBtn.vue';
 import SearchPage from 'pages/SearchPage.vue';
 import EmailBtn from 'components/btn/EmailBtn.vue';
+import LogoutBtn from 'components/btn/LogoutBtn.vue';
 
 const splitterModel = ref(350);
 const selected = ref<string>('');
@@ -62,6 +63,7 @@ const onDeleted = () => (bot.value = undefined);
           <div class="absolute-bottom bg-dark">
             <q-separator />
             <q-btn-group push spread flat square>
+              <LogoutBtn />
               <EmailBtn />
               <RefreshBtn />
             </q-btn-group>

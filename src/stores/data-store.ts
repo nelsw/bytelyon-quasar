@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import type { BotType } from 'src/types/model';
+import type { BotType, Err } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import { useLogger } from 'src/composable/useLogger';
 
@@ -24,11 +24,11 @@ const setup = () => {
       .delete(`/${t}/id/${id}`)
       .then(() => {
         if (notify) {
-          $notify.ok(null, `Deleted Successfully`);
+          $notify.ok(null, `Delete Successfully`);
         }
         return true;
       })
-      .catch((err: AxiosError) => {
+      .catch((err: AxiosError<Err>) => {
         if (notify) {
           $notify.err(err, `Delete Bot Result ${t} ${id}`);
         }

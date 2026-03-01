@@ -1,0 +1,24 @@
+<script setup lang="ts">
+const model = defineModel<string>();
+</script>
+
+<template>
+  <q-input
+    v-model="model"
+    :rules="[(val: string) => (val && val.length > 0) || 'Password is required']"
+    class="col-all"
+    label="Password"
+    lazy-rules="ondemand"
+    name="password"
+    type="password"
+  >
+    <template #prepend>
+      <q-icon name="mdi-lock-outline" />
+    </template>
+    <template #append>
+      <q-btn flat icon="mdi-lock-question" dense>
+        <q-tooltip> Forgot Password </q-tooltip>
+      </q-btn>
+    </template>
+  </q-input>
+</template>

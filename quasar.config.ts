@@ -40,7 +40,7 @@ export default defineConfig(() => {
       ],
     },
     devServer: {
-      port: 8080,
+      port: 8081,
       open: true, // opens browser window automatically
     },
     framework: {

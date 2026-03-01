@@ -1,12 +1,10 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
+import { api, type AxiosResponse } from 'boot/axios';
 import { ref } from 'vue';
 import type { Bot, Bots } from 'src/types/model';
-import { useLogger } from 'src/composable/useLogger';
 import useNotifier from 'src/composable/useNotifier';
 import { useNodeStore } from 'stores/node-store';
 
-const $log = useLogger();
 const $notify = useNotifier();
 
 const setup = () => {
@@ -19,39 +17,35 @@ const setup = () => {
   const Create = async (b: Bot): Promise<boolean | void> => {
     return await api
       .post(`/bots`, b)
-      .then((res: AxiosResponse<Bot>) =>
-        $notify.ok(res.data, `Bot Created`),
-      )
-      .catch((err: AxiosError<{ error: string }>) => {
-        $notify.err(err, `Create Bot`, err.response?.data?.error || '');
-      })
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `🥳`, `Bot Created`))
+      .catch($notify.err)
       .finally($nodes.Load);
   };
 
   const Update = async (b: Bot): Promise<boolean | void> => {
     return await api
       .put(`/bots`, b)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `Bot Updated`))
-      .catch((err: AxiosError<{ error: string }>) => {
-        $notify.err(err, `Update Bot`, err.response?.data?.error || '');
-      })
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Bot Updated`))
+      .catch($notify.err)
       .finally($nodes.Load);
   };
 
   const Load = async (): Promise<Bots> => {
     await api
       .get<Bots>('/bots')
-      .then((res: AxiosResponse<Bots>) => (model.value = res.status === 200 ? res.data : []))
-      .then(() => $log.info(null, `Bots loaded [${model.value.length}]`))
-      .catch((err: AxiosError) => $log.err(err, 'while loading Bots'));
+      .then((res: AxiosResponse<Bots>) => {
+        model.value = res.status === 200 ? res.data : [];
+        $notify.ok(res.data, `🤖`, `Bots loaded [${model.value.length}]`);
+      })
+      .catch($notify.err);
     return model.value;
   };
 
   const Delete = async (id: number): Promise<boolean> => {
     return await api
       .delete(`/bots/id/${id}`)
-      .then(() => $notify.ok(null, `Bot Deleted`))
-      .catch($log.err)
+      .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
+      .catch($notify.err)
       .finally($nodes.Load);
   };
 
