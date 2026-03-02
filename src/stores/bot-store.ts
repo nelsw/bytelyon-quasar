@@ -1,31 +1,33 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosResponse } from 'boot/axios';
-import { ref } from 'vue';
-import type { Bot, BotType, Err, NewsBot, SearchBot, SitemapBot } from 'src/types/model';
-import { IsNewBot } from 'src/types/model';
+import type { Bot, Err, NewsBot, SearchBot, SitemapBot } from 'src/types/model';
+import { BotType, IsNewBot } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import { useNodeStore } from 'stores/node-store';
 import type { AxiosError } from 'axios';
 import { useLogger } from 'src/composable/useLogger';
+import { useTokenStore } from 'stores/token-store';
 
 const $notify = useNotifier();
-
+const $tokenStore = useTokenStore();
 const setup = () => {
   const $nodes = useNodeStore();
-
-  const model = ref<Bot[]>([]);
 
   const Save = async (b: Bot): Promise<boolean | void> => (IsNewBot(b) ? Create(b) : Update(b));
 
   const Create = async (b: Bot): Promise<boolean | void> => {
+    $log.debug(b, `Create`);
+    b.userID = $tokenStore.userID();
     return await api
-      .put(`/bots/${b.type}`, b)
+      .post(`/bots/${b.type}`, b)
       .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `🥳`, `Bot Created`))
       .catch($notify.err)
       .finally($nodes.Load);
   };
 
   const Update = async (b: Bot): Promise<boolean | void> => {
+    $log.debug(b, `Updated`);
+    b.userID = $tokenStore.userID();
     return await api
       .put(`/bots/${b.type}`, b)
       .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Bot Updated`))
@@ -39,7 +41,7 @@ const setup = () => {
       .get<SearchBot[]>('/bots/search')
       .then((res: AxiosResponse<SearchBot[]>) => {
         $log.info(res.data, `LoadSearchBots`);
-        return res.status === 200 ? res.data : [];
+        return res.data;
       })
       .catch((err: AxiosError<Err>): SearchBot[] => {
         $log.err(err, `LoadSearchBots`);
@@ -51,7 +53,7 @@ const setup = () => {
     return await api
       .get<SitemapBot[]>('/bots/sitemap')
       .then((res: AxiosResponse<SitemapBot[]>) => {
-        $notify.ok(res.data, `🤖`, `Sitemap Bots loaded [${model.value.length}]`);
+        $log.info(res.data, `LoadSitemapBots`);
         return res.status === 200 ? res.data : [];
       })
       .catch((err: AxiosError<Err>): SitemapBot[] => {
@@ -64,7 +66,7 @@ const setup = () => {
     return await api
       .get<NewsBot[]>('/bots/news')
       .then((res: AxiosResponse<NewsBot[]>) => {
-        $notify.ok(res.data, `🤖`, `News Bots loaded [${model.value.length}]`);
+        $log.info(res.data, `LoadNewsBots`);
         return res.status === 200 ? res.data : [];
       })
       .catch((err: AxiosError<Err>): NewsBot[] => {
@@ -73,12 +75,15 @@ const setup = () => {
       });
   };
 
-  const Delete = async (type: BotType, target:string): Promise<boolean> => {
-    return await api
-      .delete(`/bots/${type}/id/${target}`)
-      .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
-      .catch($notify.err)
-      .finally($nodes.Load);
+  const Delete = async (type: BotType, target: string): Promise<boolean> => {
+    if (type === BotType.Sitemap) {
+      target = btoa(target)
+    }
+      return await api
+        .delete(`/bots/${type}/id/${target}`)
+        .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
+        .catch($notify.err)
+        .finally($nodes.Load);
   };
 
   return {

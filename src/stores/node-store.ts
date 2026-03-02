@@ -1,20 +1,12 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { Loading, type QTreeLazyLoadParams, type QTreeNode, uid } from 'quasar';
-import type {
-  Bot,
-  BotData,
-  NewsBot,
-  NewsBotData,
-  SearchBot,
-  SearchBotData,
-  SitemapBot,
-  SitemapBotData, SitemapRow,
-} from 'src/types/model';
+import type { Bot, BotData, NewsBotData, SearchBotData, SitemapBotData, SitemapRow } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { useLogger } from 'src/composable/useLogger';
 import { useBotStore } from 'stores/bot-store';
+import { domain } from 'src/types/base';
 
 export const NewBot = <T = BotType>(t: T): Bot<T> => {
   return {
@@ -69,46 +61,49 @@ const setup = () => {
 
     Promise.all([searchBotPromise, sitemapBotPromise, newsBotPromise])
       .then((values) => {
-        const nodes: QTreeNode[] = values.map((value: SearchBot[] | SitemapBot[] | NewsBot[]): QTreeNode => {
-          if (values === null) {
-            return [];
+        const nodes: QTreeNode[] = [];
+        for (const value of values) {
+          if (value === null) {
+            continue
           }
-
-          return value.map((bot: SearchBot | NewsBot |SitemapBot): QTreeNode => {
-            return {
+          $log.debug(value);
+          for (const v of value) {
+            nodes.push({
               id: uid(),
-              label: bot.target,
-              bot: bot,
+              label: v.type === BotType.Sitemap ? domain(v.target) : v.target,
+              bot: v,
               children: [],
               lazy: true,
-            };
-          });
-        });
+            });
+          }
+        }
+        return nodes;
 
+      })
+      .then((nodes: QTreeNode[]) => {
+        console.log(nodes);
         for (const node of nodes) {
-          if (node.bot.Type === BotType.Search) {
+          if (node?.bot?.type === BotType.Search) {
             searchModel?.children?.push(node);
-          } else if (node.bot.Type === BotType.Sitemap) {
+          } else if (node?.bot?.type === BotType.Sitemap) {
             sitemapModel?.children?.push(node);
-          } else if (node.bot.Type === BotType.News) {
+          } else if (node?.bot?.type === BotType.News) {
             newsModel?.children?.push(node);
           }
         }
 
         for (const node of model) {
-          if (node?.children?.length || 0 > 0) {
-            continue;
+          if (node?.children?.length  === 0) {
+            node?.children?.push({
+              label: 'New',
+              id: uid(),
+              icon: 'mdi-plus',
+              iconColor: 'green-13',
+              selectable: false,
+            });
           }
-          node?.children?.push({
-            label: 'New',
-            id: uid(),
-            icon: 'mdi-plus',
-            iconColor: 'green-13',
-            selectable: false,
-          });
         }
       })
-
       .catch((e) => console.log(e))
       .finally(Loading.hide);
   };
@@ -129,8 +124,7 @@ const setup = () => {
           case BotType.Search:
           case BotType.Sitemap:
             return data.map((botData: BotData) => {
-
-              let rows:Array<unknown> = [];
+              let rows: Array<unknown> = [];
 
               if (d.node.bot.Type === BotType.Search) {
                 rows = (botData as SearchBotData).pages;
@@ -140,9 +134,11 @@ const setup = () => {
                 });
                 const rem = (botData as SitemapBotData).remote;
                 if (rem != null) {
-                  rem.map((s:string):SitemapRow => {
-                    return { URL: s, IsExternal: true  }
-                  }).forEach((row: SitemapRow) => rows.push(row))
+                  rem
+                    .map((s: string): SitemapRow => {
+                      return { URL: s, IsExternal: true };
+                    })
+                    .forEach((row: SitemapRow) => rows.push(row));
                 }
               }
 

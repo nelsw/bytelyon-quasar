@@ -1,7 +1,7 @@
 import type { AxiosBasicCredentials } from 'axios';
 
-export const IsOldBot = (bot: Bot) => bot.userID === '';
-export const IsNewBot = (bot: Bot) => !IsOldBot(bot);
+export const IsOldBot = (bot: Bot) => !IsNewBot(bot);
+export const IsNewBot = (bot: Bot) => bot.updatedAt === null;
 
 export type Bot<T = BotType> = {
   userID: string;

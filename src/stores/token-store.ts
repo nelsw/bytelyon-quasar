@@ -124,7 +124,9 @@ const setup = () => {
 
   const isAnonymous = (): boolean => claims().aud.includes('anonymous');
 
-  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass  };
+  const userID = (): string => claims().sub;
+
+  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID  };
 };
 
 export const useTokenStore = defineStore('token-store', setup, {
