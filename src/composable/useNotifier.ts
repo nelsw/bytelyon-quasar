@@ -8,10 +8,10 @@ const notify = (msg: string) => {
   Notify.create({
     color: 'dark',
     html: true,
-    message: `<div class="text-center">${msg}</div>`,
-    position: 'top-right',
+    message: `<div class="text-right">${msg}</div>`,
+    position: 'bottom-right',
     textColor: 'white',
-    timeout: 5000,
+    timeout: 2500,
   });
 };
 

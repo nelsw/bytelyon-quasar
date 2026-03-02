@@ -8,7 +8,7 @@ import { useNodeStore } from 'stores/node-store';
 
 const emit = defineEmits<{
   'update:bot': [Bot];
-  'update:data': [BotTable];
+  'update:data': [BotTable<unknown>];
 }>();
 
 const $log = useLogger();

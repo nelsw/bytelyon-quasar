@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Bot } from 'src/types/model';
+import type { Bot} from 'src/types/model';
+import { IsNewBot, IsOldBot } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import TargetInput from 'components/input/TargetInput.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
@@ -23,29 +24,29 @@ const target = ref<string>('');
 const blackList = ref<string[]>([]);
 const frequency = ref<number>(1);
 
-const color = computed(() => (props.bot.ID > 0 ? 'amber-13' : 'green-13'));
-const isCreate = computed(() => props.bot.ID === 0);
-const isUpdate = computed(() => props.bot.ID > 0);
+const color = computed(() => (IsOldBot(props.bot) ? 'amber-13' : 'green-13'));
+const isCreate = computed(() => IsNewBot(props.bot));
+const isUpdate = computed(() => IsOldBot(props.bot));
 
 const onSubmit = async () => {
   const b: Bot = props.bot;
-  b.Target = target.value;
-  if (b.Type === BotType.Sitemap && !b.Target.startsWith('https://')) {
-    b.Target = `https://${b.Target}`;
+  b.target = target.value;
+  if (b.type === BotType.Sitemap && !b.target.startsWith('https://')) {
+    b.target = `https://${b.target}`;
   }
-  b.BlackList = blackList.value;
-  b.Frequency = frequency.value;
+  b.blackList = blackList.value;
+  b.frequency = frequency.value;
   await $bots.Save(b);
 };
 
 const onDelete = async () => {
-  if (await $bots.Delete(props.bot.ID)) emit('deleted');
+  if (await $bots.Delete( props.bot.type, props.bot.target)) emit('deleted');
 };
 
 const onChange = () => {
-  target.value = props.bot.ID > 0 ? props.bot.Target : '';
-  blackList.value = props.bot.ID > 0 ? props.bot.BlackList : [];
-  frequency.value = props.bot.ID > 0 ? props.bot.Frequency : 1;
+  target.value = IsOldBot(props.bot) ? props.bot.target : '';
+  blackList.value = IsOldBot(props.bot) ? props.bot.blackList : [];
+  frequency.value = IsOldBot(props.bot) ? props.bot.frequency : 1;
 };
 
 onUpdated(onChange);
@@ -60,23 +61,23 @@ onMounted(onChange);
         <q-icon v-else name="mdi-pencil-box" size="6em" :color="color" />
       </div>
       <div class="flex justify-center align-center">
-        <div class="text-h4 text-center text-capitalize">{{ bot.Type }} Bot</div>
+        <div class="text-h4 text-center text-capitalize">{{ bot.type }} Bot</div>
       </div>
 
-      <p v-if="bot.Type === BotType.News" class="text-body1 text-center q-mt-sm">
+      <p v-if="bot.type === BotType.News" class="text-body1 text-center q-mt-sm">
         Aggregate news articles from popular & <br />reputable digital publishers & RSS feeds.
       </p>
-      <p v-else-if="bot.Type === BotType.Search" class="text-body1 text-center q-mt-sm"></p>
+      <p v-else-if="bot.type === BotType.Search" class="text-body1 text-center q-mt-sm"></p>
       <p v-else class="text-body1 text-center q-mt-sm"></p>
 
-      <TargetInput v-model="target" :color="color" :bot-type="bot.Type" :disable="isUpdate" />
+      <TargetInput v-model="target" :color="color" :bot-type="bot.type" :disable="IsOldBot(bot)" />
 
       <BlackListSelect
-        v-if="bot.Type !== BotType.Sitemap"
+        v-if="bot.type !== BotType.Sitemap"
         v-model="blackList"
         class="q-mt-md"
         :color="color"
-        :bot-type="bot.Type"
+        :bot-type="bot.type"
       />
 
       <FrequencySelect

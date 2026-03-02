@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { QTableColumn } from 'quasar';
-import type { BotTable } from 'src/types/model';
-import { type News } from 'src/types/model';
+import type { BotTable, NewsBotData } from 'src/types/model';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { onMounted, ref } from 'vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
@@ -10,26 +9,20 @@ import TrashBtn from 'components/btn/TrashBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import { useDataStore } from 'stores/data-store';
 
-const model = defineModel<BotTable>({ required: true });
+const model = defineModel<BotTable<NewsBotData>>({ required: true });
 
-const columns: QTableColumn<News>[] = [
-  {
-    name: 'ID',
-    label: 'ID',
-    field: 'ID',
-    align: 'left',
-  },
+const columns: QTableColumn<NewsBotData>[] = [
   {
     name: 'Open',
     label: 'Open',
-    field: 'URL',
+    field: 'url',
     align: 'center',
     style: 'width: 0;',
   },
   {
     name: 'Published',
     label: 'Published',
-    field: 'Published',
+    field: 'published',
     align: 'left',
     format: (value) => new Date(value).toLocaleTimeString(),
     sortable: true,
@@ -37,34 +30,34 @@ const columns: QTableColumn<News>[] = [
   {
     name: 'Source',
     label: 'Source',
-    field: 'Source',
+    field: 'source',
     align: 'left',
   },
   {
     name: 'Title',
     label: 'Title',
-    field: 'Title',
+    field: 'title',
     align: 'left',
   },
   {
     name: 'Description',
     label: 'Description',
-    field: 'Description',
+    field: 'description',
     align: 'left',
   },
 ];
 
-const selected = ref<News[]>([]);
+const selected = ref<NewsBotData[]>([]);
 const filter = ref<string>('');
 const $store = useDataStore();
 
 const onDelete = async () => {
   const ok = await $store.DeleteAll(
-    model.value.Bot.Type,
-    selected.value.map((i: News) => i.ID),
+    model.value.Bot.type,
+    selected.value.map((i: NewsBotData) => i.url),
   );
   if (!ok) return;
-  model.value.rows = model.value.rows.filter((n) => !selected.value.includes(n as News)) as News[];
+  model.value.rows = model.value.rows.filter((n) => !selected.value.includes(n));
   selected.value = [];
 };
 
@@ -104,9 +97,9 @@ onMounted(() => {
         <q-separator vertical spaced inset />
         <FilterInput :filter="filter" />
         <div class="absolute-center">
-          <span class="text-h5 text-weight-medium">{{ model.Bot.Target }}</span>
+          <span class="text-h5 text-weight-medium">{{ model.Bot.target }}</span>
           <span v-if="model.rows.length > 0" class="text-body2 q-ml-sm">{{
-            new Date((model.rows[0] as News).Published).toLocaleDateString()
+            new Date((model.rows[0] as NewsBotData).published).toLocaleDateString()
           }}</span>
         </div>
         <q-space />

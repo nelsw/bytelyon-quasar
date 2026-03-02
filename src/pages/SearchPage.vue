@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Page, Search } from 'src/types/model';
+import type { BotTable, PageData } from 'src/types/model';
+import { BotType } from 'src/types/model';
 import type { QTableColumn } from 'quasar';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
 import { onMounted, ref } from 'vue';
@@ -9,25 +10,24 @@ import TrashBtn from 'components/btn/TrashBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
-import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
 import { useDataStore } from 'stores/data-store';
 
-const props = defineProps<{
-  data: Search;
+defineProps<{
+  table: BotTable<PageData>;
 }>();
 
-const columns: QTableColumn<Page>[] = [
+const columns: QTableColumn<PageData>[] = [
   {
     name: 'Open',
     label: 'Open',
-    field: 'URL',
+    field: 'url',
     align: 'center',
     style: 'width: 0;',
   },
   {
     name: 'Domain',
     label: 'Domain',
-    field: 'URL',
+    field: 'url',
     align: 'left',
     style: 'width: 0;',
     format: (val: string) => domain(val),
@@ -35,7 +35,7 @@ const columns: QTableColumn<Page>[] = [
   {
     name: 'Path',
     label: 'Path',
-    field: 'URL',
+    field: 'url',
     align: 'left',
     style: 'width: 0;',
     format: (val: string) => path(val),
@@ -43,7 +43,7 @@ const columns: QTableColumn<Page>[] = [
   {
     name: 'Title',
     label: 'Title',
-    field: 'Title',
+    field: 'title',
     align: 'left',
     style: 'width: 100;',
   },
@@ -55,7 +55,7 @@ const visibleCols = ref<string[]>([]);
 
 const $store = useDataStore();
 const onDelete = async () => {
-  await $store.Delete(props.data.Bot.Type, props.data.ID, true)
+  await $store.Delete(BotType.Search, '', true);
 };
 
 onMounted(() => {
@@ -67,7 +67,7 @@ onMounted(() => {
 <template>
   <q-page padding>
     <q-table
-      :rows="data.Pages"
+      :rows="table.rows"
       :columns="columns"
       :filter="filter"
       :rows-per-page-options="[25, 50, 100, 0]"
@@ -84,23 +84,23 @@ onMounted(() => {
       <template #top="props">
         <TrashBtn @click="onDelete" />
         <q-separator vertical spaced inset />
-        <ViewJsonBtn
-          v-if="data.Pages.length > 0 && data?.Pages[0]?.URL.includes('google.com')"
-          :title="data?.Pages[0]?.Title"
-          :content="data?.Pages[0]?.JSON"
-        />
-        <q-separator
-          v-if="data.Pages.length > 0 && data?.Pages[0]?.URL.includes('google.com')"
-          vertical
-          spaced
-          inset
-        />
+        <!--        <ViewJsonBtn-->
+        <!--          v-if="data.pages.length > 0 && data?.pages[0]?.url.includes('google.com')"-->
+        <!--          :title="data?.pages[0]?.title"-->
+        <!--          :content="data?.pages[0]?.json"-->
+        <!--        />-->
+        <!--        <q-separator-->
+        <!--          v-if="data.pages.length > 0 && data?.pages[0]?.url.includes('google.com')"-->
+        <!--          vertical-->
+        <!--          spaced-->
+        <!--          inset-->
+        <!--        />-->
         <FilterInput v-model="filter" />
         <div class="absolute-center">
-          <span class="text-h5 text-weight-medium">{{ data.Bot.Target }}</span>
-          <span class="text-body2 q-ml-sm">{{
-            new Date(data.CreatedAt || '').toLocaleString()
-          }}</span>
+          <!--          <span class="text-h5 text-weight-medium">{{ data..target }}</span>-->
+          <!--          <span class="text-body2 q-ml-sm">{{-->
+          <!--            new Date(data.Bot.updatedAt || '').toLocaleString()-->
+          <!--          }}</span>-->
         </div>
         <q-space />
         <ColumnsBtn v-model="visibleCols" :names="columnNames" />

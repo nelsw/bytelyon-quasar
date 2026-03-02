@@ -27,7 +27,7 @@ const columns: QTableColumn<SitemapRow>[] = [
 const props = defineProps<{
   domain: string;
   createdAt: string | null;
-  rows: SitemapRow[];
+  rows: Array<SitemapRow>;
 }>();
 
 const emit = defineEmits<{

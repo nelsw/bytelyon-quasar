@@ -1,23 +1,58 @@
 import type { AxiosBasicCredentials } from 'axios';
 
-export interface Model {
-  ID: number;
-  CreatedAt: string | null;
-  UpdatedAt: string | null;
-}
+export const IsOldBot = (bot: Bot) => bot.userID === '';
+export const IsNewBot = (bot: Bot) => !IsOldBot(bot);
 
-export type Bots = Bot[];
-export type BotData = BotDatum[];
-export type BotDatum = Search | Sitemap | News;
-export interface BotTable {
+export type Bot<T = BotType> = {
+  userID: string;
+  type: T;
+  frequency: number;
+  target: string;
+  blackList: string[];
+  updatedAt: number | null;
+};
+
+export type NewsBot = Bot<BotType.News>;
+export type SearchBot = Bot<BotType.Search> & { headless: boolean };
+export type SitemapBot = Bot<BotType.Sitemap>;
+
+export type NewsBotData = {
+  userID: string;
+  url: string;
+  title: string;
+  source: string;
+  description: string;
+  published: number;
+};
+
+export type SitemapBotData = {
+  userID: string;
+  createdAt: number;
+  domain: string;
+  url: string;
+  relative: string[];
+  remote: string[];
+};
+
+export type SearchBotData = {
+  userID: string;
+  createdAt: number;
+  pages: PageData[];
+};
+
+export type PageData = {
+  idx: number;
+  url: string;
+  title: string;
+  img: string;
+  png: string;
+  json: object;
+};
+
+export type BotData = SearchBotData | SitemapBotData | NewsBotData;
+export interface BotTable<T> {
   Bot: Bot;
-  rows: string[] | News[];
-}
-export interface Bot<T = BotType> extends Model {
-  Type: T;
-  Frequency: number;
-  Target: string;
-  BlackList: string[];
+  rows: Array<T>;
 }
 
 export const enum BotType {
@@ -26,48 +61,12 @@ export const enum BotType {
   News = 'news',
 }
 
-export interface Search extends Model {
-  Bot: Bot;
-  BotID: number;
-  Pages: Page[];
-}
-
-export interface Page extends Model {
-  SearchID: number;
-  URL: string;
-  Title: string;
-  JSON: object | null;
-}
-
-export interface Sitemap extends Model {
-  Bot: Bot;
-  BotID: number;
-  URL: string;
-  Domain: string;
-  Relative: string[];
-  Remote: string[];
-}
-
-export interface News extends Model {
-  Bot: Bot;
-  BotID: number;
-  URL: string;
-  Title: string;
-  Source: string;
-  Published: number;
-  Description: string;
-}
-
-export interface SitemapRow extends Record<string, unknown>{
+export interface SitemapRow extends Record<string, unknown> {
   URL: string;
   IsExternal: boolean;
 }
 
-export type Creds = AxiosBasicCredentials
-
-export interface Email {
-  ID: string;
-}
+export type Creds = AxiosBasicCredentials;
 
 export interface Err {
   error: string;

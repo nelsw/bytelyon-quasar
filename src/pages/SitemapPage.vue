@@ -1,41 +1,31 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import type { Sitemap, SitemapRow } from 'src/types/model';
+import type { BotTable, SitemapRow } from 'src/types/model';
+import { BotType } from 'src/types/model';
 import { useRouter } from 'vue-router';
 import { useDataStore } from 'stores/data-store';
 import SitemapTable from 'components/table/SitemapTable.vue';
+import { domain } from 'src/types/base';
 
-const props = defineProps<{
-  data: Sitemap;
+defineProps<{
+  table: BotTable<SitemapRow>;
 }>();
 
 const $router = useRouter();
 const $store = useDataStore();
-const rows = ref<SitemapRow[]>([]);
 
 const onDelete = async () => {
-  await $store.Delete(props.data.Bot.Type, props.data.ID, true);
+  await $store.Delete(BotType.Sitemap, '', true);
   await $router.push({ name: 'index' });
 };
-
-onMounted(() => {
-  rows.value = props.data.Relative.map((URL: string) => {
-    return { URL: URL, IsExternal: false };
-  });
-  if (props.data.Remote === null) return;
-  props.data.Remote.map((URL: string): SitemapRow => {
-    return { URL: URL, IsExternal: true };
-  }).forEach((row: SitemapRow) => rows.value.push(row));
-});
 </script>
 
 <template>
   <q-page padding>
     <SitemapTable
       @delete="onDelete"
-      :domain="data.Domain"
-      :created-at="data.CreatedAt"
-      :rows="rows"
+      :domain="domain(table.Bot.target)"
+      :created-at="new Date(table.Bot.updatedAt || 0).toLocaleString()"
+      :rows="table.rows as Array<SitemapRow>"
     />
   </q-page>
 </template>

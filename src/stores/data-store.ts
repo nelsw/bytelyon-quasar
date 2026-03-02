@@ -19,7 +19,7 @@ const setup = () => {
       });
   };
 
-  const Delete = async (t: BotType, id:number, notify:boolean): Promise<boolean> => {
+  const Delete = async (t: BotType, id:string, notify:boolean): Promise<boolean> => {
     return await api
       .delete(`/${t}/id/${id}`)
       .then(() => {
@@ -36,8 +36,8 @@ const setup = () => {
       });
   }
 
-  const DeleteAll = async (t: BotType, ids: number[]): Promise<number[]> => {
-    const ok:number[] = [];
+  const DeleteAll = async (t: BotType, ids: string[]): Promise<string[]> => {
+    const ok:string[] = [];
     for (const id of ids) {
       if (await Delete(t, id, false)) {
         ok.push(id);

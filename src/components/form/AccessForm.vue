@@ -5,24 +5,33 @@ import PasswordInput from 'components/input/PasswordInput.vue';
 import { reactive } from 'vue';
 import { type Creds } from 'src/types/model';
 
-const emit = defineEmits<{ submit: [Creds] }>();
+const emit = defineEmits<{
+  login: [Creds];
+  signup: [Creds];
+}>();
 const creds = reactive<Creds>({ username: '', password: '' });
 </script>
 
 <template>
   <div class="q-px-md text-center q-my-md">
-    <div class="q-mb-md">
-      <span class="text-h5 text-grey-5 text-weight-medium">Welcome Back!</span>
-    </div>
-    <q-form @submit.prevent="emit('submit', creds)" class="row">
+    <q-form @submit.prevent="emit('signup', creds)" class="row">
       <EmailInput v-model="creds.username" />
-      <PasswordInput v-model="creds.password" />
+      <PasswordInput v-model="creds.password" show-reset />
       <q-btn
-        label="Login"
         type="submit"
+        label="Login"
+        color="indigo-14"
+        class="q-my-md full-width text-weight-bold"
         size="lg"
-        color="primary"
-        class="full-width text-weight-bold"
+        @click.prevent="emit('login', creds)"
+      />
+      <q-btn
+        label="Sign up"
+        size="md"
+        color="green-14"
+        class="full-width"
+        outline
+        @click.prevent="emit('signup', creds)"
       />
     </q-form>
   </div>

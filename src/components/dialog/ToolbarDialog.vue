@@ -5,9 +5,15 @@ defineProps<{
   title: string;
   heading?: string;
   copy?: boolean;
+  persistent?: boolean;
+  stubborn?: boolean;
 }>();
 
-const emit = defineEmits<{ copy: [void] }>();
+const emit = defineEmits<{
+  copy: [void];
+  close: [void];
+}>();
+
 const model = defineModel<boolean>({ required: true });
 const maximized = ref(true);
 </script>
@@ -16,6 +22,7 @@ const maximized = ref(true);
   <q-dialog
     v-model="model"
     :maximized="maximized"
+    :persistent="stubborn || persistent"
     transition-show="slide-up"
     transition-hide="slide-down"
     transition-duration="1000"
@@ -31,7 +38,7 @@ const maximized = ref(true);
           flat
         />
         <div class="text-h5" v-html="title" />
-        <div>
+        <div v-if="!stubborn">
           <q-btn
             dense
             flat
@@ -46,7 +53,7 @@ const maximized = ref(true);
             @click="maximized = true"
             :disable="maximized"
           />
-          <q-btn dense flat icon="mdi-close" v-close-popup />
+          <q-btn dense flat icon="mdi-close" @click="emit('close')" />
         </div>
       </q-bar>
 

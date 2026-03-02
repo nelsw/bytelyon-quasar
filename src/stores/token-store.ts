@@ -4,7 +4,6 @@ import { Loading } from 'quasar';
 import { ref } from 'vue';
 import { type NavigationFailure } from 'vue-router';
 import useNotifier from 'src/composable/useNotifier';
-import type { Email } from 'src/types/model';
 import { useLogger } from 'src/composable/useLogger';
 
 type thisType = ReturnType<typeof useTokenStore>;
@@ -17,17 +16,55 @@ interface Auth {
     message?: string;
   };
 }
+
+interface Claims {
+  iss: string; //'https://ByteLyon.com';
+  sub: string; //'019ca7c8-437a-7134-8c2b-c30d17dd62fc';
+  exp: number; //1772347378;
+  nbf: number; //1772345578;
+  iat: number; //1772345578;
+  jti: string; //'48e36a74-5526-4998-acfa-16fe4968971e';
+  aud: string[]; // anonymous or identified
+}
+
+const emptyClaims = { iss: '', sub: '', exp: 0, nbf: 0, iat: 0, jti: '', aud: [] };
+
 const $log = useLogger();
 const $notify = useNotifier();
 const setup = () => {
   const model = ref<Token>(null);
 
-  const signup = async (e: Email): Promise<boolean> => {
+  const claims = (): Claims => {
+    if (model.value === null) {
+      return emptyClaims;
+    }
+    try {
+      // Convert Base64Url to regular Base64
+      const base64Payload = (model.value.split('.')[1] as string)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+      // Decode Base64 and parse JSON
+      return JSON.parse(
+        decodeURIComponent(
+          atob(base64Payload)
+            .split('')
+            .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+            .join(''),
+        ),
+      );
+    } catch (error) {
+      console.error('Error decoding JWT:', error);
+      return emptyClaims;
+    }
+  };
+
+  const signup = async (auth: AxiosBasicCredentials): Promise<boolean> => {
     Loading.show({ spinnerColor: 'primary' });
-    setModel();
+    SetModel();
     return await api
-      .post(`/user/signup`, e)
-      .then(setModel)
+      .post(`/user/signup`, {}, { auth })
+      .then(SetModel)
       .then((): boolean => $notify.ok(null, `🥳`, `Check your email for an invite!`))
       .catch($notify.err)
       .finally(() => Loading.hide());
@@ -35,11 +72,33 @@ const setup = () => {
 
   const login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
     Loading.show({ spinnerColor: 'primary' });
-    setModel();
+    SetModel();
     return await api
       .post(`/user/login`, {}, { auth })
-      .then(setModel)
+      .then(SetModel)
       .then((): boolean => $notify.ok(null, `👋`, `Welcome`))
+      .catch($notify.err)
+      .finally(() => Loading.hide());
+  };
+
+  const forgotPass = async (auth: AxiosBasicCredentials): Promise<boolean> => {
+    Loading.show({ spinnerColor: 'primary' });
+    SetModel();
+    return await api
+      .post(`/user/forgot-password`, {}, { auth })
+      .then(SetModel)
+      .then((): boolean => $notify.ok(null, `📧`, `Reset link sent!`))
+      .catch($notify.err)
+      .finally(() => Loading.hide());
+  };
+
+  const changePass = async (auth: AxiosBasicCredentials): Promise<boolean> => {
+    Loading.show({ spinnerColor: 'primary' });
+    SetModel();
+    return await api
+      .post(`/user/change-password`, {}, { auth })
+      .then(SetModel)
+      .then((): boolean => $notify.ok(null, `🔑`, `Password Saved`))
       .catch($notify.err)
       .finally(() => Loading.hide());
   };
@@ -47,7 +106,7 @@ const setup = () => {
   // Cannot be an arrow function give "this"
   async function logout(this: thisType): Promise<NavigationFailure | void | undefined> {
     Loading.show({ spinnerColor: 'primary' });
-    setModel();
+    SetModel();
     await this.router.push({ name: 'login' });
     Loading.hide();
     $notify.ok(null, `👋`, `Come back soon!`);
@@ -56,14 +115,16 @@ const setup = () => {
 
   const authorized = (): boolean => !!model.value;
 
-  const setModel = (res?: AxiosResponse<Auth>): void => {
+  const SetModel = (res?: AxiosResponse<Auth>): void => {
     const token = res ? res.data.context.token : null;
     model.value = token;
     api.defaults.headers.common.Authorization = token ? `Bearer ${token}` : null;
-    $log.debug(null, `Token ${token ? 'set' : 'unset'}`);
+    $log.debug(token ? claims() : null, `Token ${token ? 'set' : 'unset'}: ${token}`);
   };
 
-  return { token: model, authorized, login, logout, signup };
+  const isAnonymous = (): boolean => claims().aud.includes('anonymous');
+
+  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass  };
 };
 
 export const useTokenStore = defineStore('token-store', setup, {
