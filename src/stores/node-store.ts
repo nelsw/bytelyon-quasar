@@ -1,7 +1,14 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { Loading, type QTreeLazyLoadParams, type QTreeNode, uid } from 'quasar';
-import type { Bot, BotData, NewsBotData, SearchBotData, SitemapBotData, SitemapRow } from 'src/types/model';
+import type {
+  Bot,
+  BotNewsResult,
+  BotResult,
+  BotSearchResult,
+  BotSitemapResult,
+  SitemapRow,
+} from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { useLogger } from 'src/composable/useLogger';
@@ -64,9 +71,8 @@ const setup = () => {
         const nodes: QTreeNode[] = [];
         for (const value of values) {
           if (value === null) {
-            continue
+            continue;
           }
-          $log.debug(value);
           for (const v of value) {
             nodes.push({
               id: uid(),
@@ -78,10 +84,8 @@ const setup = () => {
           }
         }
         return nodes;
-
       })
       .then((nodes: QTreeNode[]) => {
-        console.log(nodes);
         for (const node of nodes) {
           if (node?.bot?.type === BotType.Search) {
             searchModel?.children?.push(node);
@@ -93,7 +97,7 @@ const setup = () => {
         }
 
         for (const node of model) {
-          if (node?.children?.length  === 0) {
+          if (node?.children?.length === 0) {
             node?.children?.push({
               label: 'New',
               id: uid(),
@@ -109,30 +113,41 @@ const setup = () => {
   };
 
   const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
+    const bot = d.node.bot;
+
+    let target: string;
+    if (bot.type === BotType.Sitemap) {
+      target = btoa(bot.target);
+    } else {
+      target = bot.target;
+    }
+
     return await api
-      .get<Array<BotData>>(`/bot/${d.node.bot.Type}/data/${d.node.bot.ID}`)
-      .then((res: AxiosResponse<Array<BotData>>) => {
-        const b: Array<BotData> = res.status === 200 ? res.data : [];
-        $log.info(d, `LazyLoad Result Size [${b.length}]`);
-        return b;
+      .get<Array<BotResult>>(`/results/${bot.type}/target/${target}`)
+      .then((res: AxiosResponse<Array<BotResult>>) => {
+        $log.info(null, `LazyLoad Result Size [${res.data.length}]`);
+        return res.data;
       })
-      .then((data: Array<BotData>) => {
-        switch (d.node.bot.Type) {
+      .then((data: Array<BotResult>) => {
+        if (data === null) {
+          return [];
+        }
+        switch (bot.type) {
           /*
               Search & Sitemap
            */
           case BotType.Search:
           case BotType.Sitemap:
-            return data.map((botData: BotData) => {
+            return data.map((botData: BotResult) => {
               let rows: Array<unknown> = [];
 
-              if (d.node.bot.Type === BotType.Search) {
-                rows = (botData as SearchBotData).pages;
+              if (bot.type === BotType.Search) {
+                rows = (botData as BotSearchResult).pages;
               } else {
-                rows = (botData as SitemapBotData).relative.map((s: string): SitemapRow => {
+                rows = (botData as BotSitemapResult).relative.map((s: string): SitemapRow => {
                   return { URL: s, IsExternal: false };
                 });
-                const rem = (botData as SitemapBotData).remote;
+                const rem = (botData as BotSitemapResult).remote;
                 if (rem != null) {
                   rem
                     .map((s: string): SitemapRow => {
@@ -142,12 +157,12 @@ const setup = () => {
                 }
               }
 
-              const bd = botData as SearchBotData | SitemapBotData;
               return {
                 id: uid(),
-                label: new Date(bd.createdAt || '').toLocaleString(),
+                label: new Date(botData.createdAt).toLocaleString(),
                 data: {
-                  Bot: d.node.bot,
+                  Bot: bot,
+                  result: botData,
                   rows: rows,
                 },
               };
@@ -157,7 +172,7 @@ const setup = () => {
              */
           case BotType.News:
             return Object.entries(
-              Object.groupBy(data as Array<NewsBotData>, (newsBotData: NewsBotData) =>
+              Object.groupBy(data as Array<BotNewsResult>, (newsBotData: BotNewsResult) =>
                 new Date(newsBotData.published).toLocaleDateString(),
               ),
             ).map((value) => {
@@ -166,6 +181,7 @@ const setup = () => {
                 label: value[0],
                 data: {
                   Bot: d.node.bot,
+                  result: value[1],
                   rows: value[1] ?? [],
                 },
               };

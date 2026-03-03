@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { QTableColumn } from 'quasar';
-import type { BotTable, NewsBotData } from 'src/types/model';
+import type { BotNewsResult, BotTable } from 'src/types/model';
+import { BotType } from 'src/types/model';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import { onMounted, ref } from 'vue';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
@@ -9,9 +10,9 @@ import TrashBtn from 'components/btn/TrashBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import { useDataStore } from 'stores/data-store';
 
-const model = defineModel<BotTable<NewsBotData>>({ required: true });
+const model = defineModel<BotTable<BotType.News, BotNewsResult>>({ required: true });
 
-const columns: QTableColumn<NewsBotData>[] = [
+const columns: QTableColumn<BotNewsResult>[] = [
   {
     name: 'Open',
     label: 'Open',
@@ -47,14 +48,15 @@ const columns: QTableColumn<NewsBotData>[] = [
   },
 ];
 
-const selected = ref<NewsBotData[]>([]);
+const selected = ref<BotNewsResult[]>([]);
 const filter = ref<string>('');
 const $store = useDataStore();
 
 const onDelete = async () => {
   const ok = await $store.DeleteAll(
-    model.value.Bot.type,
-    selected.value.map((i: NewsBotData) => i.url),
+    BotType.News,
+    model.value.Bot.target,
+    selected.value.map((i: BotNewsResult) => i.url),
   );
   if (!ok) return;
   model.value.rows = model.value.rows.filter((n) => !selected.value.includes(n));
@@ -81,7 +83,7 @@ onMounted(() => {
       :rows="model.rows"
       :rows-per-page-options="[20, 50, 100, 0]"
       :pagination="{ sortBy: 'Published', descending: true }"
-      row-key="ID"
+      row-key="url"
       selection="multiple"
       color="primary"
       dense
@@ -97,9 +99,9 @@ onMounted(() => {
         <q-separator vertical spaced inset />
         <FilterInput :filter="filter" />
         <div class="absolute-center">
-          <span class="text-h5 text-weight-medium">{{ model.Bot.target }}</span>
+          <span class="text-h5 text-weight-medium text-uppercase">{{ model.Bot.target }}</span>
           <span v-if="model.rows.length > 0" class="text-body2 q-ml-sm">{{
-            new Date((model.rows[0] as NewsBotData).published).toLocaleDateString()
+            new Date((model.rows[0] as BotNewsResult).published).toLocaleDateString()
           }}</span>
         </div>
         <q-space />

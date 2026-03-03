@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { QTree, type QTreeNode } from 'quasar';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
-import type { Bot, BotTable } from 'src/types/model';
+import type  { Bot, BotTable } from 'src/types/model';
 import FilterInput from 'components/input/FilterInput.vue';
 import { useLogger } from 'src/composable/useLogger';
 import { useNodeStore } from 'stores/node-store';
@@ -67,14 +67,3 @@ watch(filter, (val) => {
   </transition>
 </template>
 
-<style lang="scss">
-//.q-tree > div:nth-child(1) > div:nth-child(1) > i:nth-child(2) {
-//  display: none !important;
-//}
-//.q-tree > div:nth-child(2) > div:nth-child(1) > i:nth-child(2) {
-//  display: none !important;
-//}
-//.q-tree > div:nth-child(3) > div:nth-child(1) > i:nth-child(2) {
-//  display: none !important;
-//}
-</style>

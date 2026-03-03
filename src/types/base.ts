@@ -30,3 +30,7 @@ export const path = (url: string) => {
   }
   return url.substring(slash, query);
 };
+
+export const base64 = (s: string) =>
+  btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+

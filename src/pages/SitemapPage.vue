@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import type { BotTable, SitemapRow } from 'src/types/model';
+import type { BotSitemapResult, BotTable, SitemapRow } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { useRouter } from 'vue-router';
 import { useDataStore } from 'stores/data-store';
 import SitemapTable from 'components/table/SitemapTable.vue';
 import { domain } from 'src/types/base';
 
-defineProps<{
-  table: BotTable<SitemapRow>;
+const props = defineProps<{
+  table: BotTable<BotType.Sitemap, SitemapRow>;
 }>();
 
 const $router = useRouter();
 const $store = useDataStore();
 
 const onDelete = async () => {
-  await $store.Delete(BotType.Sitemap, '', true);
-  await $router.push({ name: 'index' });
+  const id = (props.table.result as BotSitemapResult).ID;
+  const target = (props.table.result as BotSitemapResult).target;
+  await $store.Delete(BotType.Sitemap, target, id, true);
+  await $router.push('/dashboard');
 };
 </script>
 

@@ -11,7 +11,7 @@ const notify = (msg: string) => {
     message: `<div class="text-right">${msg}</div>`,
     position: 'bottom-right',
     textColor: 'white',
-    timeout: 2500,
+    timeout: 2000,
   });
 };
 
@@ -38,7 +38,8 @@ const useNotifier = () => {
 
 
   const err = (e: AxiosError<Err>, ...args: string[]) => {
-    let msg = e.response?.data?.error || e.message;
+    let msg = e.response?.data?.error || e?.message;
+    console.error(e);
     if (args.length > 0) {
       msg = args[0] as string;
     }

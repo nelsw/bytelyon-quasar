@@ -1,17 +1,18 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import type { BotType, Err } from 'src/types/model';
+import type { Err } from 'src/types/model';
+import { BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import { useLogger } from 'src/composable/useLogger';
+import { base64 } from 'src/types/base';
 
 const $log = useLogger();
 const $notify = useNotifier();
 
 const setup = () => {
-
-  const Find = async <T>(t: BotType, id:number): Promise<T[]> => {
+  const Find = async <T>(t: BotType, id: number): Promise<T[]> => {
     return await api
-      .get<T[]>(`/${t}/bot/${id}`)
+      .get<T[]>(`/bots/${t}/results/${id}`)
       .then((res: AxiosResponse<T[]>) => res.data)
       .catch((err: AxiosError) => {
         $log.err(err, `Find Bot Results ${t} ${id}`);
@@ -19,27 +20,38 @@ const setup = () => {
       });
   };
 
-  const Delete = async (t: BotType, id:string, notify:boolean): Promise<boolean> => {
+  const Delete = async (
+    t: BotType,
+    target: string,
+    id: string,
+    notify: boolean,
+  ): Promise<boolean> => {
+    if (t === BotType.News) {
+      id = base64(id);
+    }
+    if (t === BotType.Sitemap) {
+      target = base64(target);
+    }
     return await api
-      .delete(`/${t}/id/${id}`)
+      .delete(`/results/${t}/target/${target}/id/${id}`)
       .then(() => {
         if (notify) {
-          $notify.ok(null, `Delete Successfully`);
+          $notify.ok(null, `Deleted`);
         }
         return true;
       })
       .catch((err: AxiosError<Err>) => {
         if (notify) {
-          $notify.err(err, `Delete Bot Result ${t} ${id}`);
+          $notify.err(err, `Delete Failed`);
         }
         return false;
       });
-  }
+  };
 
-  const DeleteAll = async (t: BotType, ids: string[]): Promise<string[]> => {
-    const ok:string[] = [];
+  const DeleteAll = async (t: BotType, target: string, ids: string[]): Promise<string[]> => {
+    const ok: string[] = [];
     for (const id of ids) {
-      if (await Delete(t, id, false)) {
+      if (await Delete(t, target, id, false)) {
         ok.push(id);
       }
     }

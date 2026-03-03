@@ -27,7 +27,7 @@ const maximized = ref(true);
     transition-hide="slide-down"
     transition-duration="1000"
   >
-    <q-card class="bg-dark text-white">
+    <q-card class="bg-dark text-white" style="min-width: 350px">
       <q-bar class="flex justify-between">
         <q-btn
           v-if="copy"
@@ -53,7 +53,7 @@ const maximized = ref(true);
             @click="maximized = true"
             :disable="maximized"
           />
-          <q-btn dense flat icon="mdi-close" @click="emit('close')" />
+          <q-btn dense flat icon="mdi-close" @click="model = false" />
         </div>
       </q-bar>
 

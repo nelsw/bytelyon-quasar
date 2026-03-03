@@ -3,6 +3,7 @@ import NewPassDialog from 'components/dialog/NewPassDialog.vue';
 import { onMounted, ref } from 'vue';
 import LogoImg from 'components/img/LogoImg.vue';
 import { useRouter } from 'vue-router';
+import { useTokenStore } from 'stores/token-store';
 
 const props = defineProps<{
   id: string;
@@ -11,7 +12,14 @@ const props = defineProps<{
 const router = useRouter();
 
 const dialog = ref<boolean>(false);
+const $store = useTokenStore();
+const $router = useRouter();
 onMounted(async () => {
+  const ok = await $store.postToken(props.id);
+  if (!ok) {
+    await $router.push('/');
+  }
+
   console.log(props.id, props.type);
   if (props.type === 'reset') {
     dialog.value = true;
@@ -21,11 +29,9 @@ onMounted(async () => {
   try {
     // Simulate an API call to save data
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log('Data saved successfully!');
 
     // Wait for the navigation to finish
     await router.push('/dashboard');
-    console.log('Redirect complete.');
   } catch (error) {
     console.error('Error during save or redirect:', error);
   } // 3000 milliseconds = 3 seconds // 2000 milliseconds delay

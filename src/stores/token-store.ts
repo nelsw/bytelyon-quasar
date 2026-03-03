@@ -5,6 +5,8 @@ import { ref } from 'vue';
 import { type NavigationFailure } from 'vue-router';
 import useNotifier from 'src/composable/useNotifier';
 import { useLogger } from 'src/composable/useLogger';
+import type { AxiosError } from 'axios';
+import type { Err } from 'src/types/model';
 
 type thisType = ReturnType<typeof useTokenStore>;
 type Token = string | null;
@@ -59,11 +61,23 @@ const setup = () => {
     }
   };
 
+  const postToken = async (s:string): Promise<boolean> => {
+
+    return await api
+      .post(`/auth/token/${s}`)
+      .then(SetModel)
+      .then((): boolean => $notify.ok(null, `❤️`, `Welcome to the pack!`))
+      .catch((err:AxiosError<Err>) => {
+        return $notify.err(err, 'Invalid token; Retry request.')
+      })
+      .finally(() => Loading.hide());
+  };
+
   const signup = async (auth: AxiosBasicCredentials): Promise<boolean> => {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
     return await api
-      .post(`/user/signup`, {}, { auth })
+      .post(`/auth/signup`, {}, { auth })
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `🥳`, `Check your email for an invite!`))
       .catch($notify.err)
@@ -74,7 +88,7 @@ const setup = () => {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
     return await api
-      .post(`/user/login`, {}, { auth })
+      .post(`/auth/login`, {}, { auth })
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `👋`, `Welcome`))
       .catch($notify.err)
@@ -85,7 +99,7 @@ const setup = () => {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
     return await api
-      .post(`/user/forgot-password`, {}, { auth })
+      .post(`/auth/forgot-password`, {}, { auth })
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `📧`, `Reset link sent!`))
       .catch($notify.err)
@@ -96,7 +110,7 @@ const setup = () => {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
     return await api
-      .post(`/user/change-password`, {}, { auth })
+      .post(`/auth/change-password`, {}, { auth })
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `🔑`, `Password Saved`))
       .catch($notify.err)
@@ -107,7 +121,7 @@ const setup = () => {
   async function logout(this: thisType): Promise<NavigationFailure | void | undefined> {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
-    await this.router.push({ name: 'login' });
+    await this.router.push({ path: '/login' });
     Loading.hide();
     $notify.ok(null, `👋`, `Come back soon!`);
     return;
@@ -126,7 +140,7 @@ const setup = () => {
 
   const userID = (): string => claims().sub;
 
-  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID  };
+  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken  };
 };
 
 export const useTokenStore = defineStore('token-store', setup, {

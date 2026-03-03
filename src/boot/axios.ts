@@ -18,7 +18,7 @@ const api = axios.create({
   baseURL: process.env.API,
 });
 
-export default defineBoot(({ app, store }) => {
+export default defineBoot(({ app, store, router }) => {
   // for use inside Vue files through this.$axios and this.$api
   app.config.globalProperties.$axios = axios;
   app.config.globalProperties.$api = api;
@@ -34,10 +34,10 @@ export default defineBoot(({ app, store }) => {
     console.error(e);
     if (e.status === 401 || e.status === 403) {
       api.defaults.headers.common.Authorization = null;
-      // return router.replace({
-      //   path: '/login',
-      //   query: { next: router.currentRoute.value.fullPath },
-      // });
+      return router.replace({
+        path: '/login',
+        query: { next: router.currentRoute.value.fullPath },
+      });
     }
 
     return Promise.reject(e);

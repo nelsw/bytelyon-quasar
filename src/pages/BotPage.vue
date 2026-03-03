@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Bot} from 'src/types/model';
+import type { Bot } from 'src/types/model';
 import { IsNewBot, IsOldBot } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import TargetInput from 'components/input/TargetInput.vue';
@@ -9,6 +9,7 @@ import BlackListSelect from 'components/select/BlackListSelect.vue';
 import { useBotStore } from 'stores/bot-store';
 import { computed, onMounted, onUpdated, ref } from 'vue';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
+import { useRouter } from 'vue-router';
 
 const emit = defineEmits<{
   deleted: [void];
@@ -27,7 +28,7 @@ const frequency = ref<number>(1);
 const color = computed(() => (IsOldBot(props.bot) ? 'amber-13' : 'green-13'));
 const isCreate = computed(() => IsNewBot(props.bot));
 const isUpdate = computed(() => IsOldBot(props.bot));
-
+const $router = useRouter();
 const onSubmit = async () => {
   const b: Bot = props.bot;
   b.target = target.value;
@@ -36,11 +37,14 @@ const onSubmit = async () => {
   }
   b.blackList = blackList.value;
   b.frequency = frequency.value;
-  await $bots.Save(b);
+  const ok = await $bots.Save(b);
+  if (ok) {
+    await $router.push('/dashboard');
+  }
 };
 
 const onDelete = async () => {
-  if (await $bots.Delete( props.bot.type, props.bot.target)) emit('deleted');
+  if (await $bots.Delete(props.bot.type, props.bot.target)) emit('deleted');
 };
 
 const onChange = () => {

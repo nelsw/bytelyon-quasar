@@ -7,6 +7,7 @@ import { useNodeStore } from 'stores/node-store';
 import type { AxiosError } from 'axios';
 import { useLogger } from 'src/composable/useLogger';
 import { useTokenStore } from 'stores/token-store';
+import { base64 } from 'src/types/base';
 
 const $notify = useNotifier();
 const $tokenStore = useTokenStore();
@@ -20,17 +21,17 @@ const setup = () => {
     b.userID = $tokenStore.userID();
     return await api
       .post(`/bots/${b.type}`, b)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `🥳`, `Bot Created`))
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Created`))
       .catch($notify.err)
       .finally($nodes.Load);
   };
 
   const Update = async (b: Bot): Promise<boolean | void> => {
-    $log.debug(b, `Updated`);
+    $log.debug(b, `Update`);
     b.userID = $tokenStore.userID();
     return await api
       .put(`/bots/${b.type}`, b)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Bot Updated`))
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Updated`))
       .catch($notify.err)
       .finally($nodes.Load);
   };
@@ -40,8 +41,9 @@ const setup = () => {
     return await api
       .get<SearchBot[]>('/bots/search')
       .then((res: AxiosResponse<SearchBot[]>) => {
-        $log.info(res.data, `LoadSearchBots`);
-        return res.data;
+        const data = res?.data || [];
+        $log.info(null, `LoadSearchBots [${data.length}]`);
+        return data;
       })
       .catch((err: AxiosError<Err>): SearchBot[] => {
         $log.err(err, `LoadSearchBots`);
@@ -53,8 +55,9 @@ const setup = () => {
     return await api
       .get<SitemapBot[]>('/bots/sitemap')
       .then((res: AxiosResponse<SitemapBot[]>) => {
-        $log.info(res.data, `LoadSitemapBots`);
-        return res.status === 200 ? res.data : [];
+        const data = res?.data || [];
+        $log.info(null, `LoadSitemapBots [${data.length}]`);
+        return data;
       })
       .catch((err: AxiosError<Err>): SitemapBot[] => {
         $notify.err(err);
@@ -66,24 +69,25 @@ const setup = () => {
     return await api
       .get<NewsBot[]>('/bots/news')
       .then((res: AxiosResponse<NewsBot[]>) => {
-        $log.info(res.data, `LoadNewsBots`);
-        return res.status === 200 ? res.data : [];
+        const data = res?.data || [];
+        $log.info(null, `LoadNewsBots [${data.length}]`);
+        return data;
       })
       .catch((err: AxiosError<Err>): NewsBot[] => {
-        $notify.err(err);
+        $log.err(err, `LoadNewsBots`);
         return [];
       });
   };
 
   const Delete = async (type: BotType, target: string): Promise<boolean> => {
     if (type === BotType.Sitemap) {
-      target = btoa(target)
+      target = base64(target);
     }
-      return await api
-        .delete(`/bots/${type}/id/${target}`)
-        .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
-        .catch($notify.err)
-        .finally($nodes.Load);
+    return await api
+      .delete(`/bots/${type}/target/${target}`)
+      .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
+      .catch($notify.err)
+      .finally($nodes.Load);
   };
 
   return {

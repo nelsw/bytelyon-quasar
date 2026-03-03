@@ -1,26 +1,32 @@
 import type { RouteRecordRaw } from 'vue-router';
+import TokenPage from 'pages/TokenPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '',
-    name: 'index',
     meta: { requiresAuth: false },
     component: () => import('layouts/EmptyLayout.vue'),
-    children: [{ path: '', name: 'login', component: () => import('pages/LoginPage.vue') }],
+    children: [
+      {
+        path: '',
+        alias: '/login',
+        component: () => import('pages/LoginPage.vue'),
+      },
+      {
+        path: '/dashboard',
+        meta: { requiresAuth: true },
+        component: () => import('pages/IndexPage.vue'),
+      },
+      {
+        path: '/tkn/:type/:id',
+        name: 'token',
+        meta: { requiresAuth: false },
+        component: TokenPage,
+        props: true,
+      },
+    ],
   },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    meta: { requiresAuth: true },
-    component: () => import('pages/IndexPage.vue'),
-  },
-  {
-    path: '/tkn/:type/:id',
-    name: 'token',
-    meta: { requiresAuth: false },
-    props: true,
-    component: () => import('pages/TokenPage.vue'),
-  },
+
   // Always leave this as last one, but we can also remove it
   {
     path: '/:catchAll(.*)*',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BotTable, PageData } from 'src/types/model';
+import type { BotSearchResult, BotTable, SearchBotData } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import type { QTableColumn } from 'quasar';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
@@ -11,12 +11,13 @@ import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import { useDataStore } from 'stores/data-store';
+import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
 
-defineProps<{
-  table: BotTable<PageData>;
+const props = defineProps<{
+  table: BotTable<BotType.Search, SearchBotData>;
 }>();
 
-const columns: QTableColumn<PageData>[] = [
+const columns: QTableColumn<SearchBotData>[] = [
   {
     name: 'Open',
     label: 'Open',
@@ -55,13 +56,15 @@ const visibleCols = ref<string[]>([]);
 
 const $store = useDataStore();
 const onDelete = async () => {
-  await $store.Delete(BotType.Search, '', true);
+  const id = (props.table.result as BotSearchResult).ID;
+  await $store.Delete(BotType.Search, props.table.Bot.target, id, true);
 };
 
 onMounted(() => {
   columnNames.value = columns.map((col) => col.name);
   visibleCols.value = columnNames.value.filter((s) => s !== 'ID');
 });
+const result = () => props.table.result as BotSearchResult;
 </script>
 
 <template>
@@ -84,23 +87,25 @@ onMounted(() => {
       <template #top="props">
         <TrashBtn @click="onDelete" />
         <q-separator vertical spaced inset />
-        <!--        <ViewJsonBtn-->
-        <!--          v-if="data.pages.length > 0 && data?.pages[0]?.url.includes('google.com')"-->
-        <!--          :title="data?.pages[0]?.title"-->
-        <!--          :content="data?.pages[0]?.json"-->
-        <!--        />-->
-        <!--        <q-separator-->
-        <!--          v-if="data.pages.length > 0 && data?.pages[0]?.url.includes('google.com')"-->
-        <!--          vertical-->
-        <!--          spaced-->
-        <!--          inset-->
-        <!--        />-->
+        <ViewJsonBtn
+          v-if="result().pages.length > 0 && result().pages[0]?.url.includes('google.com')"
+          :title="result().pages[0]?.title as string"
+          :content="result().pages[0]?.json as object"
+        />
+        <q-separator
+          v-if="result().pages.length > 0 && result().pages[0]?.url.includes('google.com')"
+          vertical
+          spaced
+          inset
+        />
         <FilterInput v-model="filter" />
         <div class="absolute-center">
-          <!--          <span class="text-h5 text-weight-medium">{{ data..target }}</span>-->
-          <!--          <span class="text-body2 q-ml-sm">{{-->
-          <!--            new Date(data.Bot.updatedAt || '').toLocaleString()-->
-          <!--          }}</span>-->
+          <span class="text-h5 text-weight-medium">{{
+            (table.result as BotSearchResult).target
+          }}</span>
+          <span class="text-body2 q-ml-sm">{{
+            new Date(table.Bot.updatedAt || '').toLocaleString()
+          }}</span>
         </div>
         <q-space />
         <ColumnsBtn v-model="visibleCols" :names="columnNames" />
@@ -111,7 +116,10 @@ onMounted(() => {
         <q-tr :props="props">
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
             <span v-if="col.name === 'Open'">
-              <ViewImgBtn :title="props.row.Title" :url="`http://localhost:8080${props.row.IMG}`" />
+              <ViewImgBtn
+                :title="props.row.Title"
+                :url="`https://bytelyon-public.s3.amazonaws.com/${result().pages[0]?.img}`"
+              />
               <OpenInNewBtn :url="col.value" />
             </span>
             <span v-else>{{ col.value }}</span>

@@ -12,31 +12,54 @@ export type Bot<T = BotType> = {
   updatedAt: number | null;
 };
 
-export type NewsBot = Bot<BotType.News>;
-export type SearchBot = Bot<BotType.Search> & { headless: boolean };
-export type SitemapBot = Bot<BotType.Sitemap>;
-
-export type NewsBotData = {
+export type BotResult<T = BotType> = {
   userID: string;
+  createdAt: Date;
+  updatedAt: Date;
+  type: T,
+}
+
+export type BotNewsResult = BotResult<BotType.News> & {
   url: string;
+  target: string;
   title: string;
   source: string;
   description: string;
-  published: number;
+  published: string;
 };
 
-export type SitemapBotData = {
-  userID: string;
-  createdAt: number;
-  domain: string;
-  url: string;
+export type BotSitemapResult = BotResult<BotType.Sitemap> & {
+  ID: string;
+  target: string;
   relative: string[];
   remote: string[];
 };
 
+export type BotSearchResult = BotResult<BotType.Search> & {
+  ID: string;
+  target: string;
+  pages: Array<{
+    idx: number;
+    url: string;
+    title: string;
+    img: string;
+    png: string;
+    json: object;
+  }>;
+};
+
+export type NewsBot = Bot<BotType.News>;
+export type SearchBot = Bot<BotType.Search> & { headless: boolean };
+export type SitemapBot = Bot<BotType.Sitemap>;
+
+
+
 export type SearchBotData = {
   userID: string;
   createdAt: number;
+  target: string;
+  url: string;
+  title: string;
   pages: PageData[];
 };
 
@@ -49,10 +72,10 @@ export type PageData = {
   json: object;
 };
 
-export type BotData = SearchBotData | SitemapBotData | NewsBotData;
-export interface BotTable<T> {
-  Bot: Bot;
-  rows: Array<T>;
+export interface BotTable<T = BotType, R = unknown> {
+  Bot: Bot<T>;
+  result: BotResult;
+  rows: Array<R>;
 }
 
 export const enum BotType {
