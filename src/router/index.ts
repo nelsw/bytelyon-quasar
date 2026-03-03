@@ -33,5 +33,31 @@ export default defineRouter(async function () {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
+  Router.beforeEach((to,) => {
+
+
+
+    const tkn = to.query['tkn'];
+    if (tkn !== undefined) {
+      // call it
+      // it should return a login payload with jwt token
+    }
+
+
+    const typ = to.query.typ;
+    if (typ !== undefined) {
+
+      if (typ === 'confirm') {
+        // just redirect to dash
+        // enjoy your new token
+        // bye
+      }
+
+      if (typ === 'reset') {
+        // display persistent dialog and make them submit a new password
+      }
+    }
+  });
+
   return new Promise((resolve) => resolve(Router));
 });

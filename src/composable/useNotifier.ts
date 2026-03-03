@@ -1,43 +1,60 @@
 import { Notify } from 'quasar';
-import { useLogger } from 'src/composable/useLogger';
-const $log = useLogger();
+import type { AxiosError } from 'boot/axios';
+import type { Err } from 'src/types/model';
+
+
+const symbolSpan = (s: string): string => `<span style="margin-right: 8px;">${s}</span>`;
+const notify = (msg: string) => {
+  Notify.create({
+    color: 'dark',
+    html: true,
+    message: `<div class="text-right">${msg}</div>`,
+    position: 'bottom-right',
+    textColor: 'white',
+    timeout: 2000,
+  });
+};
+
 const useNotifier = () => {
 
-  const ok = (u:unknown, s:string) => {
-    $log.info(u, s);
-    Notify.create({
-      message: s,
-      color: 'dark',
-      icon: 'mdi-check',
-      position: 'bottom',
-      textColor: 'primary',
-    });
-    return true;
-  }
-
-  const err = (e:Error, ...args: string[]) => {
-    $log.err(e, ...args);
-    let msg = `Failed to ${args[0]};<br>`;
-    if (args.length > 1) {
-      msg += `${args[1]}`;
-    } else {
-      msg += `Contact the ByteLyon tamer.`;
+  const ok = (u: unknown, ...args: string[]) => {
+    if (u) {
+      console.debug(u);
     }
-    Notify.create({
-      classes: 'text-center',
-      html: true,
-      message: msg,
-      icon: 'mdi-alert-circle',
-      textColor: 'red-13',
-      position: 'bottom',
-      color: 'dark',
-    });
+
+    if (args.length === 0) return true;
+
+    let symbol:string = `🦁`
+    let msg:string = args[0] as string;
+    if (args.length > 1) {
+      symbol = msg;
+      msg = args[1] as string;
+    }
+
+    notify(`${symbolSpan(symbol)}${msg}`);
+
+    return true;
   };
+
+
+  const err = (e: AxiosError<Err>, ...args: string[]) => {
+    let msg = e.response?.data?.error || e?.message;
+    console.error(e);
+    if (args.length > 0) {
+      msg = args[0] as string;
+    }
+
+    notify(`${symbolSpan(`⛔️`)}${msg}`);
+
+    return false;
+  };
+
+
 
   return {
     ok,
     err,
-  }
-}
+  };
+};
 
 export default useNotifier;

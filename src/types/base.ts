@@ -1,9 +1,3 @@
-export const capitalize = (text: string) =>
-  text.replace(/\w\S*/g, (s) => s.charAt(0).toUpperCase() + s.substring(1).toLowerCase());
-
-export const truncateString = (s: string, l: number) =>
-  s.length > l ? s.slice(0, l - 3) + '...' : s;
-
 export const domain = (url: string) => {
   if (url.startsWith('https://')) {
     url = url.substring(8);
@@ -36,3 +30,7 @@ export const path = (url: string) => {
   }
   return url.substring(slash, query);
 };
+
+export const base64 = (s: string) =>
+  btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+

@@ -1,21 +1,81 @@
-export interface Model {
-  ID: number;
-  CreatedAt: string | null;
-  UpdatedAt: string | null;
+import type { AxiosBasicCredentials } from 'axios';
+
+export const IsOldBot = (bot: Bot) => !IsNewBot(bot);
+export const IsNewBot = (bot: Bot) => bot.updatedAt === null;
+
+export type Bot<T = BotType> = {
+  userID: string;
+  type: T;
+  frequency: number;
+  target: string;
+  blackList: string[];
+  updatedAt: number | null;
+};
+
+export type BotResult<T = BotType> = {
+  userID: string;
+  createdAt: Date;
+  updatedAt: Date;
+  type: T,
 }
 
-export type Bots = Bot[];
-export type BotData = BotDatum[];
-export type BotDatum = Search | Sitemap | News;
-export interface BotTable {
-  Bot: Bot;
-  rows: string[] | News[];
-}
-export interface Bot<T = BotType> extends Model {
-  Type: T;
-  Frequency: number;
-  Target: string;
-  BlackList: string[];
+export type BotNewsResult = BotResult<BotType.News> & {
+  url: string;
+  target: string;
+  title: string;
+  source: string;
+  description: string;
+  published: string;
+};
+
+export type BotSitemapResult = BotResult<BotType.Sitemap> & {
+  ID: string;
+  target: string;
+  relative: string[];
+  remote: string[];
+};
+
+export type BotSearchResult = BotResult<BotType.Search> & {
+  ID: string;
+  target: string;
+  pages: Array<{
+    idx: number;
+    url: string;
+    title: string;
+    img: string;
+    png: string;
+    json: object;
+  }>;
+};
+
+export type NewsBot = Bot<BotType.News>;
+export type SearchBot = Bot<BotType.Search> & { headless: boolean };
+export type SitemapBot = Bot<BotType.Sitemap>;
+
+
+
+export type SearchBotData = {
+  userID: string;
+  createdAt: number;
+  target: string;
+  url: string;
+  title: string;
+  pages: PageData[];
+};
+
+export type PageData = {
+  idx: number;
+  url: string;
+  title: string;
+  img: string;
+  png: string;
+  json: object;
+};
+
+export interface BotTable<T = BotType, R = unknown> {
+  Bot: Bot<T>;
+  result: BotResult;
+  rows: Array<R>;
 }
 
 export const enum BotType {
@@ -24,40 +84,13 @@ export const enum BotType {
   News = 'news',
 }
 
-export interface Search extends Model {
-  Bot: Bot;
-  BotID: number;
-  Pages: Page[];
-}
-
-export interface Page extends Model {
-  SearchID: number;
-  URL: string;
-  Title: string;
-  JSON: object | null;
-}
-
-export interface Sitemap extends Model {
-  Bot: Bot;
-  BotID: number;
-  URL: string;
-  Domain: string;
-  Relative: string[];
-  Remote: string[];
-}
-
-export interface News extends Model {
-  Bot: Bot;
-  BotID: number;
-  URL: string;
-  Title: string;
-  Source: string;
-  Published: number;
-  Description: string;
-}
-
-export interface SitemapRow extends Record<string, unknown>{
+export interface SitemapRow extends Record<string, unknown> {
   URL: string;
   IsExternal: boolean;
 }
 
+export type Creds = AxiosBasicCredentials;
+
+export interface Err {
+  error: string;
+}

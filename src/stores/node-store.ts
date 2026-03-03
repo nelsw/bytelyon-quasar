@@ -1,22 +1,28 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { Loading, type QTreeLazyLoadParams, type QTreeNode, uid } from 'quasar';
-import type { Bot, BotData, BotDatum, Bots, News } from 'src/types/model';
+import type {
+  Bot,
+  BotNewsResult,
+  BotResult,
+  BotSearchResult,
+  BotSitemapResult,
+  SitemapRow,
+} from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { useLogger } from 'src/composable/useLogger';
-import { domain } from 'src/types/base';
 import { useBotStore } from 'stores/bot-store';
+import { domain } from 'src/types/base';
 
 export const NewBot = <T = BotType>(t: T): Bot<T> => {
   return {
-    ID: 0,
-    CreatedAt: null,
-    UpdatedAt: null,
-    Type: t,
-    Frequency: 1,
-    Target: '',
-    BlackList: [],
+    userID: '',
+    type: t,
+    frequency: 1,
+    target: '',
+    blackList: [],
+    updatedAt: null,
   };
 };
 
@@ -56,29 +62,40 @@ const setup = () => {
     model.splice(0, 3);
     model.push(searchModel, sitemapModel, newsModel);
 
-    await $bots
-      .Load()
-      .then((bots: Bots) =>
-        bots.map((bot: Bot): QTreeNode => {
-          return {
-            id: uid(),
-            label: bot.Type === BotType.Sitemap ? domain(bot.Target) : bot.Target,
-            bot: bot,
-            children: [],
-            lazy: true,
-          };
-        }),
-      )
+    const searchBotPromise = $bots.LoadSearchBots();
+    const sitemapBotPromise = $bots.LoadSitemapBots();
+    const newsBotPromise = $bots.LoadNewsBots();
+
+    Promise.all([searchBotPromise, sitemapBotPromise, newsBotPromise])
+      .then((values) => {
+        const nodes: QTreeNode[] = [];
+        for (const value of values) {
+          if (value === null) {
+            continue;
+          }
+          for (const v of value) {
+            nodes.push({
+              id: uid(),
+              label: v.type === BotType.Sitemap ? domain(v.target) : v.target,
+              bot: v,
+              children: [],
+              lazy: true,
+            });
+          }
+        }
+        return nodes;
+      })
       .then((nodes: QTreeNode[]) => {
         for (const node of nodes) {
-          if (node.bot.Type === BotType.Search) {
+          if (node?.bot?.type === BotType.Search) {
             searchModel?.children?.push(node);
-          } else if (node.bot.Type === BotType.Sitemap) {
+          } else if (node?.bot?.type === BotType.Sitemap) {
             sitemapModel?.children?.push(node);
-          } else if (node.bot.Type === BotType.News) {
+          } else if (node?.bot?.type === BotType.News) {
             newsModel?.children?.push(node);
           }
         }
+
         for (const node of model) {
           if (node?.children?.length === 0) {
             node?.children?.push({
@@ -91,29 +108,63 @@ const setup = () => {
           }
         }
       })
+      .catch((e) => console.log(e))
       .finally(Loading.hide);
   };
 
   const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
+    const bot = d.node.bot;
+
+    let target: string;
+    if (bot.type === BotType.Sitemap) {
+      target = btoa(bot.target);
+    } else {
+      target = bot.target;
+    }
+
     return await api
-      .get<BotData>(`/${d.node.bot.Type}/bot/${d.node.bot.ID}`)
-      .then((res: AxiosResponse<BotData>) => {
-        const b: BotData = res.status === 200 ? res.data : [];
-        $log.info(d, `LazyLoad Result Size [${b.length}]`);
-        return b;
+      .get<Array<BotResult>>(`/results/${bot.type}/target/${target}`)
+      .then((res: AxiosResponse<Array<BotResult>>) => {
+        $log.info(null, `LazyLoad Result Size [${res.data.length}]`);
+        return res.data;
       })
-      .then((data: BotData) => {
-        switch (d.node.bot.Type) {
+      .then((data: Array<BotResult>) => {
+        if (data === null) {
+          return [];
+        }
+        switch (bot.type) {
           /*
               Search & Sitemap
            */
           case BotType.Search:
           case BotType.Sitemap:
-            return data.map((d: BotDatum) => {
+            return data.map((botData: BotResult) => {
+              let rows: Array<unknown> = [];
+
+              if (bot.type === BotType.Search) {
+                rows = (botData as BotSearchResult).pages;
+              } else {
+                rows = (botData as BotSitemapResult).relative.map((s: string): SitemapRow => {
+                  return { URL: s, IsExternal: false };
+                });
+                const rem = (botData as BotSitemapResult).remote;
+                if (rem != null) {
+                  rem
+                    .map((s: string): SitemapRow => {
+                      return { URL: s, IsExternal: true };
+                    })
+                    .forEach((row: SitemapRow) => rows.push(row));
+                }
+              }
+
               return {
                 id: uid(),
-                label: new Date(d.CreatedAt || '').toLocaleString(),
-                data: d,
+                label: new Date(botData.createdAt).toLocaleString(),
+                data: {
+                  Bot: bot,
+                  result: botData,
+                  rows: rows,
+                },
               };
             });
           /*
@@ -121,8 +172,8 @@ const setup = () => {
              */
           case BotType.News:
             return Object.entries(
-              Object.groupBy(data as News[], (news: News) =>
-                new Date(news.Published).toLocaleDateString(),
+              Object.groupBy(data as Array<BotNewsResult>, (newsBotData: BotNewsResult) =>
+                new Date(newsBotData.published).toLocaleDateString(),
               ),
             ).map((value) => {
               return {
@@ -130,6 +181,7 @@ const setup = () => {
                 label: value[0],
                 data: {
                   Bot: d.node.bot,
+                  result: value[1],
                   rows: value[1] ?? [],
                 },
               };
