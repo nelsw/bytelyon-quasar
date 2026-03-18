@@ -20,7 +20,7 @@ const setup = () => {
     $log.debug(b, `Create`);
     b.userID = $tokenStore.userID();
     return await api
-      .post(`/bots/${b.type}`, b)
+      .put(`/bots?type=${b.type}`, b)
       .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Created`))
       .catch($notify.err)
       .finally($nodes.Load);
@@ -30,7 +30,7 @@ const setup = () => {
     $log.debug(b, `Update`);
     b.userID = $tokenStore.userID();
     return await api
-      .put(`/bots/${b.type}`, b)
+      .put(`/bots?type=${b.type}`, b)
       .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Updated`))
       .catch($notify.err)
       .finally($nodes.Load);
@@ -39,7 +39,7 @@ const setup = () => {
   const $log = useLogger();
   const LoadSearchBots = async (): Promise<SearchBot[]> => {
     return await api
-      .get<SearchBot[]>('/bots/search')
+      .get<SearchBot[]>('/bots?type=search')
       .then((res: AxiosResponse<SearchBot[]>) => {
         const data = res?.data || [];
         $log.info(null, `LoadSearchBots [${data.length}]`);
@@ -53,7 +53,7 @@ const setup = () => {
 
   const LoadSitemapBots = async (): Promise<SitemapBot[]> => {
     return await api
-      .get<SitemapBot[]>('/bots/sitemap')
+      .get<SitemapBot[]>('/bots?type=sitemap')
       .then((res: AxiosResponse<SitemapBot[]>) => {
         const data = res?.data || [];
         $log.info(null, `LoadSitemapBots [${data.length}]`);
@@ -67,7 +67,7 @@ const setup = () => {
 
   const LoadNewsBots = async (): Promise<NewsBot[]> => {
     return await api
-      .get<NewsBot[]>('/bots/news')
+      .get<NewsBot[]>('/bots?type=news')
       .then((res: AxiosResponse<NewsBot[]>) => {
         const data = res?.data || [];
         $log.info(null, `LoadNewsBots [${data.length}]`);
@@ -84,7 +84,7 @@ const setup = () => {
       target = base64(target);
     }
     return await api
-      .delete(`/bots/${type}/target/${target}`)
+      .delete(`/bots?type=${type}&target=${target}`)
       .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
       .catch($notify.err)
       .finally($nodes.Load);

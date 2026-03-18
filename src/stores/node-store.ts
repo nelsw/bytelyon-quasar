@@ -14,6 +14,7 @@ import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import { useLogger } from 'src/composable/useLogger';
 import { useBotStore } from 'stores/bot-store';
 import { domain } from 'src/types/base';
+import { decodeTime } from 'ulid';
 
 export const NewBot = <T = BotType>(t: T): Bot<T> => {
   return {
@@ -115,21 +116,17 @@ const setup = () => {
   const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
     const bot = d.node.bot;
 
-    let target: string;
-    if (bot.type === BotType.Sitemap) {
-      target = btoa(bot.target);
-    } else {
-      target = bot.target;
-    }
+
 
     return await api
-      .get<Array<BotResult>>(`/results/${bot.type}/target/${target}`)
+      .get<Array<BotResult>>(`/bots?type=${bot.type}&id=${bot.id}`)
       .then((res: AxiosResponse<Array<BotResult>>) => {
-        $log.info(null, `LazyLoad Result Size [${res.data.length}]`);
+        $log.info(res.data, `LazyLoad Result Size [${res.data.length}]`);
+
         return res.data;
       })
-      .then((data: Array<BotResult>) => {
-        if (data === null) {
+      .then((results: Array<BotResult>) => {
+        if (results === null) {
           return [];
         }
         switch (bot.type) {
@@ -138,16 +135,16 @@ const setup = () => {
            */
           case BotType.Search:
           case BotType.Sitemap:
-            return data.map((botData: BotResult) => {
+            return results.map((result: BotResult) => {
               let rows: Array<unknown> = [];
-
+console.debug(result.id)
               if (bot.type === BotType.Search) {
-                rows = (botData as BotSearchResult).pages;
+                rows = (result as BotSearchResult).pages;
               } else {
-                rows = (botData as BotSitemapResult).relative.map((s: string): SitemapRow => {
+                rows = (result as BotSitemapResult).relative.map((s: string): SitemapRow => {
                   return { URL: s, IsExternal: false };
                 });
-                const rem = (botData as BotSitemapResult).remote;
+                const rem = (result as BotSitemapResult).remote;
                 if (rem != null) {
                   rem
                     .map((s: string): SitemapRow => {
@@ -159,10 +156,10 @@ const setup = () => {
 
               return {
                 id: uid(),
-                label: new Date(botData.createdAt).toLocaleString(),
+                label: new Date(decodeTime(result.id)).toLocaleString(),
                 data: {
                   Bot: bot,
-                  result: botData,
+                  result: result,
                   rows: rows,
                 },
               };
@@ -171,18 +168,20 @@ const setup = () => {
                 News
              */
           case BotType.News:
+
             return Object.entries(
-              Object.groupBy(data as Array<BotNewsResult>, (newsBotData: BotNewsResult) =>
-                new Date(newsBotData.published).toLocaleDateString(),
+              Object.groupBy(
+                results as Array<BotNewsResult>,
+                (newsBotData: BotNewsResult) => newsBotData.publishedAt,
               ),
-            ).map((value) => {
+            ).map((result) => {
               return {
                 id: uid(),
-                label: value[0],
+                label: result[0],
                 data: {
                   Bot: d.node.bot,
-                  result: value[1],
-                  rows: value[1] ?? [],
+                  result: result[1],
+                  rows: result[1] ?? [],
                 },
               };
             });

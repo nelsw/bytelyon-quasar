@@ -19,6 +19,7 @@ const dialog = ref(false);
     lazy-rules="ondemand"
     name="password"
     type="password"
+    hint="Demo123!"
   >
     <template #prepend>
       <q-icon name="mdi-lock-outline" />

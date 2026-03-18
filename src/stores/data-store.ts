@@ -12,7 +12,7 @@ const $notify = useNotifier();
 const setup = () => {
   const Find = async <T>(t: BotType, id: number): Promise<T[]> => {
     return await api
-      .get<T[]>(`/bots/${t}/results/${id}`)
+      .get<T[]>(`/bots?type=${t}&id=${id}`)
       .then((res: AxiosResponse<T[]>) => res.data)
       .catch((err: AxiosError) => {
         $log.err(err, `Find Bot Results ${t} ${id}`);
@@ -26,14 +26,11 @@ const setup = () => {
     id: string,
     notify: boolean,
   ): Promise<boolean> => {
-    if (t === BotType.News) {
-      id = base64(id);
-    }
     if (t === BotType.Sitemap) {
       target = base64(target);
     }
     return await api
-      .delete(`/results/${t}/target/${target}/id/${id}`)
+      .delete(`/bots?type=${t}&target=${target}&id=${id}`)
       .then(() => {
         if (notify) {
           $notify.ok(null, `Deleted`);

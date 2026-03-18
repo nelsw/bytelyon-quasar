@@ -23,7 +23,7 @@ export default defineConfig(() => {
       vueRouterMode: 'history',
       env: {
         // Public API
-        API: 'http://localhost:8080/api',
+        API: 'https://api.bytelyon.com',
       },
       vitePlugins: [
         [

@@ -12,11 +12,8 @@ type thisType = ReturnType<typeof useTokenStore>;
 type Token = string | null;
 
 interface Auth {
-  isAuthenticated: boolean;
-  context: {
-    token: Token;
-    message?: string;
-  };
+  token: Token;
+  message?: string;
 }
 
 interface Claims {
@@ -88,7 +85,7 @@ const setup = () => {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
     return await api
-      .post(`/auth/login`, {}, { auth })
+      .post(`/user?q=login`, {}, { auth })
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `👋`, `Welcome`))
       .catch($notify.err)
@@ -130,7 +127,7 @@ const setup = () => {
   const authorized = (): boolean => !!model.value;
 
   const SetModel = (res?: AxiosResponse<Auth>): void => {
-    const token = res ? res.data.context.token : null;
+    const token = res ? res.data.token : null;
     model.value = token;
     api.defaults.headers.common.Authorization = token ? `Bearer ${token}` : null;
     $log.debug(token ? claims() : null, `Token ${token ? 'set' : 'unset'}: ${token}`);

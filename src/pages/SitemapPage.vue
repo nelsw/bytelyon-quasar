@@ -14,7 +14,7 @@ const $router = useRouter();
 const $store = useDataStore();
 
 const onDelete = async () => {
-  const id = (props.table.result as BotSitemapResult).ID;
+  const id = (props.table.result as BotSitemapResult).id;
   const target = (props.table.result as BotSitemapResult).target;
   await $store.Delete(BotType.Sitemap, target, id, true);
   await $router.push('/dashboard');

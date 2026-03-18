@@ -23,7 +23,7 @@ const columns: QTableColumn<BotNewsResult>[] = [
   {
     name: 'Published',
     label: 'Published',
-    field: 'published',
+    field: 'publishedAt',
     align: 'left',
     format: (value) => new Date(value).toLocaleTimeString(),
     sortable: true,
@@ -56,7 +56,7 @@ const onDelete = async () => {
   const ok = await $store.DeleteAll(
     BotType.News,
     model.value.Bot.target,
-    selected.value.map((i: BotNewsResult) => i.url),
+    selected.value.map((i: BotNewsResult) => i.id),
   );
   if (!ok) return;
   model.value.rows = model.value.rows.filter((n) => !selected.value.includes(n));
@@ -101,7 +101,7 @@ onMounted(() => {
         <div class="absolute-center">
           <span class="text-h5 text-weight-medium text-uppercase">{{ model.Bot.target }}</span>
           <span v-if="model.rows.length > 0" class="text-body2 q-ml-sm">{{
-            new Date((model.rows[0] as BotNewsResult).published).toLocaleDateString()
+            new Date((model.rows[0] as BotNewsResult).publishedAt).toLocaleDateString()
           }}</span>
         </div>
         <q-space />

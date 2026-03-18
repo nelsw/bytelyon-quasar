@@ -12,24 +12,24 @@ export type Bot<T = BotType> = {
   updatedAt: number | null;
 };
 
-export type BotResult<T = BotType> = {
-  userID: string;
-  createdAt: Date;
-  updatedAt: Date;
+export type BotResult<T = BotType, D = unknown> = {
+  userId: string;
+  botId: string;
+  id: string;
+  target: string;
   type: T,
+  data: D;
 }
 
 export type BotNewsResult = BotResult<BotType.News> & {
   url: string;
-  target: string;
   title: string;
   source: string;
   description: string;
-  published: string;
+  publishedAt: string;
 };
 
 export type BotSitemapResult = BotResult<BotType.Sitemap> & {
-  ID: string;
   target: string;
   relative: string[];
   remote: string[];
@@ -44,7 +44,7 @@ export type BotSearchResult = BotResult<BotType.Search> & {
     title: string;
     img: string;
     png: string;
-    json: object;
+    serp: object;
   }>;
 };
 

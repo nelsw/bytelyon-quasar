@@ -90,7 +90,7 @@ const result = () => props.table.result as BotSearchResult;
         <ViewJsonBtn
           v-if="result().pages.length > 0 && result().pages[0]?.url.includes('google.com')"
           :title="result().pages[0]?.title as string"
-          :content="result().pages[0]?.json as object"
+          :content="result().pages[0]?.serp as object"
         />
         <q-separator
           v-if="result().pages.length > 0 && result().pages[0]?.url.includes('google.com')"
