@@ -23,11 +23,6 @@ const onLogin = async (): Promise<void> => {
   }
 };
 
-const onSignup = async (): Promise<void> => {
-  if (await $store.signup(creds)) {
-    clearCreds();
-  }
-};
 </script>
 
 <template>
@@ -41,14 +36,6 @@ const onSignup = async (): Promise<void> => {
         class="q-my-md full-width text-weight-bold"
         size="lg"
         @click.prevent="onLogin"
-      />
-      <q-btn
-        label="Sign up"
-        size="md"
-        color="green-14"
-        class="full-width"
-        outline
-        @click.prevent="onSignup"
       />
     </q-form>
   </div>

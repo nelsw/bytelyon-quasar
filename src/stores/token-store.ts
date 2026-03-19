@@ -85,7 +85,7 @@ const setup = () => {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
     return await api
-      .post(`/user?q=login`, {}, { auth })
+      .post(`/auth`, {}, { auth })
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `👋`, `Welcome`))
       .catch($notify.err)
