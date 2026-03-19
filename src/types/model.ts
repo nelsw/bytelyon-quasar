@@ -36,7 +36,7 @@ export type BotSitemapResult = BotResult<BotType.Sitemap> & {
 };
 
 export type BotSearchResult = BotResult<BotType.Search> & {
-  ID: string;
+  id: string;
   target: string;
   pages: Array<{
     idx: number;

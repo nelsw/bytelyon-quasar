@@ -56,7 +56,7 @@ const visibleCols = ref<string[]>([]);
 
 const $store = useDataStore();
 const onDelete = async () => {
-  const id = (props.table.result as BotSearchResult).ID;
+  const id = (props.table.result as BotSearchResult).id;
   await $store.Delete(BotType.Search, props.table.Bot.target, id, true);
 };
 
