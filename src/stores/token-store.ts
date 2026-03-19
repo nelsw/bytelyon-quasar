@@ -85,7 +85,7 @@ const setup = () => {
     Loading.show({ spinnerColor: 'primary' });
     SetModel();
     return await api
-      .post(`/auth`, {}, { auth })
+      .post(`/auth?action=login`, {}, { auth })
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `👋`, `Welcome`))
       .catch($notify.err)
@@ -127,6 +127,7 @@ const setup = () => {
   const authorized = (): boolean => !!model.value;
 
   const SetModel = (res?: AxiosResponse<Auth>): void => {
+    console.log(res);
     const token = res ? res.data.token : null;
     model.value = token;
     api.defaults.headers.common.Authorization = token ? `Bearer ${token}` : null;
