@@ -15,6 +15,7 @@ import { useLogger } from 'src/composable/useLogger';
 import { useBotStore } from 'stores/bot-store';
 import { domain } from 'src/types/base';
 import { decodeTime } from 'ulid';
+import { useRouter } from 'vue-router';
 
 export const NewBot = <T = BotType>(t: T): Bot<T> => {
   return {
@@ -30,13 +31,19 @@ export const NewBot = <T = BotType>(t: T): Bot<T> => {
 const $log = useLogger();
 
 const setup = () => {
+  const router = useRouter();
   const $bots = useBotStore();
+  const handler = async (node: QTreeNode):Promise<void> => {
+    await router.push(`/dashboard/${node.id}`);
+  }
+
   const searchModel: QTreeNode = reactive({
     id: BotType.Search,
     label: 'Search',
     icon: 'mdi-web',
     children: [],
     bot: NewBot(BotType.Search),
+    handler: handler,
   });
   const sitemapModel: QTreeNode = reactive({
     id: BotType.Sitemap,
@@ -44,6 +51,7 @@ const setup = () => {
     icon: 'mdi-sitemap',
     children: [],
     bot: NewBot(BotType.Sitemap),
+    handler: handler,
   });
   const newsModel: QTreeNode = reactive({
     id: BotType.News,
@@ -51,6 +59,7 @@ const setup = () => {
     icon: 'mdi-newspaper',
     children: [],
     bot: NewBot(BotType.News),
+    handler: handler,
   });
 
   const model: QTreeNode[] = reactive([searchModel, sitemapModel, newsModel]);
@@ -116,8 +125,6 @@ const setup = () => {
   const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
     const bot = d.node.bot;
 
-
-
     return await api
       .get<Array<BotResult>>(`/bots?type=${bot.type}&id=${bot.id}`)
       .then((res: AxiosResponse<Array<BotResult>>) => {
@@ -137,7 +144,7 @@ const setup = () => {
           case BotType.Sitemap:
             return results.map((result: BotResult) => {
               let rows: Array<unknown> = [];
-console.debug(result.id)
+
               if (bot.type === BotType.Search) {
                 rows = (result as BotSearchResult).pages;
               } else {
@@ -168,7 +175,6 @@ console.debug(result.id)
                 News
              */
           case BotType.News:
-
             return Object.entries(
               Object.groupBy(
                 results as Array<BotNewsResult>,
@@ -198,23 +204,10 @@ console.debug(result.id)
       });
   };
 
-  const DeleteSitemap = () => {
-    searchModel.label = 'Search Test';
-  };
-
-  const DeleteNewsGroup = () => {
-    searchModel.label = 'Search Test';
-  };
-
-  const test = () => {};
-
   return {
     Load,
     LazyLoad,
-    model,
-    DeleteNewsGroup,
-    DeleteSitemap,
-    test,
+    model
   };
 };
 

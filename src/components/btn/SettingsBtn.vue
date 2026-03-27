@@ -8,5 +8,5 @@ const router = useRouter();
 const onOpen = async () => await router.push({ query: { ...route.query, modal: 'open' } });
 </script>
 <template>
-  <q-btn flat round dense @click="onOpen" color="dark" icon="mdi-cog" text-color="grey-8" />
+  <q-btn flat   @click="onOpen" color="dark" icon="mdi-cog" text-color="grey-8" />
 </template>

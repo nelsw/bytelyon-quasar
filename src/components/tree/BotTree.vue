@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { QTree, type QTreeNode } from 'quasar';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
-import type  { Bot, BotTable } from 'src/types/model';
-import FilterInput from 'components/input/FilterInput.vue';
+import type { Bot, BotTable } from 'src/types/model';
 import { useLogger } from 'src/composable/useLogger';
 import { useNodeStore } from 'stores/node-store';
 
@@ -14,10 +13,10 @@ const emit = defineEmits<{
 const $log = useLogger();
 const $nodes = useNodeStore();
 
+const filter = defineModel<string>('filter');
 const selected = defineModel<string>('selected');
 const treeRef = useTemplateRef<QTree>('my-tree');
 const loading = ref(true);
-const filter = ref<string>('');
 
 onMounted(async () => {
   await $nodes.Load();
@@ -25,10 +24,10 @@ onMounted(async () => {
 });
 
 watch(selected, (val) => {
+  filter.value = '';
   treeRef.value?.setExpanded(val, true);
   const node: QTreeNode | undefined = treeRef.value?.getNodeByKey(val);
   $log.debug(node, 'BotTree - watch selected');
-
   if (node?.data !== undefined) {
     emit('update:data', node?.data);
   } else if (node?.bot !== undefined) {
@@ -46,24 +45,19 @@ watch(filter, (val) => {
 </script>
 
 <template>
-  <FilterInput v-model="filter" class="q-pt-md q-px-md" />
-  <q-separator inset />
-  <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-    <q-scroll-area style="height: calc(100% - 7vh)">
-      <q-tree
-        v-if="!loading"
-        ref="my-tree"
-        class="q-pa-md"
-        :nodes="$nodes.model"
-        :filter="filter"
-        node-key="id"
-        selected-color="primary"
-        v-model:selected="selected"
-        accordion
-        no-selection-unset
-        @lazy-load="$nodes.LazyLoad"
-      />
-    </q-scroll-area>
+  <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" appear>
+    <q-tree
+      v-if="!loading"
+      ref="my-tree"
+      class="q-pa-md"
+      :nodes="$nodes.model"
+      :filter="filter"
+      node-key="id"
+      selected-color="primary"
+      v-model:selected="selected"
+      accordion
+      no-selection-unset
+      @lazy-load="$nodes.LazyLoad"
+    />
   </transition>
 </template>
-

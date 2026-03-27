@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import LogoImg from 'components/img/LogoImg.vue';
 import AccessForm from 'components/form/AccessForm.vue';
+import DevBanner from 'components/banner/DevBanner.vue';
 </script>
 <template>
   <q-page class="row items-center justify-evenly">
     <div class="q-px-md text-center q-mt-lg">
+      <DevBanner class="absolute-top"/>
       <LogoImg width="50%" />
       <div class="q-my-lg">
         <span class="text-h2 text-grey-5 text-weight-medium">ByteLyon</span>
