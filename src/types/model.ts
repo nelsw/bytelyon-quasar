@@ -10,7 +10,6 @@ export type Bot<T = BotType> = {
   frequency: number;
   target: string;
   blackList: string[];
-  updatedAt: number | null;
 };
 
 export type BotResult<T = BotType, D = unknown> = {

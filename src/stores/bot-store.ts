@@ -1,82 +1,25 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosResponse } from 'boot/axios';
-import type { Bot, BotNode, Err, NewsBot, SearchBot, SitemapBot } from 'src/types/model';
-import { BotType, IsNewBot } from 'src/types/model';
+import type { Bot, BotNode } from 'src/types/model';
+import { BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
-import { useNodeStore } from 'stores/node-store';
-import type { AxiosError } from 'axios';
-import { useLogger } from 'src/composable/useLogger';
 import { useTokenStore } from 'stores/token-store';
 import { base64 } from 'src/types/base';
 
 const $notify = useNotifier();
 const $tokenStore = useTokenStore();
 const setup = () => {
-  const $nodes = useNodeStore();
-
-  const Save = async (b: BotNode): Promise<boolean | void> => (IsNewBot(b) ? Create(b) : Update(b));
-
-  const Create = async (b: BotNode): Promise<boolean | void> => {
-    $log.debug(b, `Create`);
-    b.userID = $tokenStore.userID();
+  const Save = async (b: BotNode): Promise<boolean | void> => {
     return await api
-      .put(`/bots?type=${b.type}`, b)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Created`))
-      .catch($notify.err)
-      .finally($nodes.Load);
-  };
-
-  const Update = async (b: BotNode): Promise<boolean | void> => {
-    $log.debug(b, `Update`);
-    b.userID = $tokenStore.userID();
-    return await api
-      .put(`/bots?type=${b.type}`, b)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, `Updated`))
-      .catch($notify.err)
-      .finally($nodes.Load);
-  };
-
-  const $log = useLogger();
-  const LoadSearchBots = async (): Promise<SearchBot[]> => {
-    return await api
-      .get<SearchBot[]>('/bots?type=search')
-      .then((res: AxiosResponse<SearchBot[]>) => {
-        const data = res?.data || [];
-        $log.info(null, `LoadSearchBots [${data.length}]`);
-        return data;
+      .put(`/bots?type=${b.type}`, {
+        userID: $tokenStore.userID(),
+        type: b.type,
+        frequency: b.frequency,
+        target: b.target,
+        blackList: b.blackList,
       })
-      .catch((err: AxiosError<Err>): SearchBot[] => {
-        $log.err(err, `LoadSearchBots`);
-        return [];
-      });
-  };
-
-  const LoadSitemapBots = async (): Promise<SitemapBot[]> => {
-    return await api
-      .get<SitemapBot[]>('/bots?type=sitemap')
-      .then((res: AxiosResponse<SitemapBot[]>) => {
-        const data = res?.data || [];
-        $log.info(null, `LoadSitemapBots [${data.length}]`);
-        return data;
-      })
-      .catch((err: AxiosError<Err>): SitemapBot[] => {
-        $notify.err(err);
-        return [];
-      });
-  };
-
-  const LoadNewsBots = async (): Promise<NewsBot[]> => {
-    return await api
-      .get<NewsBot[]>('/bots?type=news')
-      .then((res: AxiosResponse<NewsBot[]>) => {
-        const data = res?.data || [];
-        $log.info(null, `LoadNewsBots [${data.length}]`);
-        return data;
-      })
-      .catch((err: AxiosError<Err>): NewsBot[] => {
-        $log.err(err, `LoadNewsBots`);
-        return [];
-      });
+      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `💾`, b.botId === '' ? 'Created' : 'Updated'))
+      .catch($notify.err);
   };
 
   const Delete = async (type: BotType, target: string): Promise<boolean> => {
@@ -86,16 +29,12 @@ const setup = () => {
     return await api
       .delete(`/bots?type=${type}&target=${target}`)
       .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
-      .catch($notify.err)
-      .finally($nodes.Load);
+      .catch($notify.err);
   };
 
   return {
     Save,
     Delete,
-    LoadSearchBots,
-    LoadSitemapBots,
-    LoadNewsBots,
   };
 };
 

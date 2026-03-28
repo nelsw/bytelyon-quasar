@@ -1,10 +1,12 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
-import { Loading, type QTreeLazyLoadParams } from 'quasar';
+import { type QTreeLazyLoadParams } from 'quasar';
 import type { BotNode} from 'src/types/model';
 import { BotType } from 'src/types/model';
-import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
+import { api, type AxiosResponse } from 'boot/axios';
+import useNotifier from 'src/composable/useNotifier';
 
+const $notify = useNotifier();
 const setup = () => {
   const searchModel: BotNode = reactive({
     id: BotType.Search,
@@ -45,16 +47,7 @@ const setup = () => {
 
   const model: BotNode[] = reactive([newsModel, searchModel, sitemapModel]);
 
-  const Load = async (): Promise<void> => {
-    Loading.show({ spinnerColor: 'primary' });
-    await new Promise((r) => setTimeout(r, 1000));
 
-    model.forEach((node) => (node.children = []));
-    model.splice(0, 3);
-    model.push(searchModel, sitemapModel, newsModel);
-    Loading.hide();
-
-  };
 
   const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
     console.debug('LazyLoad', d);
@@ -69,8 +62,7 @@ const setup = () => {
     }
   };
 
-  const lazyLoadBots = async (d: QTreeLazyLoadParams): Promise<void> => {
-    console.debug('LazyLoadBots', d);
+  const lazyLoadBots = async (d: QTreeLazyLoadParams): Promise<boolean> => {
     return await api
       .get<Array<BotNode>>(`/bots?type=${d.node.id}`)
       .then((result: AxiosResponse<Array<BotNode>>) => {
@@ -92,25 +84,27 @@ const setup = () => {
         ];
       })
       .then((arr: Array<BotNode>) => {
-        console.debug('LazyLoadBots', arr);
         d.done(arr);
+        return $notify.ok(arr, `🤖`, 'Bots Loaded');
       })
-      .catch((err: AxiosError) => console.error(err));
+      .catch($notify.err);
   };
 
-  const lazyLoadBotResults = async (d: QTreeLazyLoadParams): Promise<void> => {
-    console.debug('LazyLoadBotResults', d);
+  const lazyLoadBotResults = async (d: QTreeLazyLoadParams): Promise<boolean> => {
     return await api
       .get<Array<BotNode>>(`/bots?type=${d.node.type}&id=${d.node.id}`)
       .then((result: AxiosResponse<Array<BotNode>>) => {
-        console.debug('LazyLoadBotResults', d);
         d.done(result.data);
+        if (result.data && result.data.length > 0) {
+          return $notify.ok(result.data, `✅`, 'Results Loaded');
+        } else {
+          return $notify.ok(result.data, `⚠️`, 'No results found; Run the manager.');
+        }
       })
-      .catch((err: AxiosError) => console.error(err));
+      .catch($notify.err);
   };
 
   return {
-    Load,
     LazyLoad,
     model,
   };
