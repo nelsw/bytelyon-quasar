@@ -15,18 +15,12 @@ import SearchPage from 'pages/SearchPage.vue';
 
 const splitterModel = ref(350);
 const selected = ref<string>('');
-const bot = ref<BotNode>();
-const data = ref<BotNode>();
+const bot = ref<BotNode | undefined>();
 
-const onUpdateBot = (b: BotNode) => {
+const onUpdateBot = (b?: BotNode) => {
+  console.debug('onUpdateBot', b);
   bot.value = b;
-  data.value = undefined;
-  selected.value = b.id.toString();
-};
-const onUpdateData = (b: BotNode) => {
-  // bot.value = undefined;
-  data.value = b;
-  // selected.value = b.id.toString();
+  selected.value = b?.id as string;
 };
 
 const onDeleted = () => (bot.value = undefined);
@@ -52,11 +46,7 @@ const onDeleted = () => (bot.value = undefined);
           <q-separator />
 
           <div style="height: calc(100vh - 102px)">
-            <BotTree
-              v-model:selected="selected"
-              @update:bot="onUpdateBot"
-              @update:data="onUpdateData"
-            />
+            <BotTree v-model:selected="selected" @update:bot="onUpdateBot" />
           </div>
 
           <div class="absolute-bottom bg-dark">
@@ -70,15 +60,11 @@ const onDeleted = () => (bot.value = undefined);
         </div>
       </template>
       <template #after>
-        <HomePage v-if="bot === undefined && data === undefined" @update:bot="onUpdateBot" />
-        <BotPage
-          v-else-if="bot?.botId === ''"
-          :bot="bot"
-          @deleted="onDeleted"
-        />
-        <SitemapPage v-else-if="data?.type === BotType.Sitemap" :node="data" />
-        <NewsPage v-else-if="data?.type === BotType.News" v-model="data" />
-        <SearchPage v-else-if="data?.type === BotType.Search" :node="data" />
+        <HomePage v-if="bot === undefined || bot?.id === ''" @update:bot="onUpdateBot" />
+        <BotPage v-else-if="bot.rows === null" :bot="bot" @deleted="onDeleted" />
+        <SitemapPage v-else-if="bot?.type === BotType.Sitemap" :node="bot" />
+        <NewsPage v-else-if="bot?.type === BotType.News" v-model="bot" />
+        <SearchPage v-else-if="bot?.type === BotType.Search" :node="bot" />
       </template>
     </q-splitter>
   </q-page>

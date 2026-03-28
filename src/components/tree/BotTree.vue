@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { QTree } from 'quasar';
-import {  ref, useTemplateRef, watch } from 'vue';
+import { ref, useTemplateRef, watch } from 'vue';
 import type { BotNode } from 'src/types/model';
 import FilterInput from 'components/input/FilterInput.vue';
 import { useLogger } from 'src/composable/useLogger';
 import { useNodeStore } from 'stores/node-store';
 
 const emit = defineEmits<{
-  'update:bot': [BotNode];
-  'update:data': [BotNode];
+  'update:bot': [BotNode | undefined];
 }>();
 
 const $log = useLogger();
@@ -22,23 +21,7 @@ watch(selected, (val) => {
   treeRef.value?.setExpanded(val, true);
   const node: BotNode | undefined = treeRef.value?.getNodeByKey(val);
   $log.debug(node, 'BotTree - watch selected');
-  if (node === undefined) {
-    return;
-  }
-  // if root node (bot type) todo - deprecate
-  // if (node !== undefined) {
-  //   emit('update:bot', node);
-  //   return;
-  // }
-  // if branch (bot)
-  if (node.id === node.botId) {
-    emit('update:bot', node);
-    return;
-  }
-  // if leaf (bot result)
-  if (node.id !== node.botId) {
-    emit('update:data', node);
-  }
+  emit('update:bot', node);
 });
 watch(filter, (val) => {
   if (val === null) {
