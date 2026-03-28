@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Bot } from 'src/types/model';
+import type { BotNode } from 'src/types/model';
 import { IsNewBot, IsOldBot } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import TargetInput from 'components/input/TargetInput.vue';
@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<{
-  bot: Bot;
+  bot: BotNode;
 }>();
 
 const $bots = useBotStore();
@@ -30,7 +30,7 @@ const isCreate = computed(() => IsNewBot(props.bot));
 const isUpdate = computed(() => IsOldBot(props.bot));
 const $router = useRouter();
 const onSubmit = async () => {
-  const b: Bot = props.bot;
+  const b: BotNode = props.bot;
   b.target = target.value;
   if (b.type === BotType.Sitemap && !b.target.startsWith('https://')) {
     b.target = `https://${b.target}`;

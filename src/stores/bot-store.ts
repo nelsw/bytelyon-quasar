@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosResponse } from 'boot/axios';
-import type { Bot, Err, NewsBot, SearchBot, SitemapBot } from 'src/types/model';
+import type { Bot, BotNode, Err, NewsBot, SearchBot, SitemapBot } from 'src/types/model';
 import { BotType, IsNewBot } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import { useNodeStore } from 'stores/node-store';
@@ -14,9 +14,9 @@ const $tokenStore = useTokenStore();
 const setup = () => {
   const $nodes = useNodeStore();
 
-  const Save = async (b: Bot): Promise<boolean | void> => (IsNewBot(b) ? Create(b) : Update(b));
+  const Save = async (b: BotNode): Promise<boolean | void> => (IsNewBot(b) ? Create(b) : Update(b));
 
-  const Create = async (b: Bot): Promise<boolean | void> => {
+  const Create = async (b: BotNode): Promise<boolean | void> => {
     $log.debug(b, `Create`);
     b.userID = $tokenStore.userID();
     return await api
@@ -26,7 +26,7 @@ const setup = () => {
       .finally($nodes.Load);
   };
 
-  const Update = async (b: Bot): Promise<boolean | void> => {
+  const Update = async (b: BotNode): Promise<boolean | void> => {
     $log.debug(b, `Update`);
     b.userID = $tokenStore.userID();
     return await api

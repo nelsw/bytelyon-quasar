@@ -1,59 +1,49 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
-import { Loading, type QTreeLazyLoadParams, type QTreeNode, uid } from 'quasar';
-import type {
-  Bot,
-  BotNewsResult,
-  BotResult,
-  BotSearchResult,
-  BotSitemapResult,
-  SitemapRow,
-} from 'src/types/model';
+import { Loading, type QTreeLazyLoadParams } from 'quasar';
+import type { BotNode} from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import { useLogger } from 'src/composable/useLogger';
-import { useBotStore } from 'stores/bot-store';
-import { domain } from 'src/types/base';
-import { decodeTime } from 'ulid';
-
-export const NewBot = <T = BotType>(t: T): Bot<T> => {
-  return {
-    userID: '',
-    type: t,
-    frequency: 1,
-    target: '',
-    blackList: [],
-    updatedAt: null,
-  };
-};
-
-const $log = useLogger();
 
 const setup = () => {
-  const $bots = useBotStore();
-  const searchModel: QTreeNode = reactive({
+  const searchModel: BotNode = reactive({
     id: BotType.Search,
+    botId: '',
+    target: '',
+    type: BotType.Search,
+    frequency: 1,
+    rows: [],
     label: 'Search',
     icon: 'mdi-web',
     children: [],
-    bot: NewBot(BotType.Search),
+    lazy: true,
   });
-  const sitemapModel: QTreeNode = reactive({
+  const sitemapModel: BotNode = reactive({
     id: BotType.Sitemap,
+    botId: '',
+    target: '',
+    type: BotType.Sitemap,
+    frequency: 1,
+    rows: [],
     label: 'Sitemap',
     icon: 'mdi-sitemap',
     children: [],
-    bot: NewBot(BotType.Sitemap),
+    lazy: true,
   });
-  const newsModel: QTreeNode = reactive({
+  const newsModel: BotNode = reactive({
     id: BotType.News,
+    botId: '',
+    target: '',
+    type: BotType.News,
+    frequency: 1,
+    rows: [],
     label: 'News',
     icon: 'mdi-newspaper',
     children: [],
-    bot: NewBot(BotType.News),
+    lazy: true,
   });
 
-  const model: QTreeNode[] = reactive([searchModel, sitemapModel, newsModel]);
+  const model: BotNode[] = reactive([newsModel, searchModel, sitemapModel]);
 
   const Load = async (): Promise<void> => {
     Loading.show({ spinnerColor: 'primary' });
@@ -62,159 +52,67 @@ const setup = () => {
     model.forEach((node) => (node.children = []));
     model.splice(0, 3);
     model.push(searchModel, sitemapModel, newsModel);
+    Loading.hide();
 
-    const searchBotPromise = $bots.LoadSearchBots();
-    const sitemapBotPromise = $bots.LoadSitemapBots();
-    const newsBotPromise = $bots.LoadNewsBots();
-
-    Promise.all([searchBotPromise, sitemapBotPromise, newsBotPromise])
-      .then((values) => {
-        const nodes: QTreeNode[] = [];
-        for (const value of values) {
-          if (value === null) {
-            continue;
-          }
-          for (const v of value) {
-            nodes.push({
-              id: uid(),
-              label: v.type === BotType.Sitemap ? domain(v.target) : v.target,
-              bot: v,
-              children: [],
-              lazy: true,
-            });
-          }
-        }
-        return nodes;
-      })
-      .then((nodes: QTreeNode[]) => {
-        for (const node of nodes) {
-          if (node?.bot?.type === BotType.Search) {
-            searchModel?.children?.push(node);
-          } else if (node?.bot?.type === BotType.Sitemap) {
-            sitemapModel?.children?.push(node);
-          } else if (node?.bot?.type === BotType.News) {
-            newsModel?.children?.push(node);
-          }
-        }
-
-        for (const node of model) {
-          if (node?.children?.length === 0) {
-            node?.children?.push({
-              label: 'New',
-              id: uid(),
-              icon: 'mdi-plus',
-              iconColor: 'green-13',
-              selectable: false,
-            });
-          }
-        }
-      })
-      .catch((e) => console.log(e))
-      .finally(Loading.hide);
   };
 
   const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
-    const bot = d.node.bot;
+    console.debug('LazyLoad', d);
+    if (
+      d.node.id === BotType.News ||
+      d.node.id === BotType.Search ||
+      d.node.id === BotType.Sitemap
+    ) {
+      await lazyLoadBots(d);
+    } else {
+      await lazyLoadBotResults(d);
+    }
+  };
 
-
-
+  const lazyLoadBots = async (d: QTreeLazyLoadParams): Promise<void> => {
+    console.debug('LazyLoadBots', d);
     return await api
-      .get<Array<BotResult>>(`/bots?type=${bot.type}&id=${bot.id}`)
-      .then((res: AxiosResponse<Array<BotResult>>) => {
-        $log.info(res.data, `LazyLoad Result Size [${res.data.length}]`);
-
-        return res.data;
-      })
-      .then((results: Array<BotResult>) => {
-        if (results === null) {
-          return [];
+      .get<Array<BotNode>>(`/bots?type=${d.node.id}`)
+      .then((result: AxiosResponse<Array<BotNode>>) => {
+        if (result.data && result.data.length > 0) {
+          return result.data;
         }
-        switch (bot.type) {
-          /*
-              Search & Sitemap
-           */
-          case BotType.Search:
-          case BotType.Sitemap:
-            return results.map((result: BotResult) => {
-              let rows: Array<unknown> = [];
-console.debug(result.id)
-              if (bot.type === BotType.Search) {
-                rows = (result as BotSearchResult).pages;
-              } else {
-                rows = (result as BotSitemapResult).relative.map((s: string): SitemapRow => {
-                  return { URL: s, IsExternal: false };
-                });
-                const rem = (result as BotSitemapResult).remote;
-                if (rem != null) {
-                  rem
-                    .map((s: string): SitemapRow => {
-                      return { URL: s, IsExternal: true };
-                    })
-                    .forEach((row: SitemapRow) => rows.push(row));
-                }
-              }
-
-              return {
-                id: uid(),
-                label: new Date(decodeTime(result.id)).toLocaleString(),
-                data: {
-                  Bot: bot,
-                  result: result,
-                  rows: rows,
-                },
-              };
-            });
-          /*
-                News
-             */
-          case BotType.News:
-
-            return Object.entries(
-              Object.groupBy(
-                results as Array<BotNewsResult>,
-                (newsBotData: BotNewsResult) => newsBotData.publishedAt,
-              ),
-            ).map((result) => {
-              return {
-                id: uid(),
-                label: result[0],
-                data: {
-                  Bot: d.node.bot,
-                  result: result[1],
-                  rows: result[1] ?? [],
-                },
-              };
-            });
-        }
-        return [];
+        return [
+          {
+            id: '',
+            botId: '',
+            label: 'New',
+            icon: 'mdi-plus',
+            iconColor: 'green-13',
+            frequency: 1,
+            target: '',
+            type: d.node.type,
+            rows: null,
+          },
+        ];
       })
-      .then((nodes: QTreeNode[]) => {
-        $log.debug(null, `LazyLoad ${d.key} [${nodes.length}]`);
-        d.done(nodes);
+      .then((arr: Array<BotNode>) => {
+        console.debug('LazyLoadBots', arr);
+        d.done(arr);
       })
-      .catch((err: AxiosError) => {
-        $log.err(err, `LazyLoad ${d.key}`);
-        d.fail();
-      });
+      .catch((err: AxiosError) => console.error(err));
   };
 
-  const DeleteSitemap = () => {
-    searchModel.label = 'Search Test';
+  const lazyLoadBotResults = async (d: QTreeLazyLoadParams): Promise<void> => {
+    console.debug('LazyLoadBotResults', d);
+    return await api
+      .get<Array<BotNode>>(`/bots?type=${d.node.type}&id=${d.node.id}`)
+      .then((result: AxiosResponse<Array<BotNode>>) => {
+        console.debug('LazyLoadBotResults', d);
+        d.done(result.data);
+      })
+      .catch((err: AxiosError) => console.error(err));
   };
-
-  const DeleteNewsGroup = () => {
-    searchModel.label = 'Search Test';
-  };
-
-  const test = () => {};
 
   return {
     Load,
     LazyLoad,
     model,
-    DeleteNewsGroup,
-    DeleteSitemap,
-    test,
   };
 };
 

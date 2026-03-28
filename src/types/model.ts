@@ -1,7 +1,8 @@
 import type { AxiosBasicCredentials } from 'axios';
+import type { QTreeNode } from 'quasar';
 
-export const IsOldBot = (bot: Bot) => !IsNewBot(bot);
-export const IsNewBot = (bot: Bot) => bot.updatedAt === null;
+export const IsOldBot = (bot: BotNode) => !IsNewBot(bot);
+export const IsNewBot = (bot: BotNode) => bot.id.length < 10;
 
 export type Bot<T = BotType> = {
   userID: string;
@@ -29,30 +30,19 @@ export type BotNewsResult = BotResult<BotType.News> & {
   publishedAt: string;
 };
 
-export type BotSitemapResult = BotResult<BotType.Sitemap> & {
-  target: string;
-  relative: string[];
-  remote: string[];
-};
+
 
 export type BotSearchResult = BotResult<BotType.Search> & {
-  id: string;
-  target: string;
-  pages: Array<{
-    idx: number;
-    url: string;
-    title: string;
-    img: string;
-    png: string;
-    serp: object;
-  }>;
+  url: string;
+  title: string;
+  img: string;
+  html: string;
+  serp: object;
 };
 
 export type NewsBot = Bot<BotType.News>;
 export type SearchBot = Bot<BotType.Search> & { headless: boolean };
 export type SitemapBot = Bot<BotType.Sitemap>;
-
-
 
 export type SearchBotData = {
   userID: string;
@@ -72,11 +62,7 @@ export type PageData = {
   json: object;
 };
 
-export interface BotTable<T = BotType, R = unknown> {
-  Bot: Bot<T>;
-  result: BotResult;
-  rows: Array<R>;
-}
+
 
 export const enum BotType {
   Search = 'search',
@@ -85,8 +71,8 @@ export const enum BotType {
 }
 
 export interface SitemapRow extends Record<string, unknown> {
-  URL: string;
-  IsExternal: boolean;
+  url: string;
+  isExternal: boolean;
 }
 
 export type Creds = AxiosBasicCredentials;
@@ -94,3 +80,15 @@ export type Creds = AxiosBasicCredentials;
 export interface Err {
   error: string;
 }
+
+export type Node<T> = QTreeNode<T> & {
+  id: string;
+};
+
+export type BotNode<T = unknown> = Node<T> & {
+  botId: string;
+  frequency: number;
+  target: string;
+  type: BotType;
+  rows: unknown[] | null;
+};

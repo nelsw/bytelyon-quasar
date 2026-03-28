@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { QTree, type QTreeNode } from 'quasar';
-import { onMounted, ref, useTemplateRef, watch } from 'vue';
-import type  { Bot, BotTable } from 'src/types/model';
+import { QTree } from 'quasar';
+import {  ref, useTemplateRef, watch } from 'vue';
+import type { BotNode } from 'src/types/model';
 import FilterInput from 'components/input/FilterInput.vue';
 import { useLogger } from 'src/composable/useLogger';
 import { useNodeStore } from 'stores/node-store';
 
 const emit = defineEmits<{
-  'update:bot': [Bot];
-  'update:data': [BotTable<unknown>];
+  'update:bot': [BotNode];
+  'update:data': [BotNode];
 }>();
 
 const $log = useLogger();
@@ -16,23 +16,28 @@ const $nodes = useNodeStore();
 
 const selected = defineModel<string>('selected');
 const treeRef = useTemplateRef<QTree>('my-tree');
-const loading = ref(true);
 const filter = ref<string>('');
-
-onMounted(async () => {
-  await $nodes.Load();
-  loading.value = false;
-});
 
 watch(selected, (val) => {
   treeRef.value?.setExpanded(val, true);
-  const node: QTreeNode | undefined = treeRef.value?.getNodeByKey(val);
+  const node: BotNode | undefined = treeRef.value?.getNodeByKey(val);
   $log.debug(node, 'BotTree - watch selected');
-
-  if (node?.data !== undefined) {
-    emit('update:data', node?.data);
-  } else if (node?.bot !== undefined) {
-    emit('update:bot', node?.bot);
+  if (node === undefined) {
+    return;
+  }
+  // if root node (bot type) todo - deprecate
+  // if (node !== undefined) {
+  //   emit('update:bot', node);
+  //   return;
+  // }
+  // if branch (bot)
+  if (node.id === node.botId) {
+    emit('update:bot', node);
+    return;
+  }
+  // if leaf (bot result)
+  if (node.id !== node.botId) {
+    emit('update:data', node);
   }
 });
 watch(filter, (val) => {
@@ -51,7 +56,6 @@ watch(filter, (val) => {
   <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
     <q-scroll-area style="height: calc(100% - 7vh)">
       <q-tree
-        v-if="!loading"
         ref="my-tree"
         class="q-pa-md"
         :nodes="$nodes.model"
@@ -66,4 +70,3 @@ watch(filter, (val) => {
     </q-scroll-area>
   </transition>
 </template>
-

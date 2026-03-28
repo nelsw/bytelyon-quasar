@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useNodeStore } from 'stores/node-store';
-import type { Bot } from 'src/types/model';
+import type { BotNode } from 'src/types/model';
 
-const emit = defineEmits<{ 'update:bot': [Bot] }>();
+const emit = defineEmits<{ 'update:bot': [BotNode] }>();
 const $nodes = useNodeStore();
 </script>
 
@@ -21,7 +21,7 @@ const $nodes = useNodeStore();
         :key="node.id"
         class="cursor-pointer"
         style="width: 200px"
-        @click="emit('update:bot', node.bot)"
+        @click="emit('update:bot', node)"
       >
         <q-card-section style="padding: 100px">
           <q-icon :name="node.icon" color="primary" size="5em" class="absolute-center" />

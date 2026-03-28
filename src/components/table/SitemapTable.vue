@@ -12,21 +12,21 @@ const columns: QTableColumn<SitemapRow>[] = [
   {
     name: 'Open',
     label: 'Open',
-    field: 'URL',
+    field: 'url',
     align: 'center',
     style: 'width: 0;',
   },
   {
-    name: 'URL',
-    label: 'URL',
-    field: 'URL',
+    name: 'url',
+    label: 'url',
+    field: 'url',
     align: 'left',
   },
 ];
 
 const props = defineProps<{
-  domain: string;
-  createdAt: string | null;
+  botLabel: string;
+  resultLabel: string;
   rows: Array<SitemapRow>;
 }>();
 
@@ -37,10 +37,10 @@ const emit = defineEmits<{
 const filter = ref<string>('');
 const toggle = ref<boolean>(false);
 const visibleRows = computed(() =>
-  toggle.value ? props.rows : props.rows.filter((row: SitemapRow) => !row.IsExternal),
+  toggle.value ? props.rows : props.rows.filter((row: SitemapRow) => !row.isExternal),
 );
 const hasExternalUrls = computed(
-  () => props.rows.filter((row: SitemapRow) => row.IsExternal === toggle.value).length > 0,
+  () => props.rows.filter((row: SitemapRow) => row.isExternal === toggle.value).length > 0,
 );
 const onExport = () => {
   csv(columns, props.rows);
@@ -68,10 +68,8 @@ const onExport = () => {
       <FilterInput :filter="filter" />
       <div class="flex col-grow items-center">
         <div class="absolute-center">
-          <span class="text-h5 text-weight-medium">{{ domain }}</span>
-          <span v-if="createdAt">
-            <span class="text-body2 q-ml-sm">{{ new Date(createdAt).toLocaleString() }}</span>
-          </span>
+          <span class="text-h5 text-weight-medium">{{ botLabel }}</span>
+          <span class="text-body2 q-ml-sm">{{ resultLabel }}</span>
         </div>
       </div>
       <q-space />

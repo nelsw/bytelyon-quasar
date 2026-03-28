@@ -4,9 +4,8 @@ import LogoBtn from 'components/btn/LogoBtn.vue';
 import BotTree from 'components/tree/BotTree.vue';
 import HomePage from 'pages/HomePage.vue';
 import BotPage from 'pages/BotPage.vue';
-import type { Bot, BotNewsResult, BotTable, SearchBotData, SitemapRow } from 'src/types/model';
+import type { BotNode } from 'src/types/model';
 import { BotType } from 'src/types/model';
-import RefreshBtn from 'components/btn/RefreshBtn.vue';
 import EmailBtn from 'components/btn/EmailBtn.vue';
 import LogoutBtn from 'components/btn/LogoutBtn.vue';
 import SettingsBtn from 'components/btn/SettingsBtn.vue';
@@ -16,21 +15,20 @@ import SearchPage from 'pages/SearchPage.vue';
 
 const splitterModel = ref(350);
 const selected = ref<string>('');
-const bot = ref<Bot>();
-const data = ref<BotTable<unknown>>();
+const bot = ref<BotNode>();
+const data = ref<BotNode>();
 
-const onUpdateBot = (b: Bot) => {
+const onUpdateBot = (b: BotNode) => {
   bot.value = b;
   data.value = undefined;
+  selected.value = b.id.toString();
 };
-const onUpdateData = (d: BotTable<unknown>) => {
-  bot.value = undefined;
-  data.value = d;
+const onUpdateData = (b: BotNode) => {
+  // bot.value = undefined;
+  data.value = b;
+  // selected.value = b.id.toString();
 };
-const onUpdated = (b: Bot) => {
-  bot.value = b;
-  selected.value = b.type;
-};
+
 const onDeleted = () => (bot.value = undefined);
 </script>
 <template>
@@ -67,30 +65,20 @@ const onDeleted = () => (bot.value = undefined);
               <LogoutBtn />
               <EmailBtn />
               <SettingsBtn />
-              <RefreshBtn />
             </q-btn-group>
           </div>
         </div>
       </template>
       <template #after>
-        <HomePage v-if="bot === undefined && data === undefined" @update:bot="onUpdated" />
+        <HomePage v-if="bot === undefined && data === undefined" @update:bot="onUpdateBot" />
         <BotPage
-          v-else-if="bot !== undefined && data === undefined"
+          v-else-if="bot?.botId === ''"
           :bot="bot"
           @deleted="onDeleted"
         />
-        <SitemapPage
-          v-else-if="data?.Bot.type === BotType.Sitemap"
-          :table="data as BotTable<BotType.Sitemap, SitemapRow>"
-        />
-        <NewsPage
-          v-else-if="data?.Bot.type === BotType.News"
-          v-model="data as BotTable<BotType.News, BotNewsResult>"
-        />
-        <SearchPage
-          v-else-if="data?.Bot.type === BotType.Search"
-          :table="data as BotTable<BotType.Search, SearchBotData>"
-        />
+        <SitemapPage v-else-if="data?.type === BotType.Sitemap" :node="data" />
+        <NewsPage v-else-if="data?.type === BotType.News" v-model="data" />
+        <SearchPage v-else-if="data?.type === BotType.Search" :node="data" />
       </template>
     </q-splitter>
   </q-page>
