@@ -80,6 +80,7 @@ const setup = () => {
             target: '',
             type: d.node.type,
             rows: null,
+            selectable: false,
           },
         ];
       })
