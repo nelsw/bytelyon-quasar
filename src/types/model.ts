@@ -25,6 +25,8 @@ export type BotNewsResult = BotResult<BotType.News> & {
   source: string;
   description: string;
   publishedAt: string;
+  body: string;
+  image: string;
 };
 
 export type BotSearchResult = BotResult<BotType.Search> & {
@@ -78,3 +80,13 @@ export type BotNode<T = unknown> = QTreeNode<T> & {
   type: BotType;
   rows: unknown[] | null;
 };
+
+export type Article = {
+  title: string;
+  body: string;
+  summary: string;
+  tags: string[];
+  image: string;
+  prompt: string;
+  publishedAt: string;
+}

@@ -1,18 +1,29 @@
+import type { QNotifyAction, QNotifyOptions } from 'quasar';
 import { Notify } from 'quasar';
 import type { AxiosError } from 'boot/axios';
 import type { Err } from 'src/types/model';
 
 
 const symbolSpan = (s: string): string => `<span style="margin-right: 8px;">${s}</span>`;
-const notify = (msg: string) => {
-  Notify.create({
+const notify = (msg:string, avatar: string, actions:QNotifyAction[]) => {
+  const opts:QNotifyOptions = {
     color: 'dark',
     html: true,
     message: `<div class="text-right">${msg}</div>`,
     position: 'bottom-right',
     textColor: 'white',
     timeout: 2000,
-  });
+  }
+
+  if (actions.length !== 0) {
+    opts.actions = actions
+  }
+
+  if (avatar !== '') {
+    opts.avatar = avatar;
+  }
+
+  Notify.create(opts);
 };
 
 const useNotifier = () => {
@@ -31,7 +42,7 @@ const useNotifier = () => {
       msg = args[1] as string;
     }
 
-    notify(`${symbolSpan(symbol)}${msg}`);
+    notify(`${symbolSpan(symbol)}${msg}`, '', []);
 
     return true;
   };
@@ -44,17 +55,23 @@ const useNotifier = () => {
       msg = args[0] as string;
     }
 
-    notify(`${symbolSpan(`⛔️`)}${msg}`);
+    notify(`${symbolSpan(`⛔️`)}${msg}`, '', []);
 
     return false;
   };
 
   const warn = (s:string):boolean => {
-    notify(`${symbolSpan(`⚠️`)}${s}`)
+    notify(`${symbolSpan(`⚠️`)}${s}`, '', [])
     return false;
   }
 
+  const act = (msg:string, avatar: string, actions:QNotifyAction[]):boolean => {
+    notify(msg, avatar, actions)
+    return true;
+  }
+
   return {
+    act,
     ok,
     err,
     warn

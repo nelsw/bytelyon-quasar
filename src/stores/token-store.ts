@@ -136,9 +136,14 @@ const setup = () => {
 
   const isAnonymous = (): boolean => claims().aud.includes('anonymous');
 
-  const userID = (): string => claims().sub;
+  const userID = (): string => claims().jti;
 
-  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken  };
+  const IsStu = (): boolean =>
+    userID() === '01KMXGBJJE2GMCA1A9EXDGF4AJ' ||
+    userID() === '01KM010XK0HY8HWWFPJTZGRF0F' ||
+    userID() === '01KM01JC9PS1R4X4FDJNFAR4AZ'
+
+  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken, IsStu  };
 };
 
 export const useTokenStore = defineStore('token-store', setup, {

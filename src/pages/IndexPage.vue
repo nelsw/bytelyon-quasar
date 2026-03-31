@@ -11,6 +11,7 @@ import SearchPage from 'pages/SearchPage.vue';
 import { useNodeStore } from 'stores/node-store';
 import FilterInput from 'components/input/FilterInput.vue';
 import { QTree } from 'quasar';
+import ShopifyBtn from 'components/btn/ShopifyBtn.vue';
 import ArticleDialog from 'components/dialog/ArticleDialog.vue';
 
 const $nodeStore = useNodeStore();
@@ -19,6 +20,7 @@ const selected = ref<string>('');
 const bot = ref<BotNode | undefined>();
 const treeRef = useTemplateRef<QTree>('my-tree');
 const filter = ref<string>('');
+const dialog = ref<boolean>(false);
 
 watch(selected, (val) => {
   console.debug(`selected: ${val}`);
@@ -36,7 +38,7 @@ watch(filter, (val) => {
 });
 
 const onUpdate = (val: string) => selected.value = val;
-const dialog = ref<boolean>(false);
+
 </script>
 <template>
   <ArticleDialog v-model="dialog" />
@@ -51,10 +53,13 @@ const dialog = ref<boolean>(false);
     >
       <template #before>
         <div class="bg-dark">
-          <div class="flex q-pa-md">
-            <div class="flex q-gutter-md">
-              <LogoBtn @click="dialog = true" />
+          <div class="flex q-pa-md justify-between items-center">
+            <div class="flex q-gutter-md no-pointer-events">
+              <LogoBtn />
               <span class="text-h5 text-grey-5 text-weight-medium">ByteLyon</span>
+            </div>
+            <div>
+              <ShopifyBtn @click="dialog = true" />
             </div>
           </div>
           <q-separator />
