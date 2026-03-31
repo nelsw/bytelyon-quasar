@@ -5,7 +5,6 @@ import { BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import { useTokenStore } from 'stores/token-store';
 import { useNodeStore } from 'stores/node-store';
-import { base64 } from 'src/types/base';
 
 const $notify = useNotifier();
 const $tokenStore = useTokenStore();
