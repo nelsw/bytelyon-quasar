@@ -5,7 +5,9 @@ defineProps<{
   title: string;
   heading?: string;
   copy?: boolean;
+  // persistent will not close on escape
   persistent?: boolean;
+  // stubborn is persistent and hides minimize & maximize buttons
   stubborn?: boolean;
 }>();
 
@@ -15,7 +17,7 @@ const emit = defineEmits<{
 }>();
 
 const model = defineModel<boolean>({ required: true });
-const maximized = ref(true);
+const maximized = ref<boolean>(true);
 </script>
 
 <template>

@@ -11,6 +11,7 @@ import SearchPage from 'pages/SearchPage.vue';
 import { useNodeStore } from 'stores/node-store';
 import FilterInput from 'components/input/FilterInput.vue';
 import { QTree } from 'quasar';
+import ArticleDialog from 'components/dialog/ArticleDialog.vue';
 
 const $nodeStore = useNodeStore();
 const splitterModel = ref(350);
@@ -35,9 +36,10 @@ watch(filter, (val) => {
 });
 
 const onUpdate = (val: string) => selected.value = val;
-
+const dialog = ref<boolean>(false);
 </script>
 <template>
+  <ArticleDialog v-model="dialog" />
   <q-page class="absolute-full">
     <q-splitter
       v-model="splitterModel"
@@ -50,8 +52,8 @@ const onUpdate = (val: string) => selected.value = val;
       <template #before>
         <div class="bg-dark">
           <div class="flex q-pa-md">
-            <div class="flex q-gutter-md no-pointer-events">
-              <LogoBtn />
+            <div class="flex q-gutter-md">
+              <LogoBtn @click="dialog = true" />
               <span class="text-h5 text-grey-5 text-weight-medium">ByteLyon</span>
             </div>
           </div>
