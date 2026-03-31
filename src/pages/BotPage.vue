@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { BotNode } from 'src/types/model';
-import { IsNewBot, IsOldBot } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import TargetInput from 'components/input/TargetInput.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
@@ -29,6 +28,10 @@ const color = computed(() => (IsOldBot(props.bot) ? 'amber-13' : 'green-13'));
 const isCreate = computed(() => IsNewBot(props.bot));
 const isUpdate = computed(() => IsOldBot(props.bot));
 const $router = useRouter();
+
+const IsOldBot = (bot: BotNode) => !IsNewBot(bot);
+const IsNewBot = (bot: BotNode) => bot.botId === '';
+
 const onSubmit = async () => {
   const b: BotNode = props.bot;
   b.target = target.value;
@@ -44,6 +47,7 @@ const onSubmit = async () => {
 };
 
 const onDelete = async () => {
+  console.debug(`delete`, JSON.stringify(props.bot, null, 2));
   if (await $bots.Delete(props.bot.type, props.bot.target)) emit('deleted');
 };
 

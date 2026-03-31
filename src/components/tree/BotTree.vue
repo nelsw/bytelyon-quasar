@@ -3,25 +3,21 @@ import { QTree } from 'quasar';
 import { ref, useTemplateRef, watch } from 'vue';
 import type { BotNode } from 'src/types/model';
 import FilterInput from 'components/input/FilterInput.vue';
-import { useLogger } from 'src/composable/useLogger';
 import { useNodeStore } from 'stores/node-store';
 
 const emit = defineEmits<{
   'update:bot': [BotNode | undefined];
 }>();
 
-const $log = useLogger();
 const $nodes = useNodeStore();
-
 const selected = defineModel<string>('selected');
 const treeRef = useTemplateRef<QTree>('my-tree');
 const filter = ref<string>('');
 
 watch(selected, (val) => {
+  console.debug(`expand: ${val}`);
   treeRef.value?.setExpanded(val, true);
-  const node: BotNode | undefined = treeRef.value?.getNodeByKey(val);
-  $log.debug(node, 'BotTree - watch selected');
-  emit('update:bot', node);
+  emit('update:bot', treeRef.value?.getNodeByKey(val));
 });
 watch(filter, (val) => {
   if (val === null) {
@@ -34,10 +30,10 @@ watch(filter, (val) => {
 </script>
 
 <template>
-  <FilterInput v-model="filter" class="q-pt-md q-px-md" />
+  <FilterInput v-model="filter" class="q-pt-xs q-px-md" />
   <q-separator inset />
   <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-    <q-scroll-area style="height: calc(100% - 7vh)">
+    <q-scroll-area style="height: calc(100% - 56px)">
       <q-tree
         ref="my-tree"
         class="q-pa-md"

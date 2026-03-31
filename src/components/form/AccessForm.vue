@@ -3,13 +3,13 @@ import { QForm } from 'quasar';
 import EmailInput from 'components/input/EmailInput.vue';
 import PasswordInput from 'components/input/PasswordInput.vue';
 import { reactive } from 'vue';
-import { type Creds } from 'src/types/model';
+import { type Credentials } from 'src/types/model';
 import { useRouter } from 'vue-router';
 import { useTokenStore } from 'stores/token-store';
 
 const $router = useRouter();
 const $store = useTokenStore();
-const creds = reactive<Creds>({ username: '', password: '' });
+const creds = reactive<Credentials>({ username: '', password: '' });
 
 const clearCreds = () => {
   creds.username = '';
