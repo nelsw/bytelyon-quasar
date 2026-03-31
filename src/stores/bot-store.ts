@@ -1,10 +1,11 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosResponse } from 'boot/axios';
-import type { Bot, BotNode } from 'src/types/model';
-import type { BotType } from 'src/types/model';
+import type { Bot, BotNode} from 'src/types/model';
+import { BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import { useTokenStore } from 'stores/token-store';
 import { useNodeStore } from 'stores/node-store';
+import { base64 } from 'src/types/base';
 
 const $notify = useNotifier();
 const $tokenStore = useTokenStore();
@@ -26,6 +27,9 @@ const setup = () => {
   };
 
   const Delete = async (type: BotType, target: string): Promise<boolean> => {
+    if (type === BotType.Sitemap) {
+      target = encodeURIComponent(target)
+    }
     return await api
       .delete(`/bots?type=${type}&target=${target}`)
       .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
