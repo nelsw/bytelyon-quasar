@@ -1,12 +1,25 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { type QTreeLazyLoadParams } from 'quasar';
-import type { Bot, BotNode } from 'src/types/model';
+import type { Bot, BotNode} from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
 
-export const BotTypeIcon = (botType: BotType): string => {
+const BotTypeIndex = (botType: BotType): number => {
+  switch (botType) {
+    case BotType.News:
+      return 0;
+    case BotType.Search:
+      return 1;
+    case BotType.Sitemap:
+      return 2;
+    default:
+      return -1;
+  }
+};
+
+const BotTypeIcon = (botType: BotType): string => {
   switch (botType) {
     case BotType.Search:
       return 'mdi-web';
@@ -19,7 +32,7 @@ export const BotTypeIcon = (botType: BotType): string => {
   }
 };
 
-export const BotTypeLabel = (botType: BotType): string => {
+const BotTypeLabel = (botType: BotType): string => {
   switch (botType) {
     case BotType.Search:
       return 'Search';
@@ -94,6 +107,10 @@ const setup = () => {
       })
       .then((arr: Array<BotNode>) => {
         d.done(arr);
+        const i: number = BotTypeIndex(d.node.id);
+        if (i !== -1 && model[i]?.children) {
+          model[i].children = arr;
+        }
         return $notify.ok(arr, `🤖`, 'Bots Loaded');
       })
       .catch($notify.err);
@@ -104,11 +121,18 @@ const setup = () => {
       .get<Array<BotNode>>(`/bots?type=${d.node.type}&id=${d.node.id}`)
       .then((result: AxiosResponse<Array<BotNode>>) => {
         d.done(result.data);
-        if (result.data && result.data.length > 0) {
-          return $notify.ok(result.data, `✅`, 'Results Loaded');
-        } else {
+        if (result.data && result.data.length === 0) {
           return $notify.ok(result.data, `⚠️`, 'No results found; Run the manager.');
         }
+        const i: number = BotTypeIndex(d.node.type);
+        if (i !== -1 && model[i]?.children) {
+          for (let j = 0; j < model[i].children.length; j++) {
+            if (model[i].children[j]?.label === d.node.label) {
+              model[i]?.children?.[j]?.children?.push(...result.data);
+            }
+          }
+        }
+        return $notify.ok(result.data, `✅`, 'Results Loaded');
       })
       .catch($notify.err);
   };
@@ -118,36 +142,32 @@ const setup = () => {
 
     console.debug('Remove', JSON.stringify(node, null, 2));
 
-    let index: number;
-    if (node.type === BotType.News) {
-      index = 0;
-    } else if (node.type === BotType.Sitemap) {
-      index = 1;
-    } else if (node.type === BotType.Search) {
-      index = 2;
-    } else {
+    const i: number = BotTypeIndex(node.type);
+    if (i === -1) {
       console.warn('bad node type', node.type);
       return false;
     }
 
-    const root: BotNode = model[index] as BotNode;
-    for (let i = 0; i < (root.children as BotNode[]).length; i++) {
+    for (let j = 0; j < (model[i]?.children?.length || 0); j++) {
 
-      const branch: BotNode = (root.children as BotNode[])[i] as BotNode;
+      if (node.id === node.botId) {
 
-      if (node.botId !== branch.botId) continue;
-
-      if (node.id === branch.id) {
-        (root.children as BotNode[]).splice(i, 1);
-        if ((root.children as BotNode[]).length === 0) {
-          (root.children as BotNode[]).push(newBotNode(node.type));
+        if (model[i]?.children?.[j]?.label !== node.label) {
+          continue;
         }
+
+        model[i]?.children?.splice(j, 1);
+
+        if (model[i]?.children?.length === 0) {
+          model[i]?.children?.push(newBotNode(node.type));
+        }
+
         return true;
       }
 
-      for (let j = 0; j < (branch.children as BotNode[]).length; j++) {
-        if (node.id === ((branch.children as BotNode[])[j] as BotNode).id) {
-          (((root.children as BotNode[])[i] as BotNode).children as BotNode[]).splice(j, 1);
+      for (let k = 0; k < (model[i]?.children?.[j]?.children?.length || 0); k++) {
+        if (model[i]?.children?.[j]?.children?.[k]?.label === node.label) {
+          model[i]?.children?.[j]?.children?.splice(k, 1);
           return true;
         }
       }
@@ -156,34 +176,32 @@ const setup = () => {
     return false;
   };
 
-  const Insert = (bot: Bot):BotNode => {
+  const Insert = (bot: Bot): BotNode => {
 
-    const node:BotNode = {
+    const node: BotNode = {
       id: bot.id,
       botId: bot.id,
       frequency: bot.frequency,
       target: bot.target,
       type: bot.type,
       rows: null,
-      label: bot.target,
-    }
+      label: bot.target
+    };
 
     console.debug('Insert', JSON.stringify(node, null, 2));
 
-    let index: number;
-    if (bot.type === BotType.News) {
-      index = 0;
-    } else if (bot.type === BotType.Sitemap) {
-      index = 1;
-    } else if (bot.type === BotType.Search) {
-      index = 2;
-    } else {
+    const i: number = BotTypeIndex(node.type);
+    if (i === -1) {
       console.warn('bad node type', node.type);
       return node;
     }
 
-    model[index]?.children?.push(node)
-    model[index]?.children?.sort((a, b) => a.target.localeCompare(b.target))
+    if (model[i]?.children?.[0]?.label === 'New') {
+      model[i]?.children?.splice(0, 1)
+    }
+
+    model[i]?.children?.push(node);
+    model[i]?.children?.sort((a, b) => a.target.localeCompare(b.target));
     return node;
   };
 

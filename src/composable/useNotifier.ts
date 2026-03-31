@@ -11,7 +11,7 @@ const notify = (msg: string) => {
     message: `<div class="text-right">${msg}</div>`,
     position: 'bottom-right',
     textColor: 'white',
-    timeout: 2000,
+    timeout: 2000
   });
 };
 
@@ -24,8 +24,8 @@ const useNotifier = () => {
 
     if (args.length === 0) return true;
 
-    let symbol:string = `🦁`
-    let msg:string = args[0] as string;
+    let symbol: string = `🦁`;
+    let msg: string = args[0] as string;
     if (args.length > 1) {
       symbol = msg;
       msg = args[1] as string;
@@ -39,7 +39,6 @@ const useNotifier = () => {
 
   const err = (e: AxiosError<Err>, ...args: string[]) => {
     let msg = e.response?.data?.error || e?.message;
-    console.error(e);
     if (args.length > 0) {
       msg = args[0] as string;
     }
@@ -49,11 +48,9 @@ const useNotifier = () => {
     return false;
   };
 
-
-
   return {
     ok,
-    err,
+    err
   };
 };
 

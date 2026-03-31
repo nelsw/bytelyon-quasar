@@ -8,7 +8,6 @@ import BlackListSelect from 'components/select/BlackListSelect.vue';
 import { useBotStore } from 'stores/bot-store';
 import { computed, onMounted, onUpdated, ref } from 'vue';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
-import { useRouter } from 'vue-router';
 
 const emit = defineEmits<{
   deleted: [void];
@@ -27,7 +26,6 @@ const frequency = ref<number>(1);
 const color = computed(() => (IsOldBot(props.bot) ? 'amber-13' : 'green-13'));
 const isCreate = computed(() => IsNewBot(props.bot));
 const isUpdate = computed(() => IsOldBot(props.bot));
-const $router = useRouter();
 
 const IsOldBot = (bot: BotNode) => !IsNewBot(bot);
 const IsNewBot = (bot: BotNode) => bot.botId === '';
@@ -35,15 +33,9 @@ const IsNewBot = (bot: BotNode) => bot.botId === '';
 const onSubmit = async () => {
   const b: BotNode = props.bot;
   b.target = target.value;
-  if (b.type === BotType.Sitemap && !b.target.startsWith('https://')) {
-    b.target = `https://${b.target}`;
-  }
   b.blackList = blackList.value;
   b.frequency = frequency.value;
-  const ok = await $bots.Save(b);
-  if (ok) {
-    await $router.push('/dashboard');
-  }
+  await $bots.Save(b) // todo - update selection
 };
 
 const onDelete = async () => {

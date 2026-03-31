@@ -12,6 +12,9 @@ const $nodeStore = useNodeStore();
 
 const setup = () => {
   const Save = async (b: BotNode): Promise<boolean> => {
+    if (b.type === BotType.Sitemap) {
+      b.target = `https://${b.target}`
+    }
     return await api
       .put(`/bots?type=${b.type}`, {
         userID: $tokenStore.userID(),
@@ -28,6 +31,7 @@ const setup = () => {
   const Delete = async (type: BotType, target: string): Promise<boolean> => {
     if (type === BotType.Sitemap) {
       target = encodeURIComponent(target)
+      target = target.replaceAll(".", " ")
     }
     return await api
       .delete(`/bots?type=${type}&target=${target}`)
