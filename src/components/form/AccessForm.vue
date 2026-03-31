@@ -9,33 +9,30 @@ import { useTokenStore } from 'stores/token-store';
 
 const $router = useRouter();
 const $store = useTokenStore();
-const creds = reactive<Credentials>({ username: '', password: '' });
+const credentials = reactive<Credentials>({ username: '', password: '' });
 
-const clearCreds = () => {
-  creds.username = '';
-  creds.password = '';
-};
-
-const onLogin = async (): Promise<void> => {
-  if (await $store.login(creds)) {
-    await $router.push('/dashboard');
-    clearCreds();
+const onSubmit = async (): Promise<void> => {
+  if (!await $store.login(credentials)) {
+    return
   }
+  await $router.push('/dashboard');
+  credentials.username = '';
+  credentials.password = '';
 };
 
 </script>
 
 <template>
   <div class="q-px-md text-center q-my-md">
-    <q-form class="row">
-      <EmailInput v-model="creds.username" />
-      <PasswordInput v-model="creds.password" show-reset />
+    <q-form @submit.prevent="onSubmit" class="row">
+      <EmailInput v-model="credentials.username" />
+      <PasswordInput v-model="credentials.password" show-reset />
       <q-btn
         label="Login"
         color="indigo-14"
         class="q-my-md full-width text-weight-bold"
         size="lg"
-        @click.prevent="onLogin"
+        type="submit"
       />
     </q-form>
   </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BotNode } from 'src/types/model';
+import type { BotNode} from 'src/types/model';
 import { BotType } from 'src/types/model';
 import TargetInput from 'components/input/TargetInput.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
@@ -10,7 +10,7 @@ import { computed, onMounted, onUpdated, ref } from 'vue';
 import DeleteBtn from 'components/btn/DeleteBtn.vue';
 
 const emit = defineEmits<{
-  deleted: [void];
+  update: [string];
 }>();
 
 const props = defineProps<{
@@ -24,23 +24,26 @@ const blackList = ref<string[]>([]);
 const frequency = ref<number>(1);
 
 const color = computed(() => (IsOldBot(props.bot) ? 'amber-13' : 'green-13'));
-const isCreate = computed(() => IsNewBot(props.bot));
-const isUpdate = computed(() => IsOldBot(props.bot));
 
-const IsOldBot = (bot: BotNode) => !IsNewBot(bot);
-const IsNewBot = (bot: BotNode) => bot.botId === '';
+const IsOldBot = (bot: BotNode) => bot.botId !== '';
 
 const onSubmit = async () => {
   const b: BotNode = props.bot;
   b.target = target.value;
   b.blackList = blackList.value;
   b.frequency = frequency.value;
-  await $bots.Save(b) // todo - update selection
+  console.debug(`onSubmit`, JSON.stringify(b, null, 2));
+  const n:BotNode|null = await $bots.Save(b)
+  if (n) {
+    emit('update', n.id);
+  }
 };
 
 const onDelete = async () => {
-  console.debug(`delete`, JSON.stringify(props.bot, null, 2));
-  if (await $bots.Delete(props.bot.type, props.bot.target)) emit('deleted');
+  console.debug(`onDelete`, JSON.stringify(props.bot, null, 2));
+  if (await $bots.Delete(props.bot)) {
+    emit('update', props.bot.type)
+  }
 };
 
 const onChange = () => {
@@ -57,8 +60,8 @@ onMounted(onChange);
   <div class="absolute-center">
     <q-form id="my-form" @submit="onSubmit">
       <div class="flex justify-center align-center">
-        <q-icon v-if="isCreate" name="mdi-new-box" size="6em" :color="color" />
-        <q-icon v-else name="mdi-pencil-box" size="6em" :color="color" />
+        <q-icon v-if="IsOldBot(bot)" name="mdi-pencil-box" size="6em" :color="color" />
+        <q-icon v-else name="mdi-new-box" size="6em" :color="color" />
       </div>
       <div class="flex justify-center align-center">
         <div class="text-h4 text-center text-capitalize">{{ bot.type }} Bot</div>
@@ -87,8 +90,8 @@ onMounted(onChange);
         hint="Instruct the boat to run on a schedule or 'On-Demand' (once & pause)."
       />
 
-      <SubmitBtn :color="color" :label="isCreate ? 'Create' : 'Update'" />
-      <DeleteBtn v-if="isUpdate" @click="onDelete" />
+      <SubmitBtn :color="color" :label="IsOldBot(bot) ? 'Update' : 'Create'" />
+      <DeleteBtn v-if="IsOldBot(bot)" @click="onDelete" />
     </q-form>
   </div>
 </template>

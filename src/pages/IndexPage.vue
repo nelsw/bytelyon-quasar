@@ -12,7 +12,7 @@ import { useNodeStore } from 'stores/node-store';
 import FilterInput from 'components/input/FilterInput.vue';
 import { QTree } from 'quasar';
 
-const $nodes = useNodeStore();
+const $nodeStore = useNodeStore();
 const splitterModel = ref(350);
 const selected = ref<string>('');
 const bot = ref<BotNode | undefined>();
@@ -22,7 +22,7 @@ const filter = ref<string>('');
 watch(selected, (val) => {
   console.debug(`selected: ${val}`);
   treeRef.value?.setExpanded(val, true);
-  onUpdateBot(treeRef.value?.getNodeByKey(val))
+  bot.value = treeRef.value?.getNodeByKey(val);
 });
 
 watch(filter, (val) => {
@@ -34,23 +34,7 @@ watch(filter, (val) => {
   }
 });
 
-const onUpdateBot = (b?: BotNode) => {
-  console.debug('onUpdateBot', JSON.stringify(b, null, 2));
-  bot.value = b;
-  selected.value = b?.id as string;
-};
-
-const onDeleted = () => {
-  const b:BotNode = bot.value as BotNode;
-  console.debug('onDeletedBot', JSON.stringify(b, null, 2));
-
-  const ok = $nodes.Remove(b);
-  console.log('onDeletedBot', ok);
-  if (!ok) return;
-
-  bot.value = undefined
-  selected.value = b.type;
-};
+const onUpdate = (val: string) => selected.value = val;
 
 </script>
 <template>
@@ -73,21 +57,21 @@ const onDeleted = () => {
           </div>
           <q-separator />
           <div style="height: calc(100vh - 67px)">
-            <FilterInput v-model="filter" class="q-pt-xs q-px-md" />
+            <FilterInput v-model="filter" class="q-pt-xs q-px-md" :disable="selected === ''" />
             <q-separator inset />
             <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
               <q-scroll-area style="height: calc(100% - 60px)">
                 <q-tree
                   ref="my-tree"
                   class="q-pa-md"
-                  :nodes="$nodes.model"
+                  :nodes="$nodeStore.model"
                   :filter="filter"
                   node-key="id"
                   selected-color="primary"
                   v-model:selected="selected"
                   accordion
                   no-selection-unset
-                  @lazy-load="$nodes.LazyLoad"
+                  @lazy-load="$nodeStore.Load"
                 />
               </q-scroll-area>
             </transition>
@@ -95,8 +79,8 @@ const onDeleted = () => {
         </div>
       </template>
       <template #after>
-        <HomePage v-if="bot === undefined" @update:bot="onUpdateBot" />
-        <BotPage v-else-if="bot.botId === '' || bot.id === bot.botId" :bot="bot" @deleted="onDeleted" />
+        <HomePage v-if="bot === undefined" @update="onUpdate" />
+        <BotPage v-else-if="bot.botId === '' || bot.botId === bot.id" @update="onUpdate" :bot="bot" />
         <SitemapPage v-else-if="bot.type === BotType.Sitemap" :node="bot" />
         <NewsPage v-else-if="bot.type === BotType.News" v-model="bot" />
         <SearchPage v-else-if="bot.type === BotType.Search" :node="bot" />

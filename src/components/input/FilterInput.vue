@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { QInput } from 'quasar';
+defineProps<{
+  disabled?: boolean | undefined;
+}>()
 const model = defineModel<string>()
 </script>
 
 <template>
   <q-input
     ref="my-input"
-
     v-model="model"
+    :disabled="disabled"
     color="primary"
     placeholder="Filter"
     autofocus

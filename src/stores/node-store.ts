@@ -1,10 +1,12 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { type QTreeLazyLoadParams } from 'quasar';
-import type { Bot, BotNode} from 'src/types/model';
+import type { Bot, BotNode } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
+
+const $notify = useNotifier();
 
 const BotTypeIndex = (botType: BotType): number => {
   switch (botType) {
@@ -18,7 +20,6 @@ const BotTypeIndex = (botType: BotType): number => {
       return -1;
   }
 };
-
 const BotTypeIcon = (botType: BotType): string => {
   switch (botType) {
     case BotType.Search:
@@ -31,7 +32,6 @@ const BotTypeIcon = (botType: BotType): string => {
       return 'Unknown BotType: ' + (botType as string);
   }
 };
-
 const BotTypeLabel = (botType: BotType): string => {
   switch (botType) {
     case BotType.Search:
@@ -44,7 +44,6 @@ const BotTypeLabel = (botType: BotType): string => {
       return 'Unknown BotType: ' + (botType as string);
   }
 };
-
 const newRootNode = (botType: BotType): BotNode => {
   return {
     id: botType,
@@ -59,7 +58,6 @@ const newRootNode = (botType: BotType): BotNode => {
     lazy: true
   };
 };
-
 const newBotNode = (botType: BotType): BotNode => {
   return {
     id: '',
@@ -74,17 +72,22 @@ const newBotNode = (botType: BotType): BotNode => {
     selectable: false
   };
 };
-const $notify = useNotifier();
+
+const model = reactive<BotNode[]>([
+  newRootNode(BotType.News),
+  newRootNode(BotType.Search),
+  newRootNode(BotType.Sitemap)
+]);
+
+const setBotNodes = (i: number, n: BotNode[]) => {
+  if (model[i]?.children) model[i].children = n;
+};
+
 const setup = () => {
 
-  const model = reactive<Array<BotNode>>([
-    newRootNode(BotType.News),
-    newRootNode(BotType.Search),
-    newRootNode(BotType.Sitemap)
-  ]);
-
-  const LazyLoad = async (d: QTreeLazyLoadParams): Promise<void> => {
+  const Load = async (d: QTreeLazyLoadParams): Promise<void> => {
     console.debug('LazyLoad', d);
+
     if (
       d.node.id === BotType.News ||
       d.node.id === BotType.Search ||
@@ -97,46 +100,32 @@ const setup = () => {
   };
 
   const lazyLoadBots = async (d: QTreeLazyLoadParams): Promise<boolean> => {
+    const t: BotType = d.node.id;
+    const i: number = BotTypeIndex(t);
     return await api
-      .get<Array<BotNode>>(`/bots?type=${d.node.id}`)
-      .then((result: AxiosResponse<Array<BotNode>>) => {
-        if (result.data && result.data.length > 0) {
-          return result.data;
-        }
-        return [newBotNode(d.node.type)];
+      .get<BotNode[]>(`/bots?type=${t}`)
+      .then((result: AxiosResponse<BotNode[]>) => {
+        d.done(result.data);
+        return result.data;
       })
-      .then((arr: Array<BotNode>) => {
-        d.done(arr);
-        const i: number = BotTypeIndex(d.node.id);
-        if (i !== -1 && model[i]?.children) {
-          model[i].children = arr;
-        }
-        return $notify.ok(arr, `🤖`, 'Bots Loaded');
-      })
+      .then((nodes: BotNode[]) => nodes.length === 0 ? [newBotNode(t)] : nodes)
+      .then((nodes: BotNode[]) => setBotNodes(i, nodes))
+      .then(() => $notify.ok(model[i]?.children, `🤖`, `${BotTypeLabel(d.node.type)} Bots Loaded`))
       .catch($notify.err);
   };
 
   const lazyLoadBotResults = async (d: QTreeLazyLoadParams): Promise<boolean> => {
     return await api
-      .get<Array<BotNode>>(`/bots?type=${d.node.type}&id=${d.node.id}`)
-      .then((result: AxiosResponse<Array<BotNode>>) => {
+      .get<BotNode[]>(`/bots?type=${d.node.type}&id=${d.node.id}`)
+      .then((result: AxiosResponse<BotNode[]>) => {
         d.done(result.data);
-        if (result.data && result.data.length === 0) {
-          return $notify.ok(result.data, `⚠️`, 'No results found; Run the manager.');
-        }
-        const i: number = BotTypeIndex(d.node.type);
-        if (i !== -1 && model[i]?.children) {
-          for (let j = 0; j < model[i].children.length; j++) {
-            if (model[i].children[j]?.label === d.node.label) {
-              model[i]?.children?.[j]?.children?.push(...result.data);
-            }
-          }
-        }
-        return $notify.ok(result.data, `✅`, 'Results Loaded');
+        return result.data;
       })
+      .then((nodes: BotNode[]) => nodes.length > 0
+        ? $notify.ok(nodes, `✅`, 'Results Loaded')
+        : $notify.ok(nodes, `⚠️`, 'No results found; Run the manager.'))
       .catch($notify.err);
   };
-
 
   const Remove = (node: BotNode): boolean => {
 
@@ -197,7 +186,7 @@ const setup = () => {
     }
 
     if (model[i]?.children?.[0]?.label === 'New') {
-      model[i]?.children?.splice(0, 1)
+      model[i]?.children?.splice(0, 1);
     }
 
     model[i]?.children?.push(node);
@@ -205,9 +194,10 @@ const setup = () => {
     return node;
   };
 
+
   return {
-    LazyLoad,
     model,
+    Load,
     Insert,
     Remove
   };
