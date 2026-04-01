@@ -32,7 +32,7 @@ const onSubmit = async () => {
   b.target = target.value;
   b.blackList = blackList.value;
   b.frequency = frequency.value;
-  console.debug(`onSubmit`, JSON.stringify(b, null, 2));
+  console.info(`onSubmit`, JSON.stringify(b, null, 2));
   const n:BotNode|null = await $bots.Save(b)
   if (n) {
     emit('update', n.id);

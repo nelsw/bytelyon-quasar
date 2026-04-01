@@ -46,11 +46,12 @@ const BotTypeLabel = (botType: BotType): string => {
 };
 const newRootNode = (botType: BotType): BotNode => {
   return {
-    id: botType,
+    id: botType.toString(),
     botId: '',
     target: '',
     type: botType,
     frequency: 1,
+    blackList: [],
     rows: null,
     label: BotTypeLabel(botType),
     icon: BotTypeIcon(botType),
@@ -68,6 +69,7 @@ const newBotNode = (botType: BotType): BotNode => {
     frequency: 1,
     target: '',
     type: botType,
+    blackList: [],
     rows: null,
     selectable: false
   };
@@ -79,8 +81,9 @@ const model = reactive<BotNode[]>([
   newRootNode(BotType.Sitemap)
 ]);
 
-const setBotNodes = (i: number, n: BotNode[]) => {
+const setBotNodes = (i: number, n: BotNode[]):BotNode[] => {
   if (model[i]?.children) model[i].children = n;
+  return n
 };
 
 const setup = () => {
@@ -104,12 +107,10 @@ const setup = () => {
     const i: number = BotTypeIndex(t);
     return await api
       .get<BotNode[]>(`/bots?type=${t}`)
-      .then((result: AxiosResponse<BotNode[]>) => {
-        d.done(result.data);
-        return result.data;
-      })
+      .then((result: AxiosResponse<BotNode[]>) => result.data)
       .then((nodes: BotNode[]) => nodes.length === 0 ? [newBotNode(t)] : nodes)
       .then((nodes: BotNode[]) => setBotNodes(i, nodes))
+      .then((nodes: BotNode[]) => d.done(nodes))
       .then(() => $notify.ok(model[i]?.children, `🤖`, `${BotTypeLabel(d.node.type)} Bots Loaded`))
       .catch($notify.err);
   };
@@ -170,9 +171,10 @@ const setup = () => {
     const node: BotNode = {
       id: bot.id,
       botId: bot.id,
-      frequency: bot.frequency,
-      target: bot.target,
       type: bot.type,
+      target: bot.target,
+      frequency: bot.frequency,
+      blackList: bot.blackList,
       rows: null,
       label: bot.target
     };

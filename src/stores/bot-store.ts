@@ -3,11 +3,9 @@ import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import type { Bot, BotNode, Err } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
-import { useTokenStore } from 'stores/token-store';
 import { useNodeStore } from 'stores/node-store';
 
 const $notify = useNotifier();
-const $tokenStore = useTokenStore();
 const $nodeStore = useNodeStore();
 const IsValidURL = (s:string) => {
   return new RegExp(
@@ -22,8 +20,15 @@ const IsValidURL = (s:string) => {
 }
 const setup = () => {
   const Save = async (b: BotNode): Promise<BotNode | null> => {
-    if (b.type === BotType.Sitemap) {
-      b.target = `https://${b.target}`
+
+    console.info('save bot', b)
+
+    if (b.botId === '' && b.type === BotType.Sitemap) {
+
+      if (!b.target.startsWith('https://')) {
+        b.target = `https://${b.target}`
+      }
+
       if (!IsValidURL(b.target)) {
         $notify.warn("Invalid URL");
         return null;
@@ -31,16 +36,17 @@ const setup = () => {
     }
     return await api
       .put(`/bots?type=${b.type}`, {
-        userID: $tokenStore.userID(),
         type: b.type,
         frequency: b.frequency,
         target: b.target,
         blackList: b.blackList,
       })
       .then((res: AxiosResponse<Bot>) => {
-        const n:BotNode = $nodeStore.Insert(res.data)
-        $notify.ok(n, `💾`, b.botId === '' ? 'Created' : 'Updated')
-        return n
+        if (b.botId === '') {
+          b = $nodeStore.Insert(res.data)
+        }
+        $notify.ok(b, `💾`, b.botId === '' ? 'Created' : 'Updated')
+        return b
       })
       .catch((e:AxiosError<Err>)=> {
         $notify.err(e)
