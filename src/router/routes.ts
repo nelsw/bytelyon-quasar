@@ -26,7 +26,18 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-
+  {
+    path: '/dashboard-v2',
+    meta: { requiresAuth: true },
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [
+      {
+        path: '/dashboard-v2',
+        meta: { requiresAuth: true },
+        component: () => import('pages/IndexPage.vue'),
+      },
+    ],
+  },
   // Always leave this as last one, but we can also remove it
   {
     path: '/:catchAll(.*)*',

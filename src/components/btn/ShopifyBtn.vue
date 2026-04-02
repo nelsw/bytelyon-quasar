@@ -5,8 +5,8 @@ const $tokenStore = useTokenStore()
 </script>
 
 <template>
-<q-btn v-if="$tokenStore.IsStu()" size="md" dense flat round>
-  <q-avatar size="md">
+<q-btn v-if="$tokenStore.IsStu()" size="md" dense flat>
+  <q-avatar size="md" square>
     <img src="~assets/shopify-logo.svg" alt="Shopify Logo" />
   </q-avatar>
 </q-btn>

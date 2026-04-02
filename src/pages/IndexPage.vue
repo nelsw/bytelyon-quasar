@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, useTemplateRef, watch } from 'vue';
-import LogoBtn from 'components/btn/LogoBtn.vue';
 import HomePage from 'pages/HomePage.vue';
 import BotPage from 'pages/BotPage.vue';
 import type { BotNode } from 'src/types/model';
@@ -11,7 +10,6 @@ import SearchPage from 'pages/SearchPage.vue';
 import { useNodeStore } from 'stores/node-store';
 import FilterInput from 'components/input/FilterInput.vue';
 import { QTree } from 'quasar';
-import ShopifyBtn from 'components/btn/ShopifyBtn.vue';
 import ArticleDialog from 'components/dialog/ArticleDialog.vue';
 
 const $nodeStore = useNodeStore();
@@ -53,21 +51,11 @@ const onUpdate = (val: string) => selected.value = val;
     >
       <template #before>
         <div class="bg-dark">
-          <div class="flex q-pa-md justify-between items-center">
-            <div class="flex q-gutter-md no-pointer-events">
-              <LogoBtn />
-              <span class="text-h5 text-grey-5 text-weight-medium">ByteLyon</span>
-            </div>
-            <div>
-              <ShopifyBtn @click="dialog = true" />
-            </div>
-          </div>
-          <q-separator />
-          <div style="height: calc(100vh - 67px)">
+          <div style="height: calc(100vh - 51px)">
             <FilterInput v-model="filter" class="q-pt-xs q-px-md" :disable="selected === ''" />
             <q-separator inset />
             <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-              <q-scroll-area style="height: calc(100% - 60px)">
+              <q-scroll-area style="height: calc(100% - 67px)">
                 <q-tree
                   ref="my-tree"
                   class="q-pa-md"

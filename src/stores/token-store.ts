@@ -140,8 +140,7 @@ const setup = () => {
 
   const IsStu = (): boolean =>
     userID() === '01KMXGBJJE2GMCA1A9EXDGF4AJ' ||
-    userID() === '01KM010XK0HY8HWWFPJTZGRF0F' ||
-    userID() === '01KM01JC9PS1R4X4FDJNFAR4AZ'
+    userID() === '01KM010XK0HY8HWWFPJTZGRF0F'
 
   return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken, IsStu  };
 };
