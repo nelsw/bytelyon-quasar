@@ -60,7 +60,7 @@ const onDelete = async () => {
 
 onMounted(() => {
   columnNames.value = columns.map((col) => col.name);
-  visibleCols.value = columnNames.value.filter((s) => s !== 'ID');
+  visibleCols.value = columnNames.value.filter((s) => s !== 'ID' && s !== 'Path');
 });
 const result = () => props.node.rows as BotSearchResult[];
 </script>
@@ -113,7 +113,7 @@ const result = () => props.node.rows as BotSearchResult[];
               :title="props.row.Title"
               :url="`https://bytelyon-public.s3.amazonaws.com/${result()[0]?.img}`"
             />
-            <OpenInNewBtn :url="col.value" size="sm" />
+            <OpenInNewBtn :url="col.value" size="xs" />
           </span>
           <span v-else>{{ col.value }}</span>
         </q-td>

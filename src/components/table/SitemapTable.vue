@@ -93,7 +93,7 @@ const onExport = () => {
     <template #body="props">
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" size="sm" />
+          <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" size="xs" />
           <span v-else>{{ col.value }}</span>
         </q-td>
       </q-tr>

@@ -25,7 +25,7 @@ const name = computed(() => {
 </script>
 
 <template>
-  <q-btn v-if="$tokenStore.IsStu()" @click="model = !model" dense flat>
+  <q-btn v-if="$tokenStore.IsCarl()" @click="model = !model" dense flat>
     <q-icon color="grey-8" :name="name" />
     <q-tooltip>{{ model ? 'Collapse' : 'Expand' }}</q-tooltip>
   </q-btn>

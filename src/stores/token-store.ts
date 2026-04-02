@@ -138,13 +138,13 @@ const setup = () => {
 
   const userID = (): string => claims().jti;
 
-  const IsStu = (): boolean =>
-    userID() === '01KMXGBJJE2GMCA1A9EXDGF4AJ' ||
-    userID() === '01KM010XK0HY8HWWFPJTZGRF0F'
+  const IsStu = (): boolean => IsCarl() || userID() === '01KM010XK0HY8HWWFPJTZGRF0F'
+
+  const IsCarl = (): boolean => userID() === '01KM010XK0HY8HWWFPJTZGRF0F';
 
   const IsExpired = (): boolean => Date.now() < claims().exp * 1000
 
-  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken, IsStu, IsExpired  };
+  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken, IsStu, IsCarl, IsExpired  };
 };
 
 export const useTokenStore = defineStore('token-store', setup, {
