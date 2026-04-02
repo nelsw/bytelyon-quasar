@@ -32,7 +32,7 @@ export type BotNewsResult = BotNode & {
   source: string;
   description: string;
   publishedAt: string;
-  body: string;
+  body: string[];
   image: string;
 };
 

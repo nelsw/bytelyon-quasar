@@ -1,10 +1,11 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { type QTreeLazyLoadParams } from 'quasar';
-import type { Bot, BotNode } from 'src/types/model';
+import type { Bot, BotNode} from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
+import { domain } from 'src/types/base';
 
 const $notify = useNotifier();
 
@@ -56,7 +57,7 @@ const newRootNode = (botType: BotType): BotNode => {
     label: BotTypeLabel(botType),
     icon: BotTypeIcon(botType),
     children: [],
-    lazy: true
+    lazy: true,
   };
 };
 const newBotNode = (botType: BotType): BotNode => {
@@ -71,26 +72,24 @@ const newBotNode = (botType: BotType): BotNode => {
     type: botType,
     blackList: [],
     rows: null,
-    selectable: false
+    selectable: false,
   };
 };
 
 const model = reactive<BotNode[]>([
   newRootNode(BotType.News),
   newRootNode(BotType.Search),
-  newRootNode(BotType.Sitemap)
+  newRootNode(BotType.Sitemap),
 ]);
 
-const setBotNodes = (i: number, n: BotNode[]):BotNode[] => {
+const setBotNodes = (i: number, n: BotNode[]): BotNode[] => {
   if (model[i]?.children) model[i].children = n;
-  return n
+  return n;
 };
 
 const setup = () => {
-
   const Load = async (d: QTreeLazyLoadParams): Promise<void> => {
     console.debug('LazyLoad', d);
-
     if (
       d.node.id === BotType.News ||
       d.node.id === BotType.Search ||
@@ -108,7 +107,7 @@ const setup = () => {
     return await api
       .get<BotNode[]>(`/bots?type=${t}`)
       .then((result: AxiosResponse<BotNode[]>) => result.data)
-      .then((nodes: BotNode[]) => nodes.length === 0 ? [newBotNode(t)] : nodes)
+      .then((nodes: BotNode[]) => (nodes.length === 0 ? [newBotNode(t)] : nodes))
       .then((nodes: BotNode[]) => setBotNodes(i, nodes))
       .then((nodes: BotNode[]) => d.done(nodes))
       .then(() => $notify.ok(model[i]?.children, `🤖`, `${BotTypeLabel(d.node.type)} Bots Loaded`))
@@ -122,14 +121,15 @@ const setup = () => {
         d.done(result.data);
         return result.data;
       })
-      .then((nodes: BotNode[]) => nodes.length > 0
-        ? $notify.ok(nodes, `✅`, 'Results Loaded')
-        : $notify.ok(nodes, `⚠️`, 'No results found; Run the manager.'))
+      .then((nodes: BotNode[]) =>
+        nodes.length > 0
+          ? $notify.ok(nodes, `✅`, 'Results Loaded')
+          : $notify.ok(nodes, `⚠️`, 'No results found; Run the manager.'),
+      )
       .catch($notify.err);
   };
 
   const Remove = (node: BotNode): boolean => {
-
     console.debug('Remove', JSON.stringify(node, null, 2));
 
     const i: number = BotTypeIndex(node.type);
@@ -139,9 +139,7 @@ const setup = () => {
     }
 
     for (let j = 0; j < (model[i]?.children?.length || 0); j++) {
-
       if (node.id === node.botId) {
-
         if (model[i]?.children?.[j]?.label !== node.label) {
           continue;
         }
@@ -167,7 +165,6 @@ const setup = () => {
   };
 
   const Insert = (bot: Bot): BotNode => {
-
     const node: BotNode = {
       id: bot.id,
       botId: bot.id,
@@ -176,9 +173,12 @@ const setup = () => {
       frequency: bot.frequency,
       blackList: bot.blackList,
       rows: null,
-      label: bot.target
+      label: bot.target,
     };
 
+    if (bot.type === BotType.Sitemap) {
+      node.label = domain(node.label as string);
+    }
     console.debug('Insert', JSON.stringify(node, null, 2));
 
     const i: number = BotTypeIndex(node.type);
@@ -196,20 +196,19 @@ const setup = () => {
     return node;
   };
 
-
   return {
     model,
     Load,
     Insert,
-    Remove
+    Remove,
   };
 };
 
 export const useNodeStore = defineStore('node-store', setup, {
   persist: {
     debug: true,
-    storage: sessionStorage
-  }
+    storage: sessionStorage,
+  },
 });
 
 if (import.meta.hot) {

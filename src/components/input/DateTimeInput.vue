@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { date } from 'quasar'
+import { date } from 'quasar';
 
 const model = defineModel<string>({
   required: false,
   default: date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm'),
-})
+});
 </script>
 
 <template>
-  <div style="max-width: 205px">
-    <q-input  v-model="model">
+  <div style="max-width: 225px">
+    <q-input v-model="model">
       <template v-slot:prepend>
-        <q-icon name="mdi-calendar-month" class="cursor-pointer">
+        <q-btn color="primary" icon="mdi-calendar-month" dense flat>
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
             <q-date v-model="model" mask="YYYY-MM-DD HH:mm" today-btn>
               <div class="row items-center justify-end">
@@ -19,11 +19,11 @@ const model = defineModel<string>({
               </div>
             </q-date>
           </q-popup-proxy>
-        </q-icon>
+        </q-btn>
       </template>
 
       <template v-slot:append>
-        <q-icon name="mdi-clock-outline" class="cursor-pointer">
+        <q-btn color="primary" icon="mdi-clock-outline" dense flat>
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
             <q-time v-model="model" mask="YYYY-MM-DD HH:mm" format24h now-btn>
               <div class="row items-center justify-end">
@@ -31,12 +31,10 @@ const model = defineModel<string>({
               </div>
             </q-time>
           </q-popup-proxy>
-        </q-icon>
+        </q-btn>
       </template>
     </q-input>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

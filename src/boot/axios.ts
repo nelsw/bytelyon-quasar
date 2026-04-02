@@ -30,18 +30,21 @@ export default defineBoot(({ app, store, router }) => {
   }
 
   // handle expired token
-  api.interceptors.response.use(null, async (e: AxiosError) => {
-    console.error(e);
-    if (e.status === 401 || e.status === 403) {
-      api.defaults.headers.common.Authorization = null;
-      return router.replace({
-        path: '/login',
-        query: { next: router.currentRoute.value.fullPath },
-      });
-    }
+  api.interceptors.response.use(
+    (r: AxiosResponse) => r,
+    async (e: AxiosError) => {
+      console.error(e);
+      if (e.status === 401 || e.status === 403) {
+        api.defaults.headers.common.Authorization = null;
+        return router.replace({
+          path: '/login',
+          query: { next: router.currentRoute.value.fullPath },
+        });
+      }
 
-    return Promise.reject(e);
-  });
+      return Promise.reject(e);
+    },
+  );
 });
 
 export { axios, api, type AxiosError, type AxiosBasicCredentials, type AxiosResponse };

@@ -1,137 +1,68 @@
 <script setup lang="ts">
-import type { QTableColumn } from 'quasar';
 import type { BotNewsResult, BotNode } from 'src/types/model';
-import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
-import { onMounted, ref } from 'vue';
-import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
-import FilterInput from 'components/input/FilterInput.vue';
-import TrashBtn from 'components/btn/TrashBtn.vue';
-import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
+import { BotType } from 'src/types/model';
+import NewsTable from 'components/table/NewsTable.vue';
+import ArticleDialog from 'components/dialog/ArticleDialog.vue';
+import { onMounted, onUpdated, ref } from 'vue';
 import { useDataStore } from 'stores/data-store';
+import { useNodeStore } from 'stores/node-store';
+
+const emit = defineEmits<{
+  update: [BotType];
+}>();
+
+const $resultStore = useDataStore();
+const $nodeStore = useNodeStore();
 
 const model = defineModel<BotNode>({ required: true });
 
-const columns: QTableColumn<BotNewsResult>[] = [
-  {
-    name: 'Open',
-    label: 'Open',
-    field: 'url',
-    align: 'center',
-    style: 'width: 0;',
-  },
-  {
-    name: 'Published',
-    label: 'Published',
-    field: 'publishedAt',
-    align: 'left',
-    format: (value) => new Date(value).toLocaleTimeString(),
-    sortable: true,
-  },
-  {
-    name: 'Source',
-    label: 'Source',
-    field: 'source',
-    align: 'left',
-  },
-  {
-    name: 'Title',
-    label: 'Title',
-    field: 'title',
-    align: 'left',
-  },
-  {
-    name: 'Description',
-    label: 'Description',
-    field: 'description',
-    align: 'left',
-  },
-];
-
+const rows = ref<BotNewsResult[]>([]);
 const selected = ref<BotNewsResult[]>([]);
-const filter = ref<string>('');
-const $store = useDataStore();
+const result = ref<BotNewsResult | undefined>(undefined);
+const dialog = ref<boolean>(false);
 
+const onPost = (id: string) => {
+  result.value = rows.value.find((v) => v.id === id);
+  dialog.value = true;
+};
 const onDelete = async () => {
-  const ok = await $store.DeleteAll(
-    model.value.node.type,
-    model.value.node.target,
-    selected.value.map((i: BotNewsResult) => i.id),
+  const ok = await $resultStore.DeleteAll(
+    BotType.News,
+    model.value.target,
+    model.value.botId,
+    selected.value.map((r: BotNewsResult) => r.id),
   );
   if (!ok) return;
-  const rows = model.value.rows as BotNewsResult[];
-  model.value.rows = rows.filter((n) => !selected.value.includes(n));
-  selected.value = [];
+  rows.value = rows.value.filter((r: BotNewsResult) => !selected.value.includes(r));
+  if (rows.value.length > 0) {
+    selected.value = [];
+    return;
+  }
+  if ($nodeStore.Remove(model.value)) {
+    emit('update', BotType.News);
+  }
 };
 
-const columnNames = ref<string[]>([]);
-const visibleCols = ref<string[]>([]);
-
-onMounted(() => {
-  columnNames.value = columns.map((col) => col.name);
-  visibleCols.value = columnNames.value
-    .filter((s) => s !== 'ID')
-    .filter((s) => s !== 'Description');
-});
+const onChange = () => {
+  console.log('onChange', model.value);
+  rows.value = model.value.rows as BotNewsResult[];
+  selected.value = [];
+};
+onUpdated(onChange);
+onMounted(onChange);
 </script>
 
 <template>
+  <ArticleDialog v-model="dialog" :item="result" />
   <q-page padding>
-    <q-table
+    <NewsTable
+      v-model:rows="rows"
       v-model:selected="selected"
-      :columns="columns"
-      :filter="filter"
-      :rows="model.rows as BotNewsResult[]"
-      :rows-per-page-options="[20, 50, 100, 0]"
-      :pagination="{ sortBy: 'Published', descending: true }"
-      row-key="url"
-      selection="multiple"
-      color="primary"
-      dense
-      flat
-      binary-state-sort
-      bordered
-      :visible-columns="visibleCols"
-      :selected-rows-label="(n: number) => `${n} Article${n > 1 ? 's' : ''} selected`"
-      rowsPerPageLabel="Articles per page"
-    >
-      <template #top="props">
-        <TrashBtn :disable="selected.length === 0" @click="onDelete" />
-        <q-separator vertical spaced inset />
-        <FilterInput :filter="filter" />
-        <div class="absolute-center">
-          <span class="text-h5 text-weight-medium text-uppercase">{{ model.target }}</span>
-          <span class="text-body2 q-ml-sm">{{ model.label }}</span>
-        </div>
-        <q-space />
-        <ColumnsBtn v-model="visibleCols" :names="columnNames" />
-        <q-separator vertical spaced inset />
-        <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
-      </template>
-      <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th>
-            <div class="flex items-center q-ml-sm">
-              <q-checkbox v-model="props.selected" size="xs" color="pink" dense />
-            </div>
-          </q-th>
-          <q-th v-for="col in props.cols" :key="col.name" :props="props">
-            {{ col.label }}
-          </q-th>
-        </q-tr>
-      </template>
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td auto-width>
-            <div class="flex items-center q-ml-sm">
-              <q-checkbox v-model="props.selected" size="xs" color="pink-13" dense />
-            </div>
-          </q-td>
-          <q-td v-for="col in props.cols" :key="col.name" :props="props">
-            <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" />
-            <span v-else>{{ col.value }}</span>
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
+      @post="onPost"
+      @delete="onDelete"
+      :target="model.target"
+      :bot-id="model.botId"
+      :label="model.label as string"
+    />
   </q-page>
 </template>

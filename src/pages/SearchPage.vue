@@ -55,71 +55,69 @@ const visibleCols = ref<string[]>([]);
 
 const $store = useDataStore();
 const onDelete = async () => {
-  await $store.Delete(props.node.type, props.node.target, props.node.id, true);
+  await $store.Delete(props.node.type, props.node.target, props.node.botId, props.node.id, true);
 };
 
 onMounted(() => {
   columnNames.value = columns.map((col) => col.name);
-  visibleCols.value = columnNames.value.filter((s) => s !== 'ID');
+  visibleCols.value = columnNames.value.filter((s) => s !== 'ID' && s !== 'Path');
 });
 const result = () => props.node.rows as BotSearchResult[];
 </script>
 
 <template>
-  <q-page padding>
-    <q-table
-      :rows="node.rows as BotSearchResult[]"
-      :columns="columns"
-      :filter="filter"
-      :rows-per-page-options="[25, 50, 100, 0]"
-      :pagination="{ sortBy: 'ID', descending: false }"
-      color="primary"
-      row-key="ID"
-      rowsPerPageLabel="Results per page"
-      binary-state-sort
-      dense
-      flat
-      bordered
-      :visible-columns="visibleCols"
-    >
-      <template #top="props">
-        <TrashBtn @click="onDelete" />
-        <q-separator vertical spaced inset />
-        <ViewJsonBtn
-          v-if="result().length > 0 && result()[0]?.url.includes('google.com')"
-          :title="result()[0]?.title as string"
-          :content="result()[0]?.serp as object"
-        />
-        <q-separator
-          v-if="result().length > 0 && result()[0]?.url.includes('google.com')"
-          vertical
-          spaced
-          inset
-        />
-        <FilterInput v-model="filter" />
-        <div class="absolute-center">
-          <span class="text-h5 text-weight-medium">{{ node.target }}</span>
-          <span class="text-body2 q-ml-sm">{{ node.label }}</span>
-        </div>
-        <q-space />
-        <ColumnsBtn v-model="visibleCols" :names="columnNames" />
-        <q-separator vertical spaced inset />
-        <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
-      </template>
-      <template #body="props">
-        <q-tr :props="props">
-          <q-td v-for="col in props.cols" :key="col.name" :props="props">
-            <span v-if="col.name === 'Open'">
-              <ViewImgBtn
-                :title="props.row.Title"
-                :url="`https://bytelyon-public.s3.amazonaws.com/${result()[0]?.img}`"
-              />
-              <OpenInNewBtn :url="col.value" />
-            </span>
-            <span v-else>{{ col.value }}</span>
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
-  </q-page>
+  <q-table
+    :rows="node.rows as BotSearchResult[]"
+    :columns="columns"
+    :filter="filter"
+    :rows-per-page-options="[25, 50, 100, 0]"
+    :pagination="{ sortBy: 'ID', descending: false }"
+    color="primary"
+    row-key="ID"
+    rowsPerPageLabel="Results per page"
+    binary-state-sort
+    dense
+    flat
+    bordered
+    :visible-columns="visibleCols"
+  >
+    <template #top="props">
+      <TrashBtn @click="onDelete" />
+      <q-separator vertical spaced inset />
+      <ViewJsonBtn
+        v-if="result().length > 0 && result()[0]?.url.includes('google.com')"
+        :title="result()[0]?.title as string"
+        :content="result()[0]?.serp as object"
+      />
+      <q-separator
+        v-if="result().length > 0 && result()[0]?.url.includes('google.com')"
+        vertical
+        spaced
+        inset
+      />
+      <FilterInput v-model="filter" />
+      <div class="absolute-center">
+        <span class="text-h5 text-weight-medium">{{ node.target }}</span>
+        <span class="text-body2 q-ml-sm">{{ node.label }}</span>
+      </div>
+      <q-space />
+      <ColumnsBtn v-model="visibleCols" :names="columnNames" />
+      <q-separator vertical spaced inset />
+      <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
+    </template>
+    <template #body="props">
+      <q-tr :props="props">
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+          <span v-if="col.name === 'Open'">
+            <ViewImgBtn
+              :title="props.row.Title"
+              :url="`https://bytelyon-public.s3.amazonaws.com/${result()[0]?.img}`"
+            />
+            <OpenInNewBtn :url="col.value" size="xs" />
+          </span>
+          <span v-else>{{ col.value }}</span>
+        </q-td>
+      </q-tr>
+    </template>
+  </q-table>
 </template>

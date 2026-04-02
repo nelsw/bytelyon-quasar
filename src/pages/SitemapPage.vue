@@ -12,18 +12,16 @@ const $router = useRouter();
 const $store = useDataStore();
 
 const onDelete = async () => {
-  await $store.Delete(props.node.type, props.node.target, props.node.id, true);
+  await $store.Delete(props.node.type, props.node.target, props.node.botId, props.node.id, true);
   await $router.push('/dashboard');
 };
 </script>
 
 <template>
-  <q-page padding>
-    <SitemapTable
-      @delete="onDelete"
-      :rows="node.rows as Array<SitemapRow>"
-      :bot-label="node?.label || ''"
-      :result-label="node?.children?.[0]?.label || ''"
-    />
-  </q-page>
+  <SitemapTable
+    @delete="onDelete"
+    :rows="node.rows as Array<SitemapRow>"
+    :bot-label="node?.label || ''"
+    :result-label="node?.children?.[0]?.label || ''"
+  />
 </template>

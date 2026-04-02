@@ -12,7 +12,7 @@ const notify = (msg:string, avatar: string, actions:QNotifyAction[]) => {
     message: `<div class="text-right">${msg}</div>`,
     position: 'bottom-right',
     textColor: 'white',
-    timeout: 2000,
+    timeout: 5000,
   }
 
   if (actions.length !== 0) {
@@ -50,11 +50,14 @@ const useNotifier = () => {
 
 
   const err = (e: AxiosError<Err>, ...args: string[]) => {
+    console.error(e);
     let msg = e.response?.data?.error || e?.message;
     if (args.length > 0) {
       msg = args[0] as string;
     }
-
+    if (msg?.includes(`can't access property "data", result is undefined`)) {
+      return false;
+    }
     notify(`${symbolSpan(`⛔️`)}${msg}`, '', []);
 
     return false;

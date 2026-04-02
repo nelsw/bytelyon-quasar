@@ -23,6 +23,14 @@ const setup = () => {
 
     console.info('save bot', b)
 
+    if (
+      b.id === BotType.News.toString() ||
+      b.id === BotType.Search.toString() ||
+      b.id === BotType.Sitemap.toString()
+    ) {
+      b.id = '';
+    }
+
     if (b.botId === '' && b.type === BotType.Sitemap) {
 
       if (!b.target.startsWith('https://')) {
@@ -40,6 +48,8 @@ const setup = () => {
         frequency: b.frequency,
         target: b.target,
         blackList: b.blackList,
+        botId: b.botId,
+        id: b.id
       })
       .then((res: AxiosResponse<Bot>) => {
         if (b.botId === '') {
