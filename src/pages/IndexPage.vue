@@ -21,9 +21,9 @@ const filter = ref<string>('');
 const dialog = ref<boolean>(false);
 
 watch(selected, (val) => {
-  console.debug(`selected: ${val}`);
-  treeRef.value?.setExpanded(val, true);
   bot.value = treeRef.value?.getNodeByKey(val);
+  treeRef.value?.setExpanded(val, true);
+  console.debug(`selected: ${val}`, bot.value);
 });
 
 watch(filter, (val) => {
@@ -35,8 +35,7 @@ watch(filter, (val) => {
   }
 });
 
-const onUpdate = (val: string) => selected.value = val;
-
+const onUpdate = (val: string) => (selected.value = val);
 </script>
 <template>
   <ArticleDialog v-model="dialog" />
@@ -54,7 +53,11 @@ const onUpdate = (val: string) => selected.value = val;
           <div style="height: calc(100vh - 51px)">
             <FilterInput v-model="filter" class="q-pt-xs q-px-md" :disable="selected === ''" />
             <q-separator inset />
-            <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+            <transition
+              appear
+              enter-active-class="animated fadeIn"
+              leave-active-class="animated fadeOut"
+            >
               <q-scroll-area style="height: calc(100% - 67px)">
                 <q-tree
                   ref="my-tree"
@@ -74,11 +77,17 @@ const onUpdate = (val: string) => selected.value = val;
         </div>
       </template>
       <template #after>
-        <HomePage v-if="bot === undefined" @update="onUpdate" />
-        <BotPage v-else-if="bot.botId === '' || bot.botId === bot.id" @update="onUpdate" :bot="bot" />
-        <SitemapPage v-else-if="bot.type === BotType.Sitemap" :node="bot" />
-        <NewsPage v-else-if="bot.type === BotType.News" v-model="bot" />
-        <SearchPage v-else-if="bot.type === BotType.Search" :node="bot" />
+        <q-page padding>
+          <HomePage v-if="bot === undefined" @update="onUpdate" />
+          <BotPage
+            v-else-if="bot.botId === '' || bot.botId === bot.id"
+            @update="onUpdate"
+            :bot="bot"
+          />
+          <SitemapPage v-else-if="bot.type === BotType.Sitemap" :node="bot" />
+          <NewsPage v-else-if="bot.type === BotType.News" v-model="bot" @update="onUpdate" />
+          <SearchPage v-else-if="bot.type === BotType.Search" :node="bot" />
+        </q-page>
       </template>
     </q-splitter>
   </q-page>

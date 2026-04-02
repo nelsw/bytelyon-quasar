@@ -90,7 +90,6 @@ const setup = () => {
 
   const Load = async (d: QTreeLazyLoadParams): Promise<void> => {
     console.debug('LazyLoad', d);
-
     if (
       d.node.id === BotType.News ||
       d.node.id === BotType.Search ||

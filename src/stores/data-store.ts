@@ -23,6 +23,7 @@ const setup = () => {
   const Delete = async (
     t: BotType,
     target: string,
+    botId: string,
     id: string,
     notify: boolean,
   ): Promise<boolean> => {
@@ -30,7 +31,7 @@ const setup = () => {
       target = base64(target);
     }
     return await api
-      .delete(`/bots?type=${t}&target=${target}&id=${id}`)
+      .delete(`/bots?type=${t}&target=${target}&id=${id}&botId=${botId}`)
       .then(() => {
         if (notify) {
           $notify.ok(null, `Deleted`);
@@ -45,10 +46,10 @@ const setup = () => {
       });
   };
 
-  const DeleteAll = async (t: BotType, target: string, ids: string[]): Promise<string[]> => {
+  const DeleteAll = async (t: BotType, target: string, botId:string, ids: string[]): Promise<string[]> => {
     const ok: string[] = [];
     for (const id of ids) {
-      if (await Delete(t, target, id, false)) {
+      if (await Delete(t, target, botId, id, false)) {
         ok.push(id);
       }
     }

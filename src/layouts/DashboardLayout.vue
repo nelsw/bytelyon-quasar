@@ -23,7 +23,7 @@ const rightDrawer = ref<boolean>(false);
         </div>
         <div class="flex"></div>
         <div class="flex">
-          <ShopifyBtn />
+          <ShopifyBtn size="sm"/>
           <CollapseBtn v-model="rightDrawer" side="right" />
         </div>
       </q-toolbar>
