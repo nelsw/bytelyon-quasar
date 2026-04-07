@@ -5,7 +5,7 @@ import { BotType } from 'src/types/model';
 const props = defineProps<{
   botType: BotType;
   color: string;
-  disable: boolean;
+  disable?: boolean | undefined;
 }>();
 
 const model = defineModel<string>();

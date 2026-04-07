@@ -27,6 +27,63 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DashboardLayout.vue'),
     children: [
       {
+        path: '',
+        meta: { requiresAuth: true },
+        component: () => import('pages/IndexPage.vue'),
+      },
+      {
+        path: '/news',
+        meta: { requiresAuth: true },
+        component: () => import('pages/news/CreatePage.vue'),
+      },
+      {
+        path: '/news/:id',
+        meta: { requiresAuth: true },
+        component: () => import('pages/news/UpdatePage.vue'),
+      },
+      {
+        path: '/news/results/:botId',
+        meta: { requiresAuth: true },
+        component: () => import('pages/news/ResultsPage.vue'),
+      },
+      {
+        path: '/search',
+        meta: { requiresAuth: true },
+        component: () => import('pages/search/CreatePage.vue'),
+      },
+      {
+        path: '/search/:id',
+        meta: { requiresAuth: true },
+        component: () => import('pages/search/UpdatePage.vue'),
+      },
+      {
+        path: '/search/:botId/:id',
+        meta: { requiresAuth: true },
+        component: () => import('pages/search/UpdatePage.vue'),
+      },
+      {
+        path: '/sitemap',
+        meta: { requiresAuth: true },
+        component: () => import('pages/sitemap/CreatePage.vue'),
+      },
+      {
+        path: '/sitemap/:id',
+        meta: { requiresAuth: true },
+        component: () => import('pages/sitemap/UpdatePage.vue'),
+      },
+      {
+        path: '/sitemap/:botId/:id',
+        meta: { requiresAuth: true },
+        component: () => import('pages/sitemap/UpdatePage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/news',
+    meta: { requiresAuth: true },
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [
+      {
         path: '/dashboard',
         meta: { requiresAuth: true },
         component: () => import('pages/IndexPage.vue'),

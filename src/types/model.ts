@@ -19,12 +19,14 @@ export type Bot = {
   target: string;
   frequency: number;
   blackList: string[];
+  workedAt?: Date | undefined;
 };
 
-export type BotNode = Bot & QTreeNode & {
-  botId: string;
-  rows: unknown[] | null;
-};
+export type BotNode = Bot &
+  QTreeNode & {
+    botId: string;
+    rows: unknown[] | null;
+  };
 
 export type BotNewsResult = BotNode & {
   url: string;
@@ -76,3 +78,21 @@ export type Article = {
   prompt: string;
   publishedAt: string;
 }
+
+export type NewsBotResultGroup = {
+  botId: string;
+  target: string;
+  results: NewsBotResult[];
+};
+
+export type NewsBotResult = {
+  id: string;
+  botId: string;
+  url: string;
+  title: string;
+  source: string;
+  description: string;
+  publishedAt: string;
+  body: string[];
+  image: string;
+};
