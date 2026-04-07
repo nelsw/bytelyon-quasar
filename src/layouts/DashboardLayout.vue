@@ -4,13 +4,17 @@ import CollapseBtn from 'components/btn/CollapseBtn.vue';
 import ShopifyBtn from 'components/btn/ShopifyBtn.vue';
 import LogoImg from 'components/img/LogoImg.vue';
 import { useNodeStore } from 'stores/node-store';
+import ArticleDialog from 'components/dialog/ArticleDialog.vue';
+import BotList from 'components/list/BotList.vue';
 
 const $nodeStore = useNodeStore();
 
-const leftDrawer = ref<boolean>(false);
+const articleDialog = ref(false);
+const leftDrawer = ref<boolean>(true);
 const rightDrawer = ref<boolean>(false);
 </script>
 <template>
+  <ArticleDialog v-model="articleDialog" />
   <q-layout view="hHh lpR lFr">
     <q-header class="bg-dark text-white" bordered>
       <q-toolbar class="flex justify-between">
@@ -23,18 +27,18 @@ const rightDrawer = ref<boolean>(false);
         </div>
         <div class="flex"></div>
         <div class="flex">
-          <ShopifyBtn size="sm"/>
+          <ShopifyBtn @click="articleDialog = true" size="sm" />
           <CollapseBtn v-model="rightDrawer" side="right" />
         </div>
       </q-toolbar>
     </q-header>
 
     <q-drawer v-model="leftDrawer" side="left" bordered>
-      <!-- drawer content -->
+      <BotList />
     </q-drawer>
 
     <q-drawer v-model="rightDrawer" side="right" :width="1250" bordered>
-      <pre>{{$nodeStore.model}}</pre>
+      <pre>{{ $nodeStore.model }}</pre>
     </q-drawer>
 
     <q-page-container>
