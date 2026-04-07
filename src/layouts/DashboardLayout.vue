@@ -10,7 +10,7 @@ import BotList from 'components/list/BotList.vue';
 const $nodeStore = useNodeStore();
 
 const articleDialog = ref(false);
-const leftDrawer = ref<boolean>(true);
+const leftDrawer = ref<boolean>(false);
 const rightDrawer = ref<boolean>(false);
 </script>
 <template>
