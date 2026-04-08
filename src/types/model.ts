@@ -109,8 +109,7 @@ export type Page = {
   html: string;
 };
 
-export type PagesNode = Page &
-  QTreeNode & {
+export type PagesNode = QTreeNode & {
     pages: Page[];
     url: string;
   };
@@ -118,7 +117,6 @@ export type PagesNode = Page &
 export type SitemapBotResultGroup = {
   botId: string;
   target: string;
-  type: string;
   domain: string;
   urls: string[];
   node: PagesNode;

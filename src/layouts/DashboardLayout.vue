@@ -5,6 +5,7 @@ import { useNodeStore } from 'stores/node-store';
 import NewsBotExpansionItem from 'components/expansion-item/NewsBotExpansionItem.vue';
 import SearchBotExpansionItem from 'components/expansion-item/SearchBotExpansionItem.vue';
 import SitemapBotExpansionItem from 'components/expansion-item/SitemapBotExpansionItem.vue';
+import CollapseBtn from 'components/btn/CollapseBtn.vue';
 
 const $nodeStore = useNodeStore();
 
@@ -23,7 +24,7 @@ const rightDrawer = ref<boolean>(false);
       bordered
       show-if-above
     >
-      <q-scroll-area style="height: calc(100% - 49px); margin-top: 49px">
+      <q-scroll-area style="height: calc(100% - 49px - 49px); margin-top: 49px">
         <q-list separator>
           <NewsBotExpansionItem />
           <SearchBotExpansionItem />
@@ -41,6 +42,15 @@ const rightDrawer = ref<boolean>(false);
           </q-item-section>
         </q-item>
         <q-separator />
+      </div>
+      <div class="absolute-bottom" style="height: 49px">
+        <q-separator />
+        <q-item>
+          <q-item-section avatar>
+            <CollapseBtn v-model="miniState" collapse="left" inverse />
+          </q-item-section>
+
+        </q-item>
       </div>
     </q-drawer>
 

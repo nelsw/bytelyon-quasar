@@ -4,78 +4,71 @@ import { useRouter } from 'vue-router';
 import { useSitemapBotResultsStore } from 'stores/sitemap/result-store';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
-import type { PagesNode, SitemapBotResultGroup } from 'src/types/model';
+import type { PagesNode } from 'src/types/model';
 
 const $store = useSitemapBotResultsStore();
 const $router = useRouter();
 
-const result = ref<SitemapBotResultGroup>({
-  botId: '',
-  target: '',
-  type: '',
-  domain: '',
-  urls: [],
-  node: {
-    id: '',
-    html: '',
-    img: '',
-    title: '',
-    path: '',
-    domain: '',
-    pages: [],
-    url: '',
-  },
-});
+const treeRef = useTemplateRef<QTree>('my-sitemap-tree');
 
-const splitterModel = ref(350);
-const treeRef = useTemplateRef<QTree>('my-tree');
+const splitterModel = ref(10);
+const splitterLimits = [15, 85];
 const selected = ref<string>('');
+const expanded = ref<string[]>([]);
 const filter = ref<string>('');
-
-watch(selected, (val) => {
-  const n: PagesNode = treeRef.value?.getNodeByKey(val);
-  console.debug(`selected: ${val}`, n);
-});
+const nodes = ref<PagesNode[]>([]);
+const botId = ref<string>('');
+const pagesNode = ref<PagesNode | undefined>(undefined);
 
 const onchange = async () => {
-  const botId = $router.currentRoute.value.params.botId as string;
-  let r = $store.find(botId);
+  botId.value = $router.currentRoute.value.params.botId as string;
+  let r = $store.find(botId.value);
   if (r === null) {
-    await $store.load(botId);
-    r = $store.find(botId);
+    await $store.load(botId.value);
+    r = $store.find(botId.value);
   }
-  if (r !== null) result.value = r;
+  if (r !== null) {
+    nodes.value = [r.node];
+  }
 };
 
 onUpdated(onchange);
 onMounted(onchange);
+
+watch(selected, (val) => {
+  pagesNode.value = treeRef.value?.getNodeByKey(val);
+  console.log(val, JSON.stringify(pagesNode.value, null, 2));
+  treeRef.value?.setExpanded(val, true);
+});
 </script>
 
 <template>
   <q-page class="absolute-full">
-    <q-splitter
-      v-model="splitterModel"
-      :limits="[205, 500]"
-      class="full-height"
-      separator-class="bg-grey-9"
-      separator-style="width:.5px;"
-      unit="px"
-    >
+    <q-splitter v-model="splitterModel" :limits="splitterLimits" class="full-height">
       <template #before>
         <FilterInput v-model="filter" class="q-pt-xs q-px-md" />
         <q-separator inset />
-        <q-tree
-          ref="my-tree"
-
-          v-model:selected="selected"
-          node-key="label"
-          :filter="filter"
-          :nodes="[result.node]"
-          dense
-        >
-        </q-tree>
+        <div class="q-pa-md q-gutter-sm">
+          <q-tree
+            ref="my-sitemap-tree"
+            v-model:selected="selected"
+            v-model:expanded="expanded"
+            node-key="label"
+            :filter="filter"
+            :nodes="nodes"
+            accordion
+            dense
+            default-expand-all
+            no-selection-unset
+            selected-color="primary"
+          />
+        </div>
       </template>
-      <template #after> </template>
+      <template #after>
+<pre>
+{{ pagesNode }}
+        </pre>
+      </template>
     </q-splitter>
   </q-page>
 </template>

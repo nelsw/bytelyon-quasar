@@ -25,6 +25,7 @@ const setup = () => {
     return await api
       .get<SitemapBotResultGroup>(`/bots?type=sitemap&id=${botId}`)
       .then((r: AxiosResponse<SitemapBotResultGroup>) => {
+        console.debug(JSON.stringify(r, null, 2));
         const groups: SitemapBotResultGroup[] = resultGroups.value.filter(
           (rg: SitemapBotResultGroup) => rg.botId !== botId,
         );

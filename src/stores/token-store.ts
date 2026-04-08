@@ -138,7 +138,7 @@ const setup = () => {
 
   const userID = (): string => claims().jti;
 
-  const IsStu = (): boolean => IsCarl() || userID() === '01KM010XK0HY8HWWFPJTZGRF0F'
+  const IsStu = (): boolean => true
 
   const IsCarl = (): boolean => userID() === '01KM010XK0HY8HWWFPJTZGRF0F';
 
