@@ -13,6 +13,8 @@ export const enum BotType {
   News = 'news',
 }
 
+export const BotTypes: BotType[] = [BotType.News, BotType.Search, BotType.Sitemap];
+
 export type Bot = {
   id: string;
   type: BotType;
@@ -77,7 +79,7 @@ export type Article = {
   image: string;
   prompt: string;
   publishedAt: string;
-}
+};
 
 export type NewsBotResultGroup = {
   botId: string;
@@ -96,3 +98,55 @@ export type NewsBotResult = {
   body: string[];
   image: string;
 };
+
+export type Page = {
+  id: string;
+  url: string;
+  domain: string;
+  path: string;
+  title: string;
+  img: string;
+  html: string;
+};
+
+export type PagesNode = Page &
+  QTreeNode & {
+    pages: Page[];
+    url: string;
+  };
+
+export type SitemapBotResultGroup = {
+  botId: string;
+  target: string;
+  type: string;
+  domain: string;
+  urls: string[];
+  node: PagesNode;
+};
+
+export const BotTypeIcon = (botType: BotType): string => {
+  switch (botType) {
+    case BotType.Search:
+      return 'mdi-web';
+    case BotType.Sitemap:
+      return 'mdi-sitemap';
+    case BotType.News:
+      return 'mdi-newspaper';
+    default:
+      return 'Unknown BotType: ' + (botType as string);
+  }
+};
+
+export const BotTypeLabel = (botType: BotType): string => {
+  switch (botType) {
+    case BotType.Search:
+      return 'Search';
+    case BotType.Sitemap:
+      return 'Sitemap';
+    case BotType.News:
+      return 'News';
+    default:
+      return 'Unknown BotType: ' + (botType as string);
+  }
+};
+export class SitemapBotResults {}

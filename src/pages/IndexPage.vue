@@ -70,6 +70,7 @@ const onUpdate = (val: string) => (selected.value = val);
                   accordion
                   no-selection-unset
                   @lazy-load="$nodeStore.Load"
+
                 />
               </q-scroll-area>
             </transition>

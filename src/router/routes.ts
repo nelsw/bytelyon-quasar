@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         meta: { requiresAuth: true },
-        component: () => import('pages/IndexPage.vue'),
+        component: () => import('pages/HomePage.vue'),
       },
       {
         path: '/news',
@@ -57,9 +57,9 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/search/UpdatePage.vue'),
       },
       {
-        path: '/search/:botId/:id',
+        path: '/search/results/:botId',
         meta: { requiresAuth: true },
-        component: () => import('pages/search/UpdatePage.vue'),
+        component: () => import('pages/search/ResultsPage.vue'),
       },
       {
         path: '/sitemap',
@@ -72,9 +72,9 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/sitemap/UpdatePage.vue'),
       },
       {
-        path: '/sitemap/:botId/:id',
+        path: '/sitemap/results/:botId',
         meta: { requiresAuth: true },
-        component: () => import('pages/sitemap/UpdatePage.vue'),
+        component: () => import('pages/sitemap/ResultsPage.vue'),
       },
     ],
   },

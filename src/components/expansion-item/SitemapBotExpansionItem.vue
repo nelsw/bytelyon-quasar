@@ -50,9 +50,8 @@ onMounted($store.load);
         v-for="bot in $store.bots"
         :key="bot.id"
         :inset-level="0.5"
-        clickable
-        v-ripple
         :disable="$store.loading"
+        class="q-mr-xs"
       >
         <q-item-section>
           <q-item-label>

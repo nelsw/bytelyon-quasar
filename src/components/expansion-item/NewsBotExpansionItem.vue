@@ -43,15 +43,19 @@ onMounted($store.load);
     </template>
     <q-list dense>
       <q-separator inset />
-      <q-item v-for="bot in $store.bots" :key="bot.id" :inset-level="0.5" :disable="$store.loading">
+      <q-item
+        v-for="bot in $store.bots"
+        :key="bot.id"
+        :inset-level="0.5"
+        :disable="$store.loading"
+        class="q-mr-xs"
+      >
         <q-item-section>
           <q-item-label>
-            <span class="q-ml-sm">
-              {{ bot.target }}
-              <q-tooltip>
-                {{ date.formatDate(bot.workedAt, 'MM/DD/YY hh:mm a') }}
-              </q-tooltip>
-            </span>
+            {{ bot.target }}
+            <q-tooltip>
+              {{ date.formatDate(bot.workedAt, 'MM/DD/YY hh:mm a') }}
+            </q-tooltip>
           </q-item-label>
         </q-item-section>
         <q-item-section side>
@@ -80,7 +84,6 @@ onMounted($store.load);
           </div>
         </q-item-section>
       </q-item>
-
       <q-inner-loading :showing="$store.loading" dark size="sm" color="primary" />
     </q-list>
   </q-expansion-item>

@@ -1,5 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
 
-<template>art</template>
+</script>
+
+<template>
+  <pre>
+    foo
+  </pre>
+</template>
 
 <style scoped lang="scss"></style>

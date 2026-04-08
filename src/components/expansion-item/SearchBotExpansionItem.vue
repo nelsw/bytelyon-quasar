@@ -43,7 +43,13 @@ onMounted($store.load);
     </template>
     <q-list dense>
       <q-separator inset />
-      <q-item v-for="bot in $store.bots" :key="bot.id" :inset-level="0.5" :disable="$store.loading">
+      <q-item
+        v-for="bot in $store.bots"
+        :key="bot.id"
+        :inset-level="0.5"
+        :disable="$store.loading"
+        class="q-mr-xs"
+      >
         <q-item-section>
           <q-item-label>
             {{ bot.target }}
@@ -54,20 +60,27 @@ onMounted($store.load);
         </q-item-section>
         <q-item-section side>
           <div class="q-gutter-xs">
-          <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.remove(bot.target)" />
-          <q-btn :to="`/search/${bot.id}`" color="amber-13" icon="mdi-pencil" size="sm" dense flat>
-            <q-tooltip>Update News Bot</q-tooltip>
-          </q-btn>
-          <q-btn
-            :to="`/search/results/${bot.id}`"
-            color="white"
-            icon="mdi-table"
-            size="sm"
-            dense
-            flat
-          >
-            <q-tooltip>Show Search Bot Results</q-tooltip>
-          </q-btn>
+            <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.remove(bot.target)" />
+            <q-btn
+              :to="`/search/${bot.id}`"
+              color="amber-13"
+              icon="mdi-pencil"
+              size="sm"
+              dense
+              flat
+            >
+              <q-tooltip>Update News Bot</q-tooltip>
+            </q-btn>
+            <q-btn
+              :to="`/search/results/${bot.id}`"
+              color="white"
+              icon="mdi-table"
+              size="sm"
+              dense
+              flat
+            >
+              <q-tooltip>Show Search Bot Results</q-tooltip>
+            </q-btn>
           </div>
         </q-item-section>
       </q-item>
