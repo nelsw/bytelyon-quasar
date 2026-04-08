@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useNodeStore } from 'stores/node-store';
+import { BotTypeIcon, BotTypes } from 'src/types/model';
+import { useRouter } from 'vue-router';
 
-const emit = defineEmits<{ update: [string] }>();
-const $nodes = useNodeStore();
+const $router = useRouter();
 </script>
 
 <template>
@@ -16,18 +16,18 @@ const $nodes = useNodeStore();
         </div>
       </div>
       <q-card
-        v-for="node in $nodes.model"
-        :key="node.id"
+        v-for="botType in BotTypes"
+        :key="botType"
         class="cursor-pointer"
         style="width: 200px"
-        @click="emit('update', node.id)"
+        @click="$router.push(`/${botType}`)"
       >
         <q-card-section style="padding: 100px">
-          <q-icon :name="node.icon" color="primary" size="5em" class="absolute-center" />
+          <q-icon :name="BotTypeIcon(botType)" color="primary" size="5em" class="absolute-center" />
         </q-card-section>
         <q-separator />
         <q-card-actions class="flex justify-center">
-          <div class="q-pa-md text-h6 text-capitalize">{{ node.id }}</div>
+          <div class="q-pa-md text-h6 text-capitalize">{{ botType }}</div>
         </q-card-actions>
       </q-card>
     </div>

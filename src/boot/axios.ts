@@ -25,6 +25,24 @@ export default defineBoot(({ app, store, router }) => {
 
   // for browser refresh
   const tokenStore = useTokenStore(store);
+
+  router.beforeEach((to, from) => {
+    console.debug(`router.beforeEach - from:${from.fullPath}, to:${to.fullPath}`);
+  //   if (!tokenStore.IsExpired() || from.path === '/login' || from .path === '/') {
+  //     return next();
+  //   }
+  //   console.debug(from, to)
+  //   if (tokenStore.IsExpired()) {
+  //     api.defaults.headers.common.Authorization = null;
+  //     return router.replace({
+  //       path: '/login',
+  //       query: { next: to.fullPath },
+  //     });
+  //   }
+  //   return next();
+  })
+
+
   if (tokenStore.token) {
     api.defaults.headers.common.Authorization = `Bearer ${tokenStore.token}`;
   }

@@ -1,32 +1,62 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useTokenStore } from 'stores/token-store';
 
-const $tokenStore = useTokenStore();
+// menu-open points to the left
+const iconDirLeft = 'mdi-menu-open';
+// menu-close points to the right
+const iconDirRight = 'mdi-menu-close';
 
 const props = defineProps<{
-  side: 'left' | 'right';
+  collapse: 'left' | 'right';
+  inverse?: boolean;
 }>();
 
 const model = defineModel<boolean>();
 
 const name = computed(() => {
+  let name = '';
+
+  // if expanded, show collapse
   if (model.value) {
-    if (props.side === 'left') {
-      return `mdi-menu-open`;
+    // show collapse is to the left
+    if (props.collapse === 'left') {
+      name = iconDirLeft;
     }
-    return `mdi-menu-close`;
+    name = iconDirRight;
+  } else {
+    // if collapsed, show expand
+    if (props.collapse === 'right') {
+      name = iconDirLeft;
+    } else {
+      name = iconDirRight;
+    }
   }
-  if (props.side === 'left') {
-    return `mdi-menu-close`;
+
+  if (!props.inverse) {
+    return name;
   }
-  return `mdi-menu-open`;
+  if (name === iconDirLeft) {
+    return iconDirRight;
+  }
+  return iconDirLeft;
 });
+const tooltip = computed(() => {
+  let tooltip = '';
+  if (model.value) {
+    tooltip = 'Collapse'
+  } else {
+    tooltip = 'Expand';
+  }
+  if (props.inverse) {
+    tooltip = tooltip === 'Collapse' ? 'Expand' : 'Collapse';
+  }
+  return tooltip;
+})
 </script>
 
 <template>
-  <q-btn v-if="$tokenStore.IsCarl()" @click="model = !model" dense flat>
-    <q-icon color="grey-8" :name="name" />
-    <q-tooltip>{{ model ? 'Collapse' : 'Expand' }}</q-tooltip>
+  <q-btn @click="model = !model" dense flat size="sm" style="padding:0;">
+    <q-icon color="grey-8" :name="name" size="sm" />
+    <q-tooltip>{{ tooltip }}</q-tooltip>
   </q-btn>
 </template>

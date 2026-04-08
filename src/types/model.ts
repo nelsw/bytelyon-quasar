@@ -13,18 +13,22 @@ export const enum BotType {
   News = 'news',
 }
 
+export const BotTypes: BotType[] = [BotType.News, BotType.Search, BotType.Sitemap];
+
 export type Bot = {
   id: string;
   type: BotType;
   target: string;
   frequency: number;
   blackList: string[];
+  workedAt?: Date | undefined;
 };
 
-export type BotNode = Bot & QTreeNode & {
-  botId: string;
-  rows: unknown[] | null;
-};
+export type BotNode = Bot &
+  QTreeNode & {
+    botId: string;
+    rows: unknown[] | null;
+  };
 
 export type BotNewsResult = BotNode & {
   url: string;
@@ -75,4 +79,72 @@ export type Article = {
   image: string;
   prompt: string;
   publishedAt: string;
-}
+};
+
+export type NewsBotResultGroup = {
+  botId: string;
+  target: string;
+  results: NewsBotResult[];
+};
+
+export type NewsBotResult = {
+  id: string;
+  botId: string;
+  url: string;
+  title: string;
+  source: string;
+  description: string;
+  publishedAt: string;
+  body: string[];
+  image: string;
+};
+
+export type Page = {
+  id: string;
+  url: string;
+  domain: string;
+  path: string;
+  title: string;
+  img: string;
+  html: string;
+};
+
+export type PagesNode = QTreeNode & {
+    pages: Page[];
+    url: string;
+  };
+
+export type SitemapBotResultGroup = {
+  botId: string;
+  target: string;
+  domain: string;
+  urls: string[];
+  node: PagesNode;
+};
+
+export const BotTypeIcon = (botType: BotType): string => {
+  switch (botType) {
+    case BotType.Search:
+      return 'mdi-web';
+    case BotType.Sitemap:
+      return 'mdi-sitemap';
+    case BotType.News:
+      return 'mdi-newspaper';
+    default:
+      return 'Unknown BotType: ' + (botType as string);
+  }
+};
+
+export const BotTypeLabel = (botType: BotType): string => {
+  switch (botType) {
+    case BotType.Search:
+      return 'Search';
+    case BotType.Sitemap:
+      return 'Sitemap';
+    case BotType.News:
+      return 'News';
+    default:
+      return 'Unknown BotType: ' + (botType as string);
+  }
+};
+export class SitemapBotResults {}
