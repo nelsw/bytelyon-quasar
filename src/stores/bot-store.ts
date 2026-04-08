@@ -19,9 +19,11 @@ const IsValidURL = (s:string) => {
   ).test(s);
 }
 const setup = () => {
-  const Save = async (b: BotNode): Promise<BotNode | null> => {
+  const Save = async (b: BotNode): Promise<Bot | null> => {
 
     console.info('save bot', b)
+
+    const isNew = b.botId === '' && b.id ==='';
 
     if (
       b.id === BotType.News.toString() ||
@@ -52,11 +54,8 @@ const setup = () => {
         id: b.id
       })
       .then((res: AxiosResponse<Bot>) => {
-        if (b.botId === '') {
-          b = $nodeStore.Insert(res.data)
-        }
-        $notify.ok(b, `💾`, b.botId === '' ? 'Created' : 'Updated')
-        return b
+        $notify.ok(res.data, `💾`, isNew ? 'Created' : 'Updated')
+        return res.data
       })
       .catch((e:AxiosError<Err>)=> {
         $notify.err(e)

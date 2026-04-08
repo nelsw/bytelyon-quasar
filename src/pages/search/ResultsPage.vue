@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUpdated, ref, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, onUpdated, ref } from 'vue';
 import { useSearchBotResultsStore } from 'stores/search/result-store';
 import { useRouter } from 'vue-router';
 import type { BotNode } from 'src/types/model';
@@ -23,23 +23,23 @@ const barStyle = {
 const $router = useRouter();
 const $store = useSearchBotResultsStore();
 
-const treeRef = useTemplateRef<QTree>('my-search-result-tree');
 const botNodes = ref<BotNode[]>([]);
 const botId = ref<string>('');
 const splitterModel = ref(200);
 const selected = ref<string>('');
-const botNode = ref<BotNode | undefined>();
-
-watch(selected, (val) => {
-  botNode.value = treeRef.value?.getNodeByKey(val);
-});
 
 const onChange = async () => {
   botId.value = $router.currentRoute.value.params.botId as string;
   const nodes = await $store.get(botId.value);
-  if (nodes !== null) botNodes.value = nodes;
-  selected.value = nodes?.[0]?.id || '';
+  if (nodes !== null) {
+    botNodes.value = nodes;
+    if (nodes.length > 0 && nodes[0]?.id) {
+      selected.value = nodes[0].id;
+    }
+  }
 };
+
+const botNode = computed(() => botNodes.value.find((n: BotNode) => n.id === selected.value));
 
 onMounted(onChange);
 onUpdated(onChange);

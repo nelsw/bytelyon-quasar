@@ -2,7 +2,7 @@
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUpdated, ref } from 'vue';
 import { useNewsBotStore } from 'stores/news/bot-store';
 import type { Bot } from 'src/types/model';
 import { BotType } from 'src/types/model';
@@ -22,15 +22,17 @@ const onSubmit = async () => {
   }
 };
 
-onMounted(async () => {
+const onChanged = async () => {
   const id = $router.currentRoute.value.params.id as string;
   const b: Bot | null = $store.find(id);
-  if (!b) {
+  if (b === null) {
     await $router.push({ path: '/error' });
     return;
   }
   bot.value = b;
-});
+};
+onMounted(onChanged);
+onUpdated(onChanged);
 </script>
 
 <template>
@@ -47,7 +49,7 @@ onMounted(async () => {
         Aggregate news articles from popular & <br />reputable digital publishers & RSS feeds.
       </p>
 
-      <TargetInput v-model="bot.target" :color="color" :bot-type="BotType.News" disable/>
+      <TargetInput v-model="bot.target" :color="color" :bot-type="BotType.News" disable />
 
       <BlackListSelect
         v-model="bot.blackList"

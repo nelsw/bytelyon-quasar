@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
-import { onMounted, ref } from 'vue';
-import type { Bot} from 'src/types/model';
+import { onMounted, onUpdated, ref } from 'vue';
+import type { Bot } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import { useRouter } from 'vue-router';
 import { useSitemapBotStore } from 'stores/sitemap/bot-store';
@@ -20,16 +20,17 @@ const onSubmit = async () => {
     await $store.update(bot.value);
   }
 };
-
-onMounted(async () => {
+const onChanged = async () => {
   const id = $router.currentRoute.value.params.id as string;
   const b: Bot | null = $store.find(id);
-  if (!b) {
+  if (b === null) {
     await $router.push({ path: '/error' });
     return;
   }
   bot.value = b;
-});
+};
+onMounted(onChanged);
+onUpdated(onChanged);
 </script>
 
 <template>

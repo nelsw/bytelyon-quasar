@@ -57,6 +57,7 @@ onMounted(onchange);
   <ShopifyDialog v-model:result="result" v-model:show="articleDialog" />
   <q-table
     v-model:selected="selected"
+    :loading="$store.loading"
     :columns="columns"
     :filter="filter"
     :rows="rows"

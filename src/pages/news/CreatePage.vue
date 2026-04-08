@@ -4,12 +4,14 @@ import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import { onMounted, ref } from 'vue';
-import { useNewsBotStore } from 'stores/news/bot-store';
 import { BotType } from 'src/types/model';
+import { useNewsBotStore } from 'stores/news/bot-store';
 
 const color = 'green-13';
 
+
 const $store = useNewsBotStore();
+
 
 const target = ref<string>('');
 const blackList = ref<string[]>([]);
