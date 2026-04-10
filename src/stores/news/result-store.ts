@@ -12,8 +12,11 @@ const setup = () => {
   const model = ref<NewsBotResultGroup[]>([]);
 
   const load = async (botId:string): Promise<boolean> => {
-    if (model.value.find(g => g.botId === botId)) return true;
-    console.debug('Loading bot results');
+    loading.value = true;
+    if (model.value.find(g => g.botId === botId)) {
+      loading.value = false;
+      return true;
+    }
     return await api
       .get<NewsBotResult[]>(`/bots?type=news&id=${botId}`)
       .then((r: AxiosResponse<NewsBotResult[]>) => ({botId:botId, results: r.data}))
