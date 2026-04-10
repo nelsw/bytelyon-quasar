@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
 import type { Bot } from 'src/types/model';
 import { BotType } from 'src/types/model';
@@ -11,14 +11,14 @@ const $botStore = useBotStore();
 
 const setup = () => {
   const loading = ref(false);
-  const bots = ref<Bot[]>([]);
+  const model = reactive(new Map<string, Bot>())
 
   const load = async (): Promise<boolean> => {
     loading.value = true;
     return await api
       .get<Bot[]>(`/bots?type=search`)
-      .then((result: AxiosResponse<Bot[]>) => (bots.value = result.data))
-      .then(() => $notify.ok(bots.value, `🤖`, `Search Bots Loaded`))
+      .then((r: AxiosResponse<Bot[]>) => r.data.forEach((b) => model.set(b.id, b)))
+      .then(() => $notify.ok(model, `🤖`, `Search Bots Loaded`))
       .catch($notify.err)
       .finally(() => (loading.value = false));
   };
@@ -42,15 +42,9 @@ const setup = () => {
     if (bot === null) {
       return false;
     }
-    const arr = bots.value;
-    arr.push(bot);
-    arr.sort((a: Bot, b: Bot) => a.target.localeCompare(b.target));
-    bots.value = arr;
+    model.set(bot.id, bot);
     return true;
   };
-
-  const find = (id: string): Bot | null =>
-    bots.value.find((b: Bot) => b.id === id) ?? null;
 
   const update = async (bot: Bot): Promise<boolean> => {
     loading.value = true;
@@ -67,20 +61,19 @@ const setup = () => {
     return b !== null;
   };
 
-  const remove = async (target: string): Promise<boolean> => {
+  const remove = async (b: Bot): Promise<boolean> => {
     return await api
-      .delete(`/bots/search?target=${target}`)
-      .then(() => (bots.value = bots.value.filter((b: Bot) => b.target !== target)))
+      .delete(`/bots/search?target=${b.target}`)
+      .then(() => model.delete(b.id))
       .then(() => $notify.ok(null, `🗑️`, `Search Bot Deleted`))
       .catch($notify.err);
   };
 
   return {
-    bots,
+    model,
     loading,
     load,
     create,
-    find,
     update,
     remove,
   };

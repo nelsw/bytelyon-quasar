@@ -108,8 +108,8 @@ onMounted(() => {
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <span v-if="col.name === 'Open'">
             <ViewImgBtn
-              :title="props.row.Title"
-              :url="`https://bytelyon-public.s3.amazonaws.com/${props.row.img}`"
+              :title="props.row.title"
+              :url="`${props.row.img}`"
             />
             <OpenInNewBtn :url="col.value" size="xs" />
           </span>

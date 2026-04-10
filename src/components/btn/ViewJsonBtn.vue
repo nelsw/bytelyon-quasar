@@ -6,7 +6,7 @@ import useNotifier from 'src/composable/useNotifier';
 
 const props = defineProps<{
   title: string;
-  content: object | null;
+  content: object | undefined;
 }>();
 
 const $notify = useNotifier();

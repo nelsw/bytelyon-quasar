@@ -20,7 +20,7 @@ const setup = () => {
     return await api
       .get<Bot[]>(`/bots?type=news`)
       .then((r: AxiosResponse<Bot[]>) => r.data.forEach((b) => model.set(b.id, b)))
-      .then(() => $notify.ok(model.values(), `🤖`, `News Bots Loaded`))
+      .then(() => $notify.ok(model, `🤖`, `News Bots Loaded`))
       .catch($notify.err)
       .finally(() => (loading.value = false));
   };

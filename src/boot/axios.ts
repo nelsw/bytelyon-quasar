@@ -28,13 +28,17 @@ export default defineBoot(({ app, store, router }) => {
 
   router.beforeEach((to, from) => {
     console.debug(`router.beforeEach - from:${from.fullPath}, to:${to.fullPath}`);
+    // if (from.path === '/login' || from.path === '/') {
+    //   next();
+    //   return;
+    // }
   //   if (!tokenStore.IsExpired() || from.path === '/login' || from .path === '/') {
   //     return next();
   //   }
   //   console.debug(from, to)
   //   if (tokenStore.IsExpired()) {
   //     api.defaults.headers.common.Authorization = null;
-  //     return router.replace({
+  //     await router.replace({
   //       path: '/login',
   //       query: { next: to.fullPath },
   //     });

@@ -44,7 +44,7 @@ onMounted($store.load);
     <q-list dense>
       <q-separator inset />
       <q-item
-        v-for="bot in $store.bots"
+        v-for="bot in $store.model.values()"
         :key="bot.id"
         :inset-level="0.5"
         :disable="$store.loading"
@@ -60,7 +60,7 @@ onMounted($store.load);
         </q-item-section>
         <q-item-section side>
           <div class="q-gutter-xs">
-            <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.remove(bot.target)" />
+            <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.remove(bot)" />
             <q-btn
               :to="`/search/${bot.id}`"
               color="amber-13"

@@ -1,7 +1,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
-import type { NewsBotResult } from 'src/types/model';
+import type { Bot, NewsBotResult, NewsBotResultGroup } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import type { AxiosError } from 'axios';
 
@@ -9,14 +9,21 @@ const $notify = useNotifier();
 
 const setup = () => {
   const loading = ref(true);
-  const model = reactive(new Map<string, NewsBotResult[]>());
+  const model = ref<NewsBotResultGroup[]>([]);
 
   const load = async (botId:string): Promise<boolean> => {
+    if (model.value.find(g => g.botId === botId)) return true;
     console.debug('Loading bot results');
     return await api
       .get<NewsBotResult[]>(`/bots?type=news&id=${botId}`)
-      .then((r: AxiosResponse<NewsBotResult[]>) => model.set(botId, r.data))
-      .then((m) => $notify.ok(m.get(botId), `🤖`, `News Bot Results Loaded`))
+      .then((r: AxiosResponse<NewsBotResult[]>) => ({botId:botId, results: r.data}))
+      .then((g:NewsBotResultGroup)=> {
+        const groups = model.value.filter(g => g.botId !== botId)
+        groups.push(g)
+        model.value = groups
+        return g;
+      })
+      .then((g:NewsBotResultGroup) => $notify.ok(g, `🤖`, `News Bot Results Loaded`))
       .catch($notify.err)
       .finally(() => (loading.value = false));
   };
@@ -38,7 +45,16 @@ const setup = () => {
   const doRemove = async (botId: string, id: string): Promise<boolean> => {
     return await api
       .delete(`/bots?type=news&botId=${botId}&id=${id}`)
-      .then(() => model.set(botId, model.get(botId)?.filter((b) => b.id != id) ?? []))
+      .then(() => {
+        const group = model.value.find((g) => g.botId === botId);
+        if (group) {
+
+          group.results = group?.results.filter((r) => r.id !== id);
+          const groups = model.value.filter((g) => g.botId !== botId);
+          groups.push(group);
+          model.value = groups;
+        }
+      })
       .then(() => true)
       .catch((e: AxiosError) => {
         console.error(e);
@@ -46,11 +62,16 @@ const setup = () => {
       });
   }
 
+  const rows =  (bot: Bot | undefined): NewsBotResult[] => {
+    return model.value.find((g) => g.botId === bot?.id)?.results || ([]);
+  };
+
   return {
     model,
     loading,
     load,
     remove,
+    rows,
   };
 };
 

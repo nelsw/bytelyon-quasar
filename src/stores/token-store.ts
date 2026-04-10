@@ -142,7 +142,12 @@ const setup = () => {
 
   const IsCarl = (): boolean => userID() === '01KM010XK0HY8HWWFPJTZGRF0F';
 
-  const IsExpired = (): boolean => Date.now() < claims().exp * 1000
+  const IsExpired = (): boolean => {
+    const now = Date.now();
+    const then = claims().exp * 1000;
+    console.debug(new Date(now).toLocaleString(), new Date(then).toLocaleString());
+    return now > then;
+  }
 
   return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken, IsStu, IsCarl, IsExpired  };
 };

@@ -4,31 +4,29 @@ import FrequencySelect from 'components/select/FrequencySelect.vue';
 import { onMounted, onUpdated, ref } from 'vue';
 import type { Bot } from 'src/types/model';
 import { BotType } from 'src/types/model';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useSitemapBotStore } from 'stores/sitemap/bot-store';
 import TargetInput from 'components/input/TargetInput.vue';
 
 const color = 'amber-13';
 
+const $route = useRoute();
 const $router = useRouter();
 const $store = useSitemapBotStore();
 
-const bot = ref<Bot | null>(null);
+const bot = ref<Bot>();
 
 const onSubmit = async () => {
-  if (bot.value) {
-    await $store.update(bot.value);
-  }
+  if (bot.value) await $store.update(bot.value);
 };
-const onChanged = async () => {
-  const id = $router.currentRoute.value.params.id as string;
-  const b: Bot | null = $store.find(id);
-  if (b === null) {
-    await $router.push({ path: '/error' });
-    return;
-  }
-  bot.value = b;
+
+const onChanged = async (id: string | string[] | undefined) => {
+  if (!id) id = $route.params.id;
+  id = id as string;
+  bot.value = $store.model.get(id);
+  if (!bot.value) await $router.push({ path: '/error' });
 };
+
 onMounted(onChanged);
 onUpdated(onChanged);
 </script>

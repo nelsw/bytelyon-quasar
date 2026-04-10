@@ -67,7 +67,7 @@ watch(() => $route.params.botId, onChange);
         >
           <q-tree
             ref="my-search-result-tree"
-            :nodes="botNodes"
+            :nodes="botNodes ?? []"
             v-model:selected="selected"
             node-key="id"
             selected-color="primary"

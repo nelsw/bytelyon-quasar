@@ -15,14 +15,14 @@ const setup = () => {
     return await api
       .get<SearchBotData[]>(`/bots?type=search&id=${botId}`)
       .then((r: AxiosResponse<SearchBotData[]>) => model.set(botId, r.data))
-      .then((m) => $notify.ok(m.get(botId), `🤖`, `Search Results Loaded`))
+      .then(() => $notify.ok(model, `🤖`, `Search Results Loaded`))
       .catch($notify.err)
       .finally(() => (loading.value = false));
   };
 
   return {
-    model,
     loading,
+    model,
     load,
   };
 };

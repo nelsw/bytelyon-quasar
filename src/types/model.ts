@@ -52,6 +52,21 @@ export type SearchBotData = {
   pages: PageData[];
 };
 
+export type PageGroup = {
+  url: string;
+  pages: Page[];
+}
+
+export type Page = {
+  url: string;
+  title: string;
+  meta: Record<string, string>;
+  paragraphs: string[];
+  screenshotKey: string;
+  contentKey: string;
+  createdAt: string;
+}
+
 export type PageData = {
   idx: number;
   url: string;
@@ -77,6 +92,11 @@ export type Article = {
   publishedAt: string;
 };
 
+export type NewsBotResultGroup = {
+  botId: string;
+  results: NewsBotResult[];
+}
+
 export type NewsBotResult = {
   id: string;
   botId: string;
@@ -87,29 +107,14 @@ export type NewsBotResult = {
   publishedAt: string;
   body: string[];
   image: string;
-};
-
-export type Page = {
-  id: string;
-  url: string;
-  domain: string;
-  path: string;
-  title: string;
-  img: string;
-  html: string;
-};
-
-export type PagesNode = QTreeNode & {
-    pages: Page[];
-    url: string;
-  };
-
-export type SitemapBotResultGroup = {
-  botId: string;
   target: string;
-  domain: string;
-  urls: string[];
-  node: PagesNode;
+  type: BotType;
+};
+
+export type SitemapNode =  {
+  url: string;
+  label: string;
+  children: SitemapNode[];
 };
 
 export const BotTypeIcon = (botType: BotType): string => {

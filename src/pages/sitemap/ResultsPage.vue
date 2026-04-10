@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, onUpdated, ref, useTemplateRef, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref, useTemplateRef, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useSitemapBotResultsStore } from 'stores/sitemap/result-store';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
-import type { PagesNode } from 'src/types/model';
+import type { Page, SitemapNode } from 'src/types/model';
+import { useSitemapBotStore } from 'stores/sitemap/bot-store';
+import { usePageStore } from 'stores/page-store';
 
 const thumbStyle = {
   borderRadius: '5px',
@@ -19,45 +21,62 @@ const barStyle = {
   opacity: '0.2',
 };
 
+const $route = useRoute();
+const $bots = useSitemapBotStore();
 const $store = useSitemapBotResultsStore();
-const $router = useRouter();
+const $pages = usePageStore();
+
+const nodes = ref<SitemapNode[]>([]);
+const pages = ref<Page[]>([]);
 
 const treeRef = useTemplateRef<QTree>('my-sitemap-tree');
-
-const splitterModel = ref(15);
-const splitterLimits = [15, 85];
+const splitterModel = ref(50);
 const selected = ref<string>('');
 const expanded = ref<string[]>([]);
 const filter = ref<string>('');
-const nodes = ref<PagesNode[]>([]);
-const botId = ref<string>('');
-const pagesNode = ref<PagesNode | undefined>(undefined);
 
-const onchange = async () => {
-  botId.value = $router.currentRoute.value.params.botId as string;
-  let r = $store.find(botId.value);
-  if (r === null) {
-    await $store.load(botId.value);
-    r = $store.find(botId.value);
+const onChange = async (botId: string | string[] | undefined) => {
+  if ($bots.model.size === 0) await $bots.load();
+
+  if (typeof botId !== 'string' || botId === '') botId = $route.params.botId;
+  if (typeof botId !== 'string' || botId === '') return;
+
+  const target = $bots.model.get(botId)?.target;
+  if (!target) return;
+
+  if (!$store.model.find((m) => m.label === target)) await $store.load(target);
+
+  const node = $store.model.find((m) => m.label === target);
+  if (!node?.label) return;
+
+  if (nodes.value.length === 0) {
+    nodes.value = [node];
   }
-  if (r !== null) {
-    nodes.value = [r.node];
-  }
+  expanded.value = [node.label];
+  selected.value = node.label;
 };
 
-onUpdated(onchange);
-onMounted(onchange);
-
-watch(selected, (val) => {
-  pagesNode.value = treeRef.value?.getNodeByKey(val);
-  console.log(val, JSON.stringify(pagesNode.value, null, 2));
-  treeRef.value?.setExpanded(val, true);
+watch(selected, async (newVal, oldVal) => {
+  const newN = treeRef.value?.getNodeByKey(newVal);
+  const oldN = treeRef.value?.getNodeByKey(oldVal);
+  console.log(newVal, newN, oldN);
+  if (newN) {
+    treeRef.value?.setExpanded(newVal, true);
+    const url = (newN as SitemapNode).url;
+    await $pages.load(url);
+    pages.value = $pages.model.find((p) => p.url === url)?.pages || [];
+  } else if (oldN) {
+    treeRef.value?.setExpanded(oldVal, false);
+  }
 });
+watch(() => $route.params.botId, onChange);
+
+onMounted(onChange);
 </script>
 
 <template>
   <q-page class="absolute-full">
-    <q-splitter v-model="splitterModel" :limits="splitterLimits" class="full-height">
+    <q-splitter v-model="splitterModel" :limits="[35, 65]" class="full-height">
       <template #before>
         <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
         <q-separator inset />
@@ -79,7 +98,6 @@ watch(selected, (val) => {
             accordion
             dense
             default-expand-all
-            no-selection-unset
             selected-color="primary"
           />
         </q-scroll-area>
@@ -90,9 +108,9 @@ watch(selected, (val) => {
             Coming soon ... an array of screen shots and downloadable content for comparison and
             analysis.
           </span>
-          <pre
-            >{{ pagesNode }}
-        </pre
+          <pre>
+{{ pages }}
+            </pre
           >
         </div>
       </template>
