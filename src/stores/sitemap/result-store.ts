@@ -3,24 +3,17 @@ import { ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
 import type { SitemapBotResultGroup } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
-import { useSitemapBotStore } from 'stores/sitemap/bot-store';
 
-const $store = useSitemapBotStore();
 const $notify = useNotifier();
 
 const setup = () => {
-  const loading = ref(false);
+  const loading = ref(true);
   const resultGroups = ref<SitemapBotResultGroup[]>([]);
 
   const find = (botId: string): SitemapBotResultGroup | null =>
     resultGroups.value.find((entry) => entry.botId === botId) ?? null;
 
   const load = async (botId: string): Promise<boolean> => {
-    if ($store.find(botId) === null) {
-      $notify.warn('Bot not found');
-      return false;
-    }
-
     loading.value = true;
     return await api
       .get<SitemapBotResultGroup>(`/bots?type=sitemap&id=${botId}`)

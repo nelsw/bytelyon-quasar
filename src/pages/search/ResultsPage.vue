@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, onUpdated, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useSearchBotResultsStore } from 'stores/search/result-store';
-import { useRouter } from 'vue-router';
-import type { BotNode } from 'src/types/model';
+import { useRoute } from 'vue-router';
+import type { Bot, SearchBotData } from 'src/types/model';
 import SearchPage from 'pages/SearchPage.vue';
 import { QTree } from 'quasar';
+import { useNewsBotStore } from 'stores/news/bot-store';
 
 const splitterLimits = [200, 200];
 const thumbStyle = {
@@ -20,29 +21,30 @@ const barStyle = {
   opacity: '0.2',
 };
 
-const $router = useRouter();
+const $route = useRoute();
+const $bots = useNewsBotStore();
 const $store = useSearchBotResultsStore();
 
-const botNodes = ref<BotNode[]>([]);
-const botId = ref<string>('');
+const bot = ref<Bot>();
+const botNodes = ref<SearchBotData[]>([]);
 const splitterModel = ref(200);
 const selected = ref<string>('');
 
-const onChange = async () => {
-  botId.value = $router.currentRoute.value.params.botId as string;
-  const nodes = await $store.get(botId.value);
-  if (nodes !== null) {
-    botNodes.value = nodes;
-    if (nodes.length > 0 && nodes[0]?.id) {
-      selected.value = nodes[0].id;
-    }
-  }
+const onChange = async (botId: string | string[] | undefined) => {
+  if (!botId) botId = $route.params.botId;
+  botId = botId as string;
+  bot.value = $bots.model.get(botId);
+  if (!$store.model.has(botId)) await $store.load(botId);
+  botNodes.value = $store.model.get(botId) as SearchBotData[];
+  selected.value = botNodes?.value?.[0]?.id || '';
 };
 
-const botNode = computed(() => botNodes.value.find((n: BotNode) => n.id === selected.value));
+const botNode = computed(() =>
+  botNodes?.value?.find((n: SearchBotData) => n.id === selected.value),
+);
 
 onMounted(onChange);
-onUpdated(onChange);
+watch(() => $route.params.botId, onChange);
 </script>
 
 <template>
@@ -83,12 +85,10 @@ onUpdated(onChange);
           style="height: 100vh; max-width: 100vw"
         >
           <div class="q-pa-md">
-            <SearchPage v-if="botNode" :node="botNode" />
+            <SearchPage v-if="botNode" v-model="botNode" />
           </div>
         </q-scroll-area>
       </template>
     </q-splitter>
   </q-page>
 </template>
-
-<style scoped lang="scss"></style>

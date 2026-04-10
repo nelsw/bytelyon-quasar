@@ -40,20 +40,15 @@ export type BotNewsResult = BotNode & {
   image: string;
 };
 
-export type BotSearchResult = BotNode & {
-  url: string;
-  title: string;
-  img: string;
-  html: string;
-  serp: object;
-};
-
 export type SearchBotData = {
+  botId: string;
+  id: string;
   url: string;
   title: string;
-  userID: string;
+  userId: string;
   createdAt: number;
   target: string;
+  label: string;
   pages: PageData[];
 };
 
@@ -64,6 +59,7 @@ export type PageData = {
   img: string;
   png: string;
   json: object;
+  serp: object;
 };
 
 export interface SitemapRow extends Record<string, unknown> {
@@ -79,12 +75,6 @@ export type Article = {
   image: string;
   prompt: string;
   publishedAt: string;
-};
-
-export type NewsBotResultGroup = {
-  botId: string;
-  target: string;
-  results: NewsBotResult[];
 };
 
 export type NewsBotResult = {
@@ -147,4 +137,3 @@ export const BotTypeLabel = (botType: BotType): string => {
       return 'Unknown BotType: ' + (botType as string);
   }
 };
-export class SitemapBotResults {}

@@ -24,8 +24,8 @@ const onSubmit = async () => {
 
 const onChanged = async () => {
   const id = $router.currentRoute.value.params.id as string;
-  const b: Bot | null = $store.find(id);
-  if (b === null) {
+  const b: Bot | undefined = $store.model.get(id);
+  if (!b) {
     await $router.push({ path: '/error' });
     return;
   }

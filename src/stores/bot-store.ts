@@ -35,10 +35,6 @@ const setup = () => {
 
     if (b.botId === '' && b.type === BotType.Sitemap) {
 
-      if (!b.target.startsWith('https://')) {
-        b.target = `https://${b.target}`
-      }
-
       if (!IsValidURL(b.target)) {
         $notify.warn("Invalid URL");
         return null;

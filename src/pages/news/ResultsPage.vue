@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useNewsBotResultsStore } from 'stores/news/result-store';
-import { onMounted, onUpdated, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import FilterInput from 'components/input/FilterInput.vue';
@@ -10,11 +10,10 @@ import ShopifyBtn from 'components/btn/ShopifyBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import type { QTableColumn } from 'quasar';
 import { date } from 'quasar';
-import type { NewsBotResult } from 'src/types/model';
+import type { Bot, NewsBotResult } from 'src/types/model';
 import ShopifyDialog from 'components/dialog/ShopifyDialog.vue';
+import { useNewsBotStore } from 'stores/news/bot-store';
 
-const $store = useNewsBotResultsStore();
-const $router = useRouter();
 const fmtTs = (a: unknown, r: NewsBotResult) => date.formatDate(r.publishedAt, 'MM/DD/YY hh:mm');
 const columns: QTableColumn<NewsBotResult>[] = [
   { name: 'Open', label: 'Open', field: 'url', align: 'center', style: 'width: 0;' },
@@ -25,10 +24,13 @@ const columns: QTableColumn<NewsBotResult>[] = [
   { name: 'Description', label: 'Description', field: 'description', align: 'left' },
 ];
 
+const $route = useRoute();
+const $bots = useNewsBotStore();
+const $store = useNewsBotResultsStore();
+
 const articleDialog = ref<boolean>(false);
 const filter = ref<string>('');
-const target = ref<string>('');
-const botId = ref<string>('');
+const bot = ref<Bot>();
 const rows = ref<NewsBotResult[]>([]);
 const selected = ref<NewsBotResult[]>([]);
 const result = ref<NewsBotResult | null>(null);
@@ -40,21 +42,21 @@ const visibleCols = ref<string[]>(
     .filter((s) => s !== 'Description'),
 );
 
-const onchange = async () => {
-  botId.value = $router.currentRoute.value.params.botId as string;
-  const group = await $store.get(botId.value);
-  if (group) {
-    target.value = group.target;
-    rows.value = group.results;
-  }
+const onChange = async (botId: string | string[] | undefined) => {
+  if (!botId) botId = $route.params.botId;
+  botId = botId as string;
+  bot.value = $bots.model.get(botId);
+  if (!$store.model.has(botId)) await $store.load(botId);
+  rows.value = $store.model.get(botId) as NewsBotResult[];
 };
 
-onUpdated(onchange)
-onMounted(onchange);
+onMounted(onChange);
+watch(() => $route.params.botId, onChange);
 </script>
 
 <template>
   <ShopifyDialog v-model:result="result" v-model:show="articleDialog" />
+  <div class="q-pa-md">
   <q-table
     v-model:selected="selected"
     :loading="$store.loading"
@@ -79,7 +81,7 @@ onMounted(onchange);
       <q-separator vertical spaced inset />
       <FilterInput :filter="filter" />
       <div class="flex absolute-center items-center">
-        <div class="text-h5 text-weight-medium text-uppercase">{{ target }}</div>
+        <div class="text-h5 text-weight-medium text-uppercase">{{ bot?.target }}</div>
       </div>
       <q-space />
       <ColumnsBtn v-model="visibleCols" :names="columnNames" />
@@ -120,6 +122,5 @@ onMounted(onchange);
       </q-tr>
     </template>
   </q-table>
+  </div>
 </template>
-
-<style scoped lang="scss"></style>

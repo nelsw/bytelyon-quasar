@@ -1,63 +1,22 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
-import type { Bot, NewsBotResult, NewsBotResultGroup } from 'src/types/model';
+import type { NewsBotResult } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
-import { useNewsBotStore } from 'stores/news/bot-store';
 import type { AxiosError } from 'axios';
 
-const $store = useNewsBotStore();
 const $notify = useNotifier();
 
 const setup = () => {
-  const loading = ref(false);
-  const resultGroups = ref<NewsBotResultGroup[]>([]);
-  const results = ref<NewsBotResult[]>([]);
-
-  const find = (botId: string): NewsBotResultGroup | null =>
-    resultGroups.value.find((entry) => entry.botId === botId) ?? null;
+  const loading = ref(true);
+  const model = reactive(new Map<string, NewsBotResult[]>());
 
   const load = async (botId:string): Promise<boolean> => {
-    const bot: Bot|null = $store.find(botId);
-    if (bot === null) {
-      $notify.warn("Bot not found");
-      return false;
-    }
-    loading.value = true;
+    console.debug('Loading bot results');
     return await api
-      .get<NewsBotResult[]>(`/bots/news/results?id=${botId}`)
-      .then((r: AxiosResponse<NewsBotResult[]>) => set(botId, bot.target, r.data))
-      .then((r: NewsBotResultGroup) => $notify.ok(r, `🤖`, `News Bot Results Loaded`))
-      .catch($notify.err)
-      .finally(() => (loading.value = false));
-  };
-
-  const set = (botId: string, target:string, results: NewsBotResult[]): NewsBotResultGroup => {
-
-    const group:NewsBotResultGroup = {
-      botId: botId,
-      target: target,
-      results: results,
-    };
-
-    if (results.length === 0) return group
-
-    const groups = resultGroups.value.filter((entry) => entry.botId !== botId);
-    groups.push(group);
-    resultGroups.value = groups;
-    return group;
-  };
-
-  const get = async (botId: string): Promise<NewsBotResultGroup | null> => {
-    if (find(botId) === null) await load(botId);
-    return resultGroups.value.find((entry) => entry.botId === botId) ?? null;
-  };
-
-  const update = async (bot: Bot): Promise<boolean> => {
-    loading.value = true;
-    return await api
-      .post<Bot>(`/bots/news/results`, bot)
-      .then((res: AxiosResponse<Bot>) => $notify.ok(res.data, `🤖`, `News Bot Created`))
+      .get<NewsBotResult[]>(`/bots?type=news&id=${botId}`)
+      .then((r: AxiosResponse<NewsBotResult[]>) => model.set(botId, r.data))
+      .then((m) => $notify.ok(m.get(botId), `🤖`, `News Bot Results Loaded`))
       .catch($notify.err)
       .finally(() => (loading.value = false));
   };
@@ -78,7 +37,8 @@ const setup = () => {
 
   const doRemove = async (botId: string, id: string): Promise<boolean> => {
     return await api
-      .delete(`/bots/news/results?botId=${botId}&id=${id}`)
+      .delete(`/bots?type=news&botId=${botId}&id=${id}`)
+      .then(() => model.set(botId, model.get(botId)?.filter((b) => b.id != id) ?? []))
       .then(() => true)
       .catch((e: AxiosError) => {
         console.error(e);
@@ -87,13 +47,10 @@ const setup = () => {
   }
 
   return {
-    results,
+    model,
     loading,
     load,
-    update,
-    get,
     remove,
-    find,
   };
 };
 
