@@ -49,7 +49,6 @@ const rightDrawer = ref<boolean>(false);
           <q-item-section avatar>
             <CollapseBtn v-model="miniState" collapse="left" inverse />
           </q-item-section>
-
         </q-item>
       </div>
     </q-drawer>

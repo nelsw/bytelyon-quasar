@@ -3,7 +3,7 @@ import axios, {
   type AxiosError,
   type AxiosBasicCredentials,
   type AxiosResponse,
-  type AxiosInstance,
+  type AxiosInstance
 } from 'axios';
 import { useTokenStore } from 'stores/token-store';
 
@@ -26,27 +26,6 @@ export default defineBoot(({ app, store, router }) => {
   // for browser refresh
   const tokenStore = useTokenStore(store);
 
-  router.beforeEach((to, from) => {
-    console.debug(`router.beforeEach - from:${from.fullPath}, to:${to.fullPath}`);
-    // if (from.path === '/login' || from.path === '/') {
-    //   next();
-    //   return;
-    // }
-  //   if (!tokenStore.IsExpired() || from.path === '/login' || from .path === '/') {
-  //     return next();
-  //   }
-  //   console.debug(from, to)
-  //   if (tokenStore.IsExpired()) {
-  //     api.defaults.headers.common.Authorization = null;
-  //     await router.replace({
-  //       path: '/login',
-  //       query: { next: to.fullPath },
-  //     });
-  //   }
-  //   return next();
-  })
-
-
   if (tokenStore.token) {
     api.defaults.headers.common.Authorization = `Bearer ${tokenStore.token}`;
   }
@@ -55,7 +34,7 @@ export default defineBoot(({ app, store, router }) => {
   api.interceptors.response.use(
     (r: AxiosResponse) => r,
     async (e: AxiosError) => {
-      console.error(e);
+
       if (e.status === 401 || e.status === 403) {
         api.defaults.headers.common.Authorization = null;
         return router.replace({

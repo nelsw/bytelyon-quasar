@@ -49,8 +49,8 @@ const setup = () => {
           atob(base64Payload)
             .split('')
             .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-            .join(''),
-        ),
+            .join('')
+        )
       );
     } catch (error) {
       console.error('Error decoding JWT:', error);
@@ -58,14 +58,14 @@ const setup = () => {
     }
   };
 
-  const postToken = async (s:string): Promise<boolean> => {
+  const postToken = async (s: string): Promise<boolean> => {
 
     return await api
       .post(`/auth/token/${s}`)
       .then(SetModel)
       .then((): boolean => $notify.ok(null, `❤️`, `Welcome to the pack!`))
-      .catch((err:AxiosError<Err>) => {
-        return $notify.err(err, 'Invalid token; Retry request.')
+      .catch((err: AxiosError<Err>) => {
+        return $notify.err(err, 'Invalid token; Retry request.');
       })
       .finally(() => Loading.hide());
   };
@@ -138,7 +138,7 @@ const setup = () => {
 
   const userID = (): string => claims().jti;
 
-  const IsStu = (): boolean => true
+  const IsStu = (): boolean => true;
 
   const IsCarl = (): boolean => userID() === '01KM010XK0HY8HWWFPJTZGRF0F';
 
@@ -147,16 +147,31 @@ const setup = () => {
     const then = claims().exp * 1000;
     console.debug(new Date(now).toLocaleString(), new Date(then).toLocaleString());
     return now > then;
-  }
+  };
 
-  return { token: model, authorized, login, logout, signup, isAnonymous, forgotPass, changePass, userID, postToken, IsStu, IsCarl, IsExpired  };
+  return {
+    token: model,
+    authorized,
+    login,
+    logout,
+    signup,
+    isAnonymous,
+    forgotPass,
+    changePass,
+    userID,
+    postToken,
+    IsStu,
+    IsCarl,
+    IsExpired,
+    SetModel,
+  };
 };
 
 export const useTokenStore = defineStore('token-store', setup, {
   persist: {
     debug: true,
-    storage: sessionStorage,
-  },
+    storage: sessionStorage
+  }
 });
 
 if (import.meta.hot) {
