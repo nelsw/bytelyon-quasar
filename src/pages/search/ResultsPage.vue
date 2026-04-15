@@ -2,7 +2,6 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useSearchBotResultsStore } from 'stores/search/result-store';
 import { useRoute } from 'vue-router';
-import type { SearchBotData } from 'src/types/model';
 import { QTree } from 'quasar';
 import SearchTable from 'components/table/SearchTable.vue';
 
@@ -21,25 +20,13 @@ const barStyle = {
 };
 
 const $route = useRoute();
-const $results = useSearchBotResultsStore();
+const botId = computed(() => $route.params.botId as string)
 
-const results = ref<SearchBotData[]>([]);
-const selected = ref<string>('');
+const $results = useSearchBotResultsStore();
 const splitterModel = ref(200);
 
-const onChange = async () => {
-  selected.value = '';
-  results.value = [];
-  results.value = await $results.Retrieve($route.params.botId as string);
-  selected.value = results.value?.[0]?.id ?? '';
-};
-
-const result = computed(() =>
-  results.value?.find((n: SearchBotData) => n.id === selected.value),
-);
-
-onMounted(onChange);
-watch(() => $route.params.botId, onChange);
+onMounted(async () => $results.load(botId.value))
+watch(() => $route.params.botId, async () => $results.load(botId.value))
 </script>
 
 <template>
@@ -62,8 +49,9 @@ watch(() => $route.params.botId, onChange);
         >
           <q-tree
             ref="my-search-result-tree"
-            :nodes="results"
-            v-model:selected="selected"
+            v-model:selected="$results.resultId"
+            :nodes="$results.find(botId)"
+            class="q-mt-sm"
             node-key="id"
             selected-color="primary"
             accordion
@@ -80,7 +68,7 @@ watch(() => $route.params.botId, onChange);
           style="height: 100vh; max-width: 100vw"
         >
           <div class="q-pa-md">
-            <SearchTable v-if="result" v-model="result" />
+            <SearchTable v-if="$results.selection" v-model="$results.selection" />
           </div>
         </q-scroll-area>
       </template>

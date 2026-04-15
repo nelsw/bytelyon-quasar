@@ -21,8 +21,8 @@ const onCopy = async () => {
 </script>
 
 <template>
-  <q-btn @click="model = true" :disable="disabled" dense flat>
-    <q-icon name="mdi-code-json" :color="color" size="xs" />
+  <q-btn @click="model = true" :disable="disabled" size="md" dense flat>
+    <q-icon name="mdi-code-json" :color="color"  />
   </q-btn>
   <ToolbarDialog v-model="model" @copy="onCopy" :title="title" copy>
     <template #content>

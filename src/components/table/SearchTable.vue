@@ -1,86 +1,51 @@
 <script setup lang="ts">
 import type { PageData, SearchBotData } from 'src/types/model';
-import { BotType } from 'src/types/model';
 import type { QTableColumn } from 'quasar';
 import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { domain, path } from 'src/types/base';
 import FilterInput from 'components/input/FilterInput.vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
-import { useDataStore } from 'stores/data-store';
 import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
+import { useSearchBotResultsStore } from 'stores/search/result-store';
+
+const columns: QTableColumn<PageData>[] = [
+  { name: 'Open', label: 'Open', field: 'url', align: 'center', style: 'width: 0;', },
+  { name: 'Domain', label: 'Domain', field: 'url', align: 'left', style: 'width: 0;', format: (val: string) => domain(val), },
+  { name: 'Path', label: 'Path', field: 'url', align: 'left', style: 'width: 0;', format: (val: string) => path(val), },
+  { name: 'Title', label: 'Title', field: 'title', align: 'left', style: 'width: 100;', },
+];
+
+const $store = useSearchBotResultsStore();
 
 const model = defineModel<SearchBotData>({ required: true });
 
-const columns: QTableColumn<PageData>[] = [
-  {
-    name: 'Open',
-    label: 'Open',
-    field: 'url',
-    align: 'center',
-    style: 'width: 0;',
-  },
-  {
-    name: 'Domain',
-    label: 'Domain',
-    field: 'url',
-    align: 'left',
-    style: 'width: 0;',
-    format: (val: string) => domain(val),
-  },
-  {
-    name: 'Path',
-    label: 'Path',
-    field: 'url',
-    align: 'left',
-    style: 'width: 0;',
-    format: (val: string) => path(val),
-  },
-  {
-    name: 'Title',
-    label: 'Title',
-    field: 'title',
-    align: 'left',
-    style: 'width: 100;',
-  },
-];
-
 const filter = ref<string>('');
-const columnNames = ref<string[]>([]);
-const visibleCols = ref<string[]>([]);
-
-const $store = useDataStore();
-const onDelete = async () => {
-  await $store.Delete(BotType.Search, model.value.target, model.value.botId, model.value.id, true);
-};
-
-onMounted(() => {
-  columnNames.value = columns.map((col) => col.name);
-  visibleCols.value = columnNames.value.filter((s) => s !== 'ID' && s !== 'Path');
-});
+const visibleCols = ref<string[]>(columns.map((col) => col.name).filter((s) => s !== 'ID' && s !== 'Path'));
 </script>
 
 <template>
   <q-table
-    :rows="model.pages"
     :columns="columns"
     :filter="filter"
-    :rows-per-page-options="[25, 50, 100, 0]"
+    :loading="$store.busy"
     :pagination="{ sortBy: 'ID', descending: false }"
+    :rows-per-page-options="[25, 50, 100, 0]"
+    :rows="model.pages"
+    :visible-columns="visibleCols"
     color="primary"
     row-key="ID"
     rowsPerPageLabel="Results per page"
+    bordered
     binary-state-sort
     dense
     flat
-    bordered
-    :visible-columns="visibleCols"
   >
     <template #top="props">
-      <TrashBtn @click="onDelete" />
+      <TrashBtn @click="$store.remove(model.botId, model.id)" size="md"/>
       <q-separator vertical spaced inset />
       <ViewJsonBtn
         v-if="model.pages[0]?.url.includes('google.com')"
@@ -94,12 +59,11 @@ onMounted(() => {
         inset
       />
       <FilterInput v-model="filter" />
-      <div class="absolute-center">
+      <div @click="$store.load(model.botId, true)" class="absolute-center">
         <span class="text-h5 text-weight-medium">{{ model.target }}</span>
-        <span class="text-body2 q-ml-sm">{{ model.label }}</span>
       </div>
       <q-space />
-      <ColumnsBtn v-model="visibleCols" :names="columnNames" />
+      <ColumnsBtn v-model="visibleCols" :names="columns.map((col) => col.name)" />
       <q-separator vertical spaced inset />
       <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
     </template>

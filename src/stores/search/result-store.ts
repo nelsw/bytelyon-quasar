@@ -1,46 +1,74 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { ref } from 'vue';
-import { type SearchBotData } from 'src/types/model';
+import { computed, ref } from 'vue';
+import {  type SearchBotData } from 'src/types/model';
 import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
 
 const $notify = useNotifier();
 
 const setup = () => {
-  const loading = ref(true);
-  const model = ref<Array<SearchBotData[]>>([]);
+  const removing = ref(false);
+  const loading = ref(false);
+  const model = ref<SearchBotData[][]>([]);
+  const botId = ref<string>('')
+  const resultId = ref<string>('');
+
+  const busy = computed(() => removing.value || loading.value);
+  const selection = computed(() => find(botId.value).find(r => r.id === resultId.value))
 
   const findIndex = (botId: string): number => model.value.findIndex(a => a?.[0]?.botId === botId);
 
-  const load = async (botId: string) => {
+  const find = (botId: string): SearchBotData[] => loading.value ? [] : model.value[findIndex(botId)] ?? []
+
+  const load = async (id: string, force?:boolean) => {
+    botId.value = id;
+    const results = find(id)
+    if (results.length > 0) {
+      resultId.value = results[0]?.id ?? ''
+      if (!force) return;
+    }
+
     loading.value = true;
     return await api
-      .get<SearchBotData[]>(`/bots?type=search&id=${botId}`)
+      .get<SearchBotData[]>(`/bots?type=search&id=${id}`)
       .then((r: AxiosResponse<SearchBotData[]>) => {
-        const idx = findIndex(botId);
+        const idx = findIndex(id);
         if (idx > 0) {
           model.value[idx] = r.data ?? [];
         } else {
           model.value.push(r.data ?? []);
+        }
+        if ((r.data ?? []).length > 0) {
+          resultId.value = r.data[0]?.id ?? ''
         }
       })
       .catch($notify.err)
       .finally(() => (loading.value = false));
   };
 
-  const Retrieve = async (botId: string): Promise<SearchBotData[]> => {
-    loading.value = true;
-    let res = model.value[findIndex(botId)];
-    if (!res) await load(botId);
-    res = model.value[findIndex(botId)] ?? [];
-    loading.value = false;
-    return res;
-  };
+  const remove = async (botId: string, id:string) => {
+    removing.value = true;
+    return await api
+      .delete(`/bots?type=search&botId=${botId}&id=${id}`)
+      .then(() => {
+        const idx = findIndex(botId);
+        if (model.value[idx]) {
+          model.value[idx] = model.value[idx].filter((v) => v.id !== id);
+        }
+      })
+      .then(() => $notify.ok(null, `🤖`, `Search Bot Result Deleted`))
+      .catch($notify.err)
+      .finally(() => (removing.value = false));
+  }
 
   return {
-    loading,
+    busy,
+    selection,
+    resultId,
     model,
-    Retrieve,
+    load,
+    find,
+    remove,
   };
 };
 
