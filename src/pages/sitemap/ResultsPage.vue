@@ -7,19 +7,7 @@ import FilterInput from 'components/input/FilterInput.vue';
 import type { Page, SitemapNode } from 'src/types/model';
 import { useSitemapBotStore } from 'stores/sitemap/bot-store';
 import { usePageStore } from 'stores/page-store';
-
-const thumbStyle = {
-  borderRadius: '5px',
-  backgroundColor: '#027be3',
-  width: '5px',
-  opacity: '0.75',
-};
-const barStyle = {
-  borderRadius: '9px',
-  backgroundColor: '#027be3',
-  width: '9px',
-  opacity: '0.2',
-};
+import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 
 const $route = useRoute();
 const $bots = useSitemapBotStore();
@@ -77,13 +65,7 @@ onMounted(onChange);
       <template #before>
         <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
         <q-separator inset />
-        <q-scroll-area
-          :visible="false"
-          :horizontal-offset="[0, 2]"
-          :thumb-style="thumbStyle"
-          :bar-style="barStyle"
-          style="height: calc(100vh - 48px)"
-        >
+        <ScrollArea style="height: calc(100vh - 48px)">
           <q-tree
             class="q-px-md q-py-sm"
             ref="my-sitemap-tree"
@@ -97,7 +79,7 @@ onMounted(onChange);
             default-expand-all
             selected-color="primary"
           />
-        </q-scroll-area>
+        </ScrollArea>
       </template>
       <template #after>
         <div class="q-pa-lg">

@@ -6,6 +6,7 @@ import SearchBotExpansionItem from 'components/expansion-item/SearchBotExpansion
 import SitemapBotExpansionItem from 'components/expansion-item/SitemapBotExpansionItem.vue';
 import LogoutItem from 'components/item/LogoutItem.vue';
 import CollapseItem from 'components/item/CollapseItem.vue';
+import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 
 const miniState = ref<boolean>(false);
 const leftDrawer = ref<boolean>(true);
@@ -21,14 +22,14 @@ const leftDrawer = ref<boolean>(true);
       bordered
       show-if-above
     >
-      <q-scroll-area style="height: calc(100% - 49px - 98px); margin-top: 49px">
+      <ScrollArea style="height: calc(100% - 49px - 98px); margin-top: 49px">
         <q-list separator>
           <NewsBotExpansionItem />
           <SearchBotExpansionItem />
           <SitemapBotExpansionItem />
           <q-separator />
         </q-list>
-      </q-scroll-area>
+      </ScrollArea>
       <div class="absolute-top" style="height: 49px">
         <q-item>
           <q-item-section avatar style="min-width: 25px; padding-right: 0">

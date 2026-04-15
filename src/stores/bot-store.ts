@@ -3,10 +3,8 @@ import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
 import type { Bot, BotNode, Err } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
-import { useNodeStore } from 'stores/node-store';
 
 const $notify = useNotifier();
-const $nodeStore = useNodeStore();
 const IsValidURL = (s:string) => {
   return new RegExp(
     '^(https?:\\/\\/)?' + // protocol
@@ -67,7 +65,6 @@ const setup = () => {
     return await api
       .delete(`/bots?type=${node.type}&target=${node.target}`)
       .then(() => {
-        $nodeStore.Remove(node)
         return $notify.ok(null, `🗑️`, `Bot Deleted`);
       })
       .catch($notify.err);

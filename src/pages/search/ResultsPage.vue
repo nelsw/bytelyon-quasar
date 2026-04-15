@@ -4,29 +4,18 @@ import { useSearchBotResultsStore } from 'stores/search/result-store';
 import { useRoute } from 'vue-router';
 import { QTree } from 'quasar';
 import SearchTable from 'components/table/SearchTable.vue';
+import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 
 const splitterLimits = [200, 200];
-const thumbStyle = {
-  borderRadius: '5px',
-  backgroundColor: '#027be3',
-  width: '5px',
-  opacity: '0.75',
-};
-const barStyle = {
-  borderRadius: '9px',
-  backgroundColor: '#027be3',
-  width: '9px',
-  opacity: '0.2',
-};
 
 const $route = useRoute();
-const botId = computed(() => $route.params.botId as string)
+const botId = computed(() => $route.params.botId as string);
 
 const $results = useSearchBotResultsStore();
 const splitterModel = ref(200);
 
-onMounted(async () => $results.load(botId.value))
-watch(() => $route.params.botId, async () => $results.load(botId.value))
+onMounted(async () => $results.load(botId.value));
+watch(() => $route.params.botId, async () => $results.load(botId.value));
 </script>
 
 <template>
@@ -40,13 +29,7 @@ watch(() => $route.params.botId, async () => $results.load(botId.value))
       unit="px"
     >
       <template #before>
-        <q-scroll-area
-          :visible="false"
-          :horizontal-offset="[0, 2]"
-          :thumb-style="thumbStyle"
-          :bar-style="barStyle"
-          style="height: 100vh"
-        >
+        <ScrollArea style="height: 100vh">
           <q-tree
             ref="my-search-result-tree"
             v-model:selected="$results.resultId"
@@ -57,20 +40,14 @@ watch(() => $route.params.botId, async () => $results.load(botId.value))
             accordion
             no-selection-unset
           />
-        </q-scroll-area>
+        </ScrollArea>
       </template>
       <template #after>
-        <q-scroll-area
-          :visible="false"
-          :horizontal-offset="[0, 2]"
-          :thumb-style="thumbStyle"
-          :bar-style="barStyle"
-          style="height: 100vh; max-width: 100vw"
-        >
+        <ScrollArea style="height: 100vh; max-width: 100vw">
           <div class="q-pa-md">
             <SearchTable v-if="$results.selection" v-model="$results.selection" />
           </div>
-        </q-scroll-area>
+        </ScrollArea>
       </template>
     </q-splitter>
   </q-page>

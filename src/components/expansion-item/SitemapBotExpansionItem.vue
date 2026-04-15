@@ -47,7 +47,7 @@ onMounted($store.Load);
     <q-list dense>
       <q-separator inset />
       <q-item
-        v-for="bot in $store.model.values()"
+        v-for="bot in $store.model"
         :key="bot.id"
         :inset-level="0.5"
         :disable="$store.busy"
