@@ -37,7 +37,7 @@ onMounted($store.Load);
           >
             <q-tooltip>Show News Bot Results</q-tooltip>
           </q-btn>
-          <q-inner-loading :showing="$store.busy" size="sm" color="primary" />
+          <q-inner-loading :showing="$store.busy && !expanded" size="sm" color="primary" />
         </div>
       </q-item-section>
     </template>
@@ -84,7 +84,7 @@ onMounted($store.Load);
           </div>
         </q-item-section>
       </q-item>
-      <q-inner-busy :showing="$store.busy" dark size="xs" color="primary" />
+      <q-inner-loading :showing="$store.busy" dark size="xs" color="primary" />
     </q-list>
   </q-expansion-item>
 </template>
