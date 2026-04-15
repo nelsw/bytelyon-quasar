@@ -11,13 +11,17 @@ const $botStore = useBotStore();
 const setup = () => {
   const busy = ref(true);
   const model = ref<Bot[]>([]);
+
+  const find = (botId: string):Bot|undefined => model.value[findIndex(botId)]
+
   const findIndex = (botId: string): number => model.value.findIndex(b => b.id === botId);
+
   const Load = async (): Promise<boolean> => {
     busy.value = true;
     return await api
       .get<Bot[]>(`/bots?type=sitemap`)
       .then((r: AxiosResponse<Bot[]>) => model.value = r.data)
-      .then(() => $notify.ok(model, `🤖`, `Sitemap Bots Loaded`))
+      .then(() => $notify.ok(null, `🤖`, `Sitemap Bots Loaded`))
       .catch($notify.err)
       .finally(() => (busy.value = false));
   };
@@ -85,6 +89,7 @@ const setup = () => {
   return {
     model,
     busy,
+    find,
     Create,
     Load,
     Remove,

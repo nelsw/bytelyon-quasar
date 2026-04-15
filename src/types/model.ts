@@ -24,13 +24,10 @@ export type Bot = {
   workedAt?: Date | undefined;
 };
 
-export type BotNode = Bot &
-  QTreeNode & {
-    botId: string;
-    rows: unknown[] | null;
-  };
-
-
+export type BotNode = Bot & QTreeNode & {
+  botId: string;
+  rows: unknown[] | null;
+};
 
 export type SearchBotData = {
   botId: string;
@@ -69,11 +66,6 @@ export type PageData = {
   serp: object;
 };
 
-export interface SitemapRow extends Record<string, unknown> {
-  url: string;
-  isExternal: boolean;
-}
-
 export type Article = {
   title: string;
   body: string;
@@ -83,7 +75,6 @@ export type Article = {
   prompt: string;
   publishedAt: string;
 };
-
 
 
 export type NewsBotResult = {
@@ -100,7 +91,8 @@ export type NewsBotResult = {
   type: BotType;
 };
 
-export type SitemapNode =  {
+export type SitemapNode = {
+  botId: string;
   url: string;
   label: string;
   children: SitemapNode[];

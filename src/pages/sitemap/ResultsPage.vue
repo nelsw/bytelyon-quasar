@@ -5,13 +5,11 @@ import { useSitemapBotResultsStore } from 'stores/sitemap/result-store';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
 import type { Page, SitemapNode } from 'src/types/model';
-import { useSitemapBotStore } from 'stores/sitemap/bot-store';
 import { usePageStore } from 'stores/page-store';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 
 const $route = useRoute();
-const $bots = useSitemapBotStore();
-const $store = useSitemapBotResultsStore();
+const $results = useSitemapBotResultsStore();
 const $pages = usePageStore();
 
 const nodes = ref<SitemapNode[]>([]);
@@ -24,19 +22,11 @@ const expanded = ref<string[]>([]);
 const filter = ref<string>('');
 
 const onChange = async () => {
-
-
-  const target = (await $bots.Retrieve($route.params.botId as string))?.target;
-  if (!target) return;
-
-  if (!$store.model.find((m) => m.label === target)) await $store.load(target);
-
-  const node = $store.model.find((m) => m.label === target);
+  await $results.load($route.params.botId as string)
+  const node = $results.find($route.params.botId as string);
   if (!node?.label) return;
 
-  if (nodes.value.length === 0) {
-    nodes.value = [node];
-  }
+  nodes.value = [node];
   expanded.value = [node.label];
   selected.value = node.label;
 };
@@ -44,7 +34,7 @@ const onChange = async () => {
 watch(selected, async (newVal, oldVal) => {
   const newN = treeRef.value?.getNodeByKey(newVal);
   const oldN = treeRef.value?.getNodeByKey(oldVal);
-  console.log(newVal, newN, oldN);
+  console.log('sitemap page selection', newN?.label, oldN?.label);
   if (newN) {
     treeRef.value?.setExpanded(newVal, true);
     const url = (newN as SitemapNode).url;
