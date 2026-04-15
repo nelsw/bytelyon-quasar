@@ -5,11 +5,11 @@ import { onMounted } from 'vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 
 const $store = useNewsBotStore();
-onMounted($store.load);
+onMounted($store.Load);
 </script>
 
 <template>
-  <q-expansion-item :disable="$store.loading" group="bots" hide-expand-icon expand-icon-toggle>
+  <q-expansion-item :disable="$store.busy" group="bots" hide-expand-icon expand-icon-toggle>
     <template #header="{ expanded, toggle }">
       <q-item-section avatar style="min-width: 25px; padding-right: 0">
         <q-icon name="mdi-newspaper" />
@@ -24,7 +24,7 @@ onMounted($store.load);
           <q-btn to="/news" color="green-13" icon="mdi-plus" size="md" dense flat>
             <q-tooltip>Create a News Bot</q-tooltip>
           </q-btn>
-          <q-btn @click="$store.load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
+          <q-btn @click="$store.Load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
             <q-tooltip>Refresh News Bots</q-tooltip>
           </q-btn>
           <q-btn
@@ -37,17 +37,17 @@ onMounted($store.load);
           >
             <q-tooltip>Show News Bot Results</q-tooltip>
           </q-btn>
-          <q-inner-loading :showing="$store.loading" size="sm" color="primary" />
+          <q-inner-loading :showing="$store.busy" size="sm" color="primary" />
         </div>
       </q-item-section>
     </template>
     <q-list dense>
       <q-separator inset />
       <q-item
-        v-for="bot in $store.model.values()"
+        v-for="bot in $store.model"
         :key="bot.id"
         :inset-level="0.5"
-        :disable="$store.loading"
+        :disable="$store.busy"
         class="q-mr-xs"
       >
         <q-item-section>
@@ -60,7 +60,7 @@ onMounted($store.load);
         </q-item-section>
         <q-item-section side>
           <div class="q-gutter-xs">
-            <TrashBtn size="sm" tooltip="Delete News Bot" @click="$store.remove(bot)" />
+            <TrashBtn size="sm" tooltip="Delete News Bot" @click="$store.Remove(bot.target)" />
             <q-btn
               :to="`/news/${bot.id}`"
               color="amber-13"
@@ -84,7 +84,7 @@ onMounted($store.load);
           </div>
         </q-item-section>
       </q-item>
-      <q-inner-loading :showing="$store.loading" dark size="sm" color="primary" />
+      <q-inner-loading :showing="$store.busy" dark size="sm" color="primary" />
     </q-list>
   </q-expansion-item>
 </template>

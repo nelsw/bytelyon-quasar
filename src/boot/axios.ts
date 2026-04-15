@@ -29,7 +29,6 @@ export default defineBoot(({ app, store, router }) => {
   const $token = useTokenStore(store);
   const $notify = useNotifier();
   const loginRedirect = async () => {
-    $notify.warn('Please log in to continue');
     await router.replace({
       path: '/login',
       query: { next: router.currentRoute.value.fullPath }
@@ -47,6 +46,9 @@ export default defineBoot(({ app, store, router }) => {
       }
 
       // else warn and redirect to login page
+      if ($token.IsExpired()) {
+        $notify.warn('Please log in to continue');
+      }
       await loginRedirect();
 
       // and abort request
@@ -64,13 +66,14 @@ export default defineBoot(({ app, store, router }) => {
   // handle unauthorized & forbidden response status
   api.interceptors.response.use(
     (r: AxiosResponse) => {
-      console.log(JSON.stringify({
+      console.debug(JSON.stringify({
         url: r.config.url,
         data: r.data
       }, null, 2));
       return r;
     },
     async (e: AxiosError) => {
+      console.error(e);
       if (e.status === 401 || e.status === 403) {
         await loginRedirect();
       }

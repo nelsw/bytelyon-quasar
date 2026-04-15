@@ -7,8 +7,8 @@ defineProps<{
   copy?: boolean;
   // persistent will not close on escape
   persistent?: boolean;
-  // stubborn is persistent and hides minimize & maximize buttons
-  stubborn?: boolean;
+  // strict hides minimize & maximize buttons
+  strict?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -24,7 +24,7 @@ const maximized = ref<boolean>(true);
   <q-dialog
     v-model="model"
     :maximized="maximized"
-    :persistent="stubborn || persistent"
+    :persistent="persistent"
     transition-show="slide-up"
     transition-hide="slide-down"
     transition-duration="1000"
@@ -40,7 +40,7 @@ const maximized = ref<boolean>(true);
           flat
         />
         <div class="text-h5" v-html="title" />
-        <div v-if="!stubborn">
+        <div v-if="!strict">
           <q-btn
             dense
             flat

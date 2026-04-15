@@ -2,10 +2,9 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useSearchBotResultsStore } from 'stores/search/result-store';
 import { useRoute } from 'vue-router';
-import type { Bot, SearchBotData } from 'src/types/model';
-import SearchPage from 'pages/SearchPage.vue';
+import type { SearchBotData } from 'src/types/model';
 import { QTree } from 'quasar';
-import { useNewsBotStore } from 'stores/news/bot-store';
+import SearchTable from 'components/table/SearchTable.vue';
 
 const splitterLimits = [200, 200];
 const thumbStyle = {
@@ -22,25 +21,21 @@ const barStyle = {
 };
 
 const $route = useRoute();
-const $bots = useNewsBotStore();
-const $store = useSearchBotResultsStore();
+const $results = useSearchBotResultsStore();
 
-const bot = ref<Bot>();
-const botNodes = ref<SearchBotData[]>([]);
-const splitterModel = ref(200);
+const results = ref<SearchBotData[]>([]);
 const selected = ref<string>('');
+const splitterModel = ref(200);
 
-const onChange = async (botId: string | string[] | undefined) => {
-  if (!botId) botId = $route.params.botId;
-  botId = botId as string;
-  bot.value = $bots.model.get(botId);
-  if (!$store.model.has(botId)) await $store.load(botId);
-  botNodes.value = $store.model.get(botId) as SearchBotData[];
-  selected.value = botNodes?.value?.[0]?.id || '';
+const onChange = async () => {
+  selected.value = '';
+  results.value = [];
+  results.value = await $results.Retrieve($route.params.botId as string);
+  selected.value = results.value?.[0]?.id ?? '';
 };
 
-const botNode = computed(() =>
-  botNodes?.value?.find((n: SearchBotData) => n.id === selected.value),
+const result = computed(() =>
+  results.value?.find((n: SearchBotData) => n.id === selected.value),
 );
 
 onMounted(onChange);
@@ -67,7 +62,7 @@ watch(() => $route.params.botId, onChange);
         >
           <q-tree
             ref="my-search-result-tree"
-            :nodes="botNodes ?? []"
+            :nodes="results"
             v-model:selected="selected"
             node-key="id"
             selected-color="primary"
@@ -85,7 +80,7 @@ watch(() => $route.params.botId, onChange);
           style="height: 100vh; max-width: 100vw"
         >
           <div class="q-pa-md">
-            <SearchPage v-if="botNode" v-model="botNode" />
+            <SearchTable v-if="result" v-model="result" />
           </div>
         </q-scroll-area>
       </template>
