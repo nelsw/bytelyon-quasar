@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useSearchBotResultsStore } from 'stores/search/result-store';
 import { useRoute } from 'vue-router';
-import { QTree } from 'quasar';
+import { date, QTree } from 'quasar';
 import SearchTable from 'components/table/SearchTable.vue';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 
@@ -13,7 +13,12 @@ const botId = computed(() => $route.params.botId as string);
 
 const $results = useSearchBotResultsStore();
 const splitterModel = ref(200);
-
+const label = (s:string) => {
+  const d = date.extractDate(s, 'MM/DD/YYYY, h:mm:ssA');
+  const ts = date.formatDate(d, 'YYYY-MM-DDTHH:mm:ss.SSSZ').split('.000')[0] + '.000Z'
+  const dd = date.extractDate(ts, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+  return dd.toLocaleString();
+}
 onMounted(async () => $results.load(botId.value));
 watch(() => $route.params.botId, async () => $results.load(botId.value));
 </script>
@@ -39,7 +44,11 @@ watch(() => $route.params.botId, async () => $results.load(botId.value));
             selected-color="primary"
             accordion
             no-selection-unset
-          />
+          >
+            <template v-slot:default-header="prop">
+              {{label(prop.node.label)}}
+            </template>
+          </q-tree>
         </ScrollArea>
       </template>
       <template #after>
