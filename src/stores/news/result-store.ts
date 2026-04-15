@@ -1,88 +1,90 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
-import type { Bot, NewsBotResult, NewsBotResultGroup } from 'src/types/model';
+import type { NewsBotResult } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
-import type { AxiosError } from 'axios';
 
 const $notify = useNotifier();
 
 const setup = () => {
-  const loading = ref(true);
-  const model = ref<NewsBotResultGroup[]>([]);
 
-  const load = async (botId:string): Promise<boolean> => {
+  const removing = ref(false);
+  const loading = ref(false);
+  const botId = ref<string>('');
+  const model = ref<NewsBotResult[][]>([]);
+  const selected = ref<NewsBotResult[]>([]);
+
+  const busy = computed(() => removing.value || loading.value);
+
+  const findIndex = (botId: string): number => model.value.findIndex(a => a?.[0]?.botId === botId);
+
+  const find = (botId: string): NewsBotResult[] => loading.value ? [] : model.value[findIndex(botId)] ?? []
+
+  const target  = (botId: string): string => find(botId)?.[0]?.target ?? '';
+
+  const load = async (id: string, force?:boolean) => {
+    botId.value = id;
+    if (find(id).length > 0 && !force) return;
     loading.value = true;
-    if (model.value.find(g => g.botId === botId)) {
-      loading.value = false;
-      return true;
-    }
+    selected.value = [];
     return await api
-      .get<NewsBotResult[]>(`/bots?type=news&id=${botId}`)
-      .then((r: AxiosResponse<NewsBotResult[]>) => ({botId:botId, results: r.data}))
-      .then((g:NewsBotResultGroup)=> {
-        const groups = model.value.filter(g => g.botId !== botId)
-        groups.push(g)
-        model.value = groups
-        return g;
-      })
-      .then((g:NewsBotResultGroup) => $notify.ok(g, `🤖`, `News Bot Results Loaded`))
-      .catch($notify.err)
-      .finally(() => (loading.value = false));
-  };
-
-  const remove = async (...results:NewsBotResult[]): Promise<boolean> => {
-    let ok: number = 0;
-    for (let i = 0; i < results.length; i++) {
-      const r = results[i] as NewsBotResult;
-      if (await doRemove(r.botId, r.id)) {
-        ok++;
-      }
-    }
-    if (ok === results.length) {
-      return $notify.ok(null, `🤖`, `News Bot Results Deleted`);
-    }
-    return $notify.warn(`Failed to delete all News Bot Results; Refresh now.`);
-  }
-
-  const doRemove = async (botId: string, id: string): Promise<boolean> => {
-    return await api
-      .delete(`/bots?type=news&botId=${botId}&id=${id}`)
-      .then(() => {
-        const group = model.value.find((g) => g.botId === botId);
-        if (group) {
-
-          group.results = group?.results.filter((r) => r.id !== id);
-          const groups = model.value.filter((g) => g.botId !== botId);
-          groups.push(group);
-          model.value = groups;
+      .get<NewsBotResult[]>(`/bots?type=news&id=${id}`)
+      .then((r: AxiosResponse<NewsBotResult[]>) => {
+        const idx = findIndex(id);
+        if (idx > 0) {
+          model.value.fill(r.data ?? [], idx, idx + 1);
+        } else {
+          model.value.push(r.data ?? []);
         }
       })
-      .then(() => true)
-      .catch((e: AxiosError) => {
-        console.error(e);
-        return false;
-      });
-  }
+      .catch($notify.err)
+      .finally(() => loading.value = false);
+  };
 
-  const rows =  (bot: Bot | undefined): NewsBotResult[] => {
-    return model.value.find((g) => g.botId === bot?.id)?.results || ([]);
+  const remove = async () => {
+
+    removing.value = true;
+
+    const doRemove = (id:string) => api
+      .delete(`/bots?type=news&botId=${botId.value}&id=${id}`)
+      .then(() => id)
+      .catch(() => null);
+
+    const promises: Promise<string | null>[] = selected.value
+      .map(r => r.id)
+      .map((id: string) => doRemove(id));
+
+    const ok: string[] = await Promise
+      .all(promises)
+      .then(values => values.filter(s => s !== null));
+
+    const idx = findIndex(botId.value);
+    if (model.value[idx]) {
+      model.value[idx] = model.value[idx].filter((v: NewsBotResult) => !ok.includes(v.id));
+    }
+
+    if (ok.length === selected.value.length) {
+      $notify.ok(null, `🤖`, `News Bot Results Deleted`);
+      selected.value = [];
+    } else {
+      $notify.warn(`Failed to delete all News Bot Results; Refresh now.`);
+      selected.value = selected.value.filter(r => !ok.includes(r.id));
+    }
+
+    removing.value = false;
   };
 
   return {
-    model,
-    loading,
-    load,
-    remove,
-    rows,
+    busy, model, selected,
+    target, load, remove, find
   };
 };
 
 export const useNewsBotResultsStore = defineStore('news-bot-results-store', setup, {
   persist: {
     debug: true,
-    storage: sessionStorage,
-  },
+    storage: sessionStorage
+  }
 });
 
 if (import.meta.hot) {

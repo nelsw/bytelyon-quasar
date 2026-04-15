@@ -4,7 +4,8 @@ import LogoImg from 'components/img/LogoImg.vue';
 import NewsBotExpansionItem from 'components/expansion-item/NewsBotExpansionItem.vue';
 import SearchBotExpansionItem from 'components/expansion-item/SearchBotExpansionItem.vue';
 import SitemapBotExpansionItem from 'components/expansion-item/SitemapBotExpansionItem.vue';
-import MenuIcon from 'components/icon/MenuIcon.vue';
+import LogoutItem from 'components/item/LogoutItem.vue';
+import CollapseItem from 'components/item/CollapseItem.vue';
 
 const miniState = ref<boolean>(false);
 const leftDrawer = ref<boolean>(true);
@@ -20,7 +21,7 @@ const leftDrawer = ref<boolean>(true);
       bordered
       show-if-above
     >
-      <q-scroll-area style="height: calc(100% - 49px - 49px); margin-top: 49px">
+      <q-scroll-area style="height: calc(100% - 49px - 98px); margin-top: 49px">
         <q-list separator>
           <NewsBotExpansionItem />
           <SearchBotExpansionItem />
@@ -39,18 +40,12 @@ const leftDrawer = ref<boolean>(true);
         </q-item>
         <q-separator />
       </div>
-      <div class="absolute-bottom" style="height: 49px">
+      <div class="absolute-bottom" style="height: 98px">
         <q-separator />
-        <q-item @click="miniState = !miniState" class="text-grey-8" clickable>
-          <q-item-section avatar>
-            <MenuIcon v-model="miniState" size="md" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>
-              Collapse
-            </q-item-label>
-          </q-item-section>
-        </q-item>
+        <q-list separator>
+          <LogoutItem />
+          <CollapseItem v-model="miniState" />
+        </q-list>
       </div>
     </q-drawer>
     <q-page-container>

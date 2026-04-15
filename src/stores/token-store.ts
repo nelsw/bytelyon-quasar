@@ -69,12 +69,13 @@ const setup = () => {
     return;
   }
 
-  const IsExpired = (): boolean => Date.now() > (claims()?.exp || 1) * 1000;
-
+  const IsExpired = (): boolean => !IsEmpty && Date.now() > (claims()?.exp || 1) * 1000;
+  const IsEmpty = (): boolean => model.value?.length === 0;
   const IsGuest = (): boolean => claims()?.jti === '01KM01JC9PS1R4X4FDJNFAR4AZ';
 
   return {
     model,
+    IsEmpty,
     IsExpired,
     IsGuest,
     Login,

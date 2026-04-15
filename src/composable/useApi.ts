@@ -1,12 +1,10 @@
 import { api, type AxiosResponse } from 'boot/axios';
-import type { Article } from 'src/types/model';
+import type { Article, BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 import { openURL } from 'quasar';
 import { Loading } from 'quasar';
 
-type CreateArticleResponse = {
-  link: string;
-}
+type CreateArticleResponse = { link: string; }
 
 const $notify = useNotifier();
 
@@ -21,17 +19,27 @@ const useApi = () => {
           {
             label: 'View',
             textColor: 'light-green',
-            handler: () => { openURL(res.data.link) }
+            handler: () => {
+              openURL(res.data.link);
+            }
           }
-        ])
+        ]);
       })
       .catch($notify.err)
       .finally(Loading.hide);
-  }
+  };
+
+  const GetBotResults = async <T>(botType:BotType, botId:string):Promise<T[]> => {
+    return api
+      .get<T[]>(`/bots?type=${botType}&id=${botId}`)
+      .then(res => res.data)
+      .catch($notify.Err<T[]>);
+  };
 
   return {
     CreateArticle,
-  }
-}
+    GetBotResults
+  };
+};
 
 export default useApi;

@@ -12,11 +12,13 @@ const notify = (msg: string, avatar: string, actions: QNotifyAction[]) => {
     message: `<div class="text-right">${msg}</div>`,
     position: 'bottom-right',
     textColor: 'white',
-    timeout: 5000
+    timeout: 5_000,
+    group: false,
   };
 
   if (actions.length !== 0) {
     opts.actions = actions;
+    opts.timeout = 10_000
   }
 
   if (avatar !== '') {
@@ -54,7 +56,11 @@ const useNotifier = () => {
     if (args.length > 0) {
       msg = args[0] as string;
     }
-    if (msg?.includes(`cancel`)) {
+    if (
+      msg?.includes(`cancel`) ||
+      msg === 'Request failed with status code 401' ||
+      msg === 'Request failed with status code 403'
+    ) {
       return false;
     }
     notify(`${symbolSpan(`⛔️`)}${msg}`, '', []);
@@ -72,11 +78,20 @@ const useNotifier = () => {
     return true;
   };
 
+  const Err = <T = unknown>(e: AxiosError<Err>):T => {
+    const msg = e.response?.data?.error || e?.message;
+    if (!msg?.includes(`cancel`)) {
+      notify(`${symbolSpan(`⛔️`)}${msg}`, '', []);
+    }
+    return undefined as T
+  };
+
   return {
     act,
     ok,
     err,
-    warn
+    warn,
+    Err,
   };
 };
 

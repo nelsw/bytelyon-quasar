@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
 import type { Bot } from 'src/types/model';
 import { BotType } from 'src/types/model';
@@ -12,25 +12,33 @@ const $botStore = useBotStore();
 
 const setup = () => {
   const loading = ref(true);
-  // const bots = ref<Bot[]>([]);
-  const model = reactive(new Map<string, Bot>());
+  const model = ref<Bot[]>([]);
 
-  const load = async (): Promise<boolean> => {
+  const findIndex = (botId: string): number => model.value.findIndex(b => b.id === botId);
+
+  const Load = async (): Promise<boolean> => {
     loading.value = true;
     return await api
       .get<Bot[]>(`/bots?type=news`)
-      .then((r: AxiosResponse<Bot[]>) => r.data.forEach((b) => model.set(b.id, b)))
+      .then((r: AxiosResponse<Bot[]>) => model.value = r.data)
       .then(() => $notify.ok(model, `🤖`, `News Bots Loaded`))
       .catch($notify.err)
-      .finally(() => (loading.value = false));
+      .finally(() => loading.value = false);
   };
 
-  const create = async (
-    target: string,
-    blackList: string[],
-    frequency: number,
-  ): Promise<boolean> => {
+  const Retrieve = async (botId: string): Promise<Bot | undefined> => {
     loading.value = true;
+    let res = model.value[findIndex(botId)];
+    if (!res) await Load();
+    res = model.value[findIndex(botId)];
+    loading.value = false;
+    return res;
+  };
+
+  const Create = async (target: string, blackList: string[], frequency: number): Promise<boolean> => {
+
+    loading.value = true;
+
     const bot = await $botStore.Save({
       blackList: blackList,
       botId: '',
@@ -38,21 +46,21 @@ const setup = () => {
       id: '',
       target: target,
       type: BotType.News,
-      rows: [],
+      rows: []
     });
-    loading.value = false;
 
-    if (bot === null) {
-      return false;
+    if (bot !== null) {
+      model.value.push(bot);
     }
 
-    model.set(bot.id, bot);
+    loading.value = false;
 
     return true;
   };
 
-  const update = async (bot: Bot): Promise<boolean> => {
+  const Update = async (bot: Bot): Promise<boolean> => {
     loading.value = true;
+
     const b = await $botStore.Save({
       blackList: bot.blackList,
       botId: bot.id,
@@ -60,35 +68,47 @@ const setup = () => {
       id: bot.id,
       target: bot.target,
       type: BotType.News,
-      rows: [],
+      rows: []
     });
+
+    const ok = b !== null;
+
+    if (ok) {
+      const idx = findIndex(b.id)
+      model.value.fill(b, idx, idx+1)
+    }
+
     loading.value = false;
-    return b !== null;
+
+    return ok;
   };
 
-  const remove = async (b:Bot): Promise<boolean> => {
+  const Remove = async (target: string): Promise<boolean> => {
+    loading.value = true;
     return await api
-      .delete(`/bots?type=news&target=${b.target}`)
-      .then(() => model.delete(b.id))
+      .delete(`/bots?type=news&target=${target}`)
+      .then(() => model.value = model.value.filter(b => b.target !== target))
       .then(() => $notify.ok(null, `🗑️`, `News Bot Deleted`))
-      .catch($notify.err);
+      .catch($notify.err)
+      .finally(() => loading.value = false);
   };
 
   return {
     model,
     loading,
-    load,
-    create,
-    update,
-    remove,
+    Create,
+    Load,
+    Remove,
+    Retrieve,
+    Update
   };
 };
 
 export const useNewsBotStore = defineStore('news-bot-store', setup, {
   persist: {
     debug: true,
-    storage: sessionStorage,
-  },
+    storage: sessionStorage
+  }
 });
 
 if (import.meta.hot) {

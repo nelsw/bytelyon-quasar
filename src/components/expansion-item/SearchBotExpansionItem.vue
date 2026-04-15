@@ -6,7 +6,7 @@ import TrashBtn from 'components/btn/TrashBtn.vue';
 
 const $store = useSearchBotStore();
 
-onMounted($store.load);
+onMounted($store.Load);
 </script>
 
 <template>
@@ -24,7 +24,7 @@ onMounted($store.load);
           <q-btn to="/search" color="green-13" icon="mdi-plus" size="md" dense flat>
             <q-tooltip>Create a News Bot</q-tooltip>
           </q-btn>
-          <q-btn @click="$store.load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
+          <q-btn @click="$store.Load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
             <q-tooltip>Refresh News Bots</q-tooltip>
           </q-btn>
           <q-btn
@@ -44,7 +44,7 @@ onMounted($store.load);
     <q-list dense>
       <q-separator inset />
       <q-item
-        v-for="bot in $store.model.values()"
+        v-for="bot in $store.model"
         :key="bot.id"
         :inset-level="0.5"
         :disable="$store.loading"
@@ -60,7 +60,7 @@ onMounted($store.load);
         </q-item-section>
         <q-item-section side>
           <div class="q-gutter-xs">
-            <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.remove(bot)" />
+            <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.Remove(bot.target)" />
             <q-btn
               :to="`/search/${bot.id}`"
               color="amber-13"

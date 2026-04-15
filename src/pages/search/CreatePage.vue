@@ -16,7 +16,7 @@ const blackList = ref<string[]>([]);
 const frequency = ref<number>(1);
 
 const onSubmit = async () => {
-  if (await $store.create(target.value, blackList.value, frequency.value)) {
+  if (await $store.Create(target.value, blackList.value, frequency.value)) {
     onReset();
   }
 };

@@ -30,15 +30,7 @@ export type BotNode = Bot &
     rows: unknown[] | null;
   };
 
-export type BotNewsResult = BotNode & {
-  url: string;
-  title: string;
-  source: string;
-  description: string;
-  publishedAt: string;
-  body: string[];
-  image: string;
-};
+
 
 export type SearchBotData = {
   botId: string;
@@ -92,10 +84,7 @@ export type Article = {
   publishedAt: string;
 };
 
-export type NewsBotResultGroup = {
-  botId: string;
-  results: NewsBotResult[];
-}
+
 
 export type NewsBotResult = {
   id: string;
