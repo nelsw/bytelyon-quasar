@@ -11,33 +11,33 @@ const $notify = useNotifier();
 const $botStore = useBotStore();
 
 const setup = () => {
-  const loading = ref(true);
+  const busy = ref(true);
   const model = ref<Bot[]>([]);
 
   const findIndex = (botId: string): number => model.value.findIndex(b => b.id === botId);
 
   const Load = async (): Promise<boolean> => {
-    loading.value = true;
+    busy.value = true;
     return await api
       .get<Bot[]>(`/bots?type=news`)
       .then((r: AxiosResponse<Bot[]>) => model.value = r.data)
       .then(() => $notify.ok(model, `🤖`, `News Bots Loaded`))
       .catch($notify.err)
-      .finally(() => loading.value = false);
+      .finally(() => busy.value = false);
   };
 
   const Retrieve = async (botId: string): Promise<Bot | undefined> => {
-    loading.value = true;
+    busy.value = true;
     let res = model.value[findIndex(botId)];
     if (!res) await Load();
     res = model.value[findIndex(botId)];
-    loading.value = false;
+    busy.value = false;
     return res;
   };
 
   const Create = async (target: string, blackList: string[], frequency: number): Promise<boolean> => {
 
-    loading.value = true;
+    busy.value = true;
 
     const bot = await $botStore.Save({
       blackList: blackList,
@@ -53,13 +53,13 @@ const setup = () => {
       model.value.push(bot);
     }
 
-    loading.value = false;
+    busy.value = false;
 
-    return true;
+    return bot !== null;
   };
 
   const Update = async (bot: Bot): Promise<boolean> => {
-    loading.value = true;
+    busy.value = true;
 
     const b = await $botStore.Save({
       blackList: bot.blackList,
@@ -78,24 +78,24 @@ const setup = () => {
       model.value.fill(b, idx, idx+1)
     }
 
-    loading.value = false;
+    busy.value = false;
 
     return ok;
   };
 
   const Remove = async (target: string): Promise<boolean> => {
-    loading.value = true;
+    busy.value = true;
     return await api
       .delete(`/bots?type=news&target=${target}`)
       .then(() => model.value = model.value.filter(b => b.target !== target))
       .then(() => $notify.ok(null, `🗑️`, `News Bot Deleted`))
       .catch($notify.err)
-      .finally(() => loading.value = false);
+      .finally(() => busy.value = false);
   };
 
   return {
     model,
-    loading,
+    busy,
     Create,
     Load,
     Remove,

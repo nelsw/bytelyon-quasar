@@ -10,7 +10,7 @@ onMounted($store.Load);
 </script>
 
 <template>
-  <q-expansion-item :disable="$store.loading" group="bots" hide-expand-icon expand-icon-toggle>
+  <q-expansion-item :disable="$store.busy" group="bots" hide-expand-icon expand-icon-toggle>
     <template #header="{ expanded, toggle }">
       <q-item-section avatar style="min-width: 25px; padding-right: 0">
         <q-icon name="mdi-web" />
@@ -37,7 +37,7 @@ onMounted($store.Load);
           >
             <q-tooltip>Show News Bot Results</q-tooltip>
           </q-btn>
-          <q-inner-loading :showing="$store.loading" size="sm" color="primary" />
+          <q-inner-loading :showing="$store.busy" size="sm" color="primary" />
         </div>
       </q-item-section>
     </template>
@@ -47,7 +47,7 @@ onMounted($store.Load);
         v-for="bot in $store.model"
         :key="bot.id"
         :inset-level="0.5"
-        :disable="$store.loading"
+        :disable="$store.busy"
         class="q-mr-xs"
       >
         <q-item-section>
@@ -84,7 +84,7 @@ onMounted($store.Load);
           </div>
         </q-item-section>
       </q-item>
-      <q-inner-loading :showing="$store.loading" dark size="xs" color="primary" />
+      <q-inner-busy :showing="$store.busy" dark size="xs" color="primary" />
     </q-list>
   </q-expansion-item>
 </template>

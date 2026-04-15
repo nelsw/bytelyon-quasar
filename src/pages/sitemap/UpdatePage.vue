@@ -17,13 +17,11 @@ const $store = useSitemapBotStore();
 const bot = ref<Bot>();
 
 const onSubmit = async () => {
-  if (bot.value) await $store.update(bot.value);
+  if (bot.value) await $store.Update(bot.value);
 };
 
-const onChanged = async (id: string | string[] | undefined) => {
-  if (!id) id = $route.params.id;
-  id = id as string;
-  bot.value = $store.model.get(id);
+const onChanged = async () => {
+  bot.value = await $store.Retrieve($route.params.id as string);
   if (!bot.value) await $router.push({ path: '/error' });
 };
 

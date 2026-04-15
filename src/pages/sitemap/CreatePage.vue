@@ -14,7 +14,7 @@ const target = ref<string>('');
 const frequency = ref<number>(1);
 
 const onSubmit = async () => {
-  if (await $store.create(target.value, frequency.value)) {
+  if (await $store.Create(target.value, frequency.value)) {
     onReset();
   }
 };

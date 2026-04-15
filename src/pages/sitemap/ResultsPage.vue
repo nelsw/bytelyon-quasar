@@ -35,13 +35,10 @@ const selected = ref<string>('');
 const expanded = ref<string[]>([]);
 const filter = ref<string>('');
 
-const onChange = async (botId: string | string[] | undefined) => {
-  if ($bots.model.size === 0) await $bots.load();
+const onChange = async () => {
 
-  if (typeof botId !== 'string' || botId === '') botId = $route.params.botId;
-  if (typeof botId !== 'string' || botId === '') return;
 
-  const target = $bots.model.get(botId)?.target;
+  const target = (await $bots.Retrieve($route.params.botId as string))?.target;
   if (!target) return;
 
   if (!$store.model.find((m) => m.label === target)) await $store.load(target);

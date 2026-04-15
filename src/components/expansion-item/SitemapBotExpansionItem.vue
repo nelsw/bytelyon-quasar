@@ -7,13 +7,11 @@ import TrashBtn from 'components/btn/TrashBtn.vue';
 
 const $store = useSitemapBotStore();
 
-onMounted(async () => {
-  await $store.load();
-});
+onMounted($store.Load);
 </script>
 
 <template>
-  <q-expansion-item :disable="$store.loading" group="bots" hide-expand-icon expand-icon-toggle>
+  <q-expansion-item :disable="$store.busy" group="bots" hide-expand-icon expand-icon-toggle>
     <template #header="{ expanded, toggle }">
       <q-item-section avatar style="min-width: 25px; padding-right: 0">
         <q-icon name="mdi-sitemap" />
@@ -29,7 +27,7 @@ onMounted(async () => {
           <q-btn to="/sitemap" color="green-13" icon="mdi-plus" size="md" dense flat>
             <q-tooltip>Create a Sitemap Bot</q-tooltip>
           </q-btn>
-          <q-btn @click="$store.load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
+          <q-btn @click="$store.Load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
             <q-tooltip>Refresh Sitemap Bots</q-tooltip>
           </q-btn>
           <q-btn
@@ -42,7 +40,7 @@ onMounted(async () => {
           >
             <q-tooltip>Show News Bot Results</q-tooltip>
           </q-btn>
-          <q-inner-loading :showing="$store.loading" size="sm" color="primary" />
+          <q-inner-loading :showing="$store.busy" size="sm" color="primary" />
         </div>
       </q-item-section>
     </template>
@@ -52,7 +50,7 @@ onMounted(async () => {
         v-for="bot in $store.model.values()"
         :key="bot.id"
         :inset-level="0.5"
-        :disable="$store.loading"
+        :disable="$store.busy"
         class="q-mr-xs"
       >
         <q-item-section>
@@ -65,7 +63,7 @@ onMounted(async () => {
         </q-item-section>
         <q-item-section side>
           <div class="q-gutter-xs">
-            <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.remove(bot)" />
+            <TrashBtn size="sm" tooltip="Delete Search Bot" @click="$store.Remove(bot.target)" />
             <q-btn
               :to="`/sitemap/${bot.id}`"
               color="amber-13"
@@ -89,7 +87,7 @@ onMounted(async () => {
           </div>
         </q-item-section>
       </q-item>
-      <q-inner-loading :showing="$store.loading" dark size="sm" color="primary" />
+      <q-inner-loading :showing="$store.busy" dark size="sm" color="primary" />
     </q-list>
   </q-expansion-item>
 </template>
