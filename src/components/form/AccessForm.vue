@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { QForm } from 'quasar';
 import EmailInput from 'components/input/EmailInput.vue';
 import PasswordInput from 'components/input/PasswordInput.vue';
 import { reactive } from 'vue';
@@ -12,8 +11,8 @@ const $store = useTokenStore();
 const credentials = reactive<Credentials>({ username: '', password: '' });
 
 const onSubmit = async (): Promise<void> => {
-  if (!await $store.login(credentials)) {
-    return
+  if (!await $store.Login(credentials)) {
+    return;
   }
   await $router.push('/dashboard');
   credentials.username = '';
@@ -26,7 +25,7 @@ const onSubmit = async (): Promise<void> => {
   <div class="q-px-md text-center q-my-md">
     <q-form @submit.prevent="onSubmit" class="row">
       <EmailInput v-model="credentials.username" />
-      <PasswordInput v-model="credentials.password" show-reset />
+      <PasswordInput v-model="credentials.password" />
       <q-btn
         label="Login"
         color="indigo-14"

@@ -2,7 +2,7 @@
 import { useTokenStore } from 'stores/token-store';
 const $store = useTokenStore();
 const onClick = async () => {
-  await $store.logout();
+  await $store.Logout();
 };
 </script>
 <template>

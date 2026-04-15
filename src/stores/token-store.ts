@@ -4,19 +4,16 @@ import { Loading } from 'quasar';
 import { ref } from 'vue';
 import { type NavigationFailure } from 'vue-router';
 import useNotifier from 'src/composable/useNotifier';
-import { useLogger } from 'src/composable/useLogger';
-import type { AxiosError } from 'axios';
-import type { Err } from 'src/types/model';
 
 type thisType = ReturnType<typeof useTokenStore>;
-type Token = string | null;
+type Token = string | null | undefined;
 
-interface Auth {
+type Auth = {
   token: Token;
   message?: string;
 }
 
-interface Claims {
+type Claims = {
   iss: string; //'https://ByteLyon.com';
   sub: string; //'019ca7c8-437a-7134-8c2b-c30d17dd62fc';
   exp: number; //1772347378;
@@ -26,20 +23,15 @@ interface Claims {
   aud: string[]; // anonymous or identified
 }
 
-const emptyClaims = { iss: '', sub: '', exp: 0, nbf: 0, iat: 0, jti: '', aud: [] };
-
-const $log = useLogger();
 const $notify = useNotifier();
-const setup = () => {
-  const model = ref<Token>(null);
 
-  const claims = (): Claims => {
-    if (model.value === null) {
-      return emptyClaims;
-    }
+const setup = () => {
+  const model = ref<Token>();
+
+  const claims = (): Claims | undefined => {
     try {
       // Convert Base64Url to regular Base64
-      const base64Payload = (model.value.split('.')[1] as string)
+      const base64Payload = (model.value?.split('.')[1] as string)
         .replace(/-/g, '+')
         .replace(/_/g, '/');
 
@@ -54,116 +46,39 @@ const setup = () => {
       );
     } catch (error) {
       console.error('Error decoding JWT:', error);
-      return emptyClaims;
     }
   };
 
-  const postToken = async (s: string): Promise<boolean> => {
-
-    return await api
-      .post(`/auth/token/${s}`)
-      .then(SetModel)
-      .then((): boolean => $notify.ok(null, `❤️`, `Welcome to the pack!`))
-      .catch((err: AxiosError<Err>) => {
-        return $notify.err(err, 'Invalid token; Retry request.');
-      })
-      .finally(() => Loading.hide());
-  };
-
-  const signup = async (auth: AxiosBasicCredentials): Promise<boolean> => {
+  const Login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
     Loading.show({ spinnerColor: 'primary' });
-    SetModel();
-    return await api
-      .post(`/auth/signup`, {}, { auth })
-      .then(SetModel)
-      .then((): boolean => $notify.ok(null, `🥳`, `Check your email for an invite!`))
-      .catch($notify.err)
-      .finally(() => Loading.hide());
-  };
-
-  const login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
-    Loading.show({ spinnerColor: 'primary' });
-    SetModel();
     return await api
       .post(`/auth?action=login`, {}, { auth })
-      .then(SetModel)
+      .then((r:AxiosResponse<Auth>) => model.value = r.data.token)
       .then((): boolean => $notify.ok(null, `👋`, `Welcome`))
       .catch($notify.err)
       .finally(() => Loading.hide());
   };
 
-  const forgotPass = async (auth: AxiosBasicCredentials): Promise<boolean> => {
-    Loading.show({ spinnerColor: 'primary' });
-    SetModel();
-    return await api
-      .post(`/auth/forgot-password`, {}, { auth })
-      .then(SetModel)
-      .then((): boolean => $notify.ok(null, `📧`, `Reset link sent!`))
-      .catch($notify.err)
-      .finally(() => Loading.hide());
-  };
-
-  const changePass = async (auth: AxiosBasicCredentials): Promise<boolean> => {
-    Loading.show({ spinnerColor: 'primary' });
-    SetModel();
-    return await api
-      .post(`/auth/change-password`, {}, { auth })
-      .then(SetModel)
-      .then((): boolean => $notify.ok(null, `🔑`, `Password Saved`))
-      .catch($notify.err)
-      .finally(() => Loading.hide());
-  };
-
   // Cannot be an arrow function give "this"
-  async function logout(this: thisType): Promise<NavigationFailure | void | undefined> {
+  async function Logout(this: thisType): Promise<NavigationFailure | void | undefined> {
     Loading.show({ spinnerColor: 'primary' });
-    SetModel();
+    model.value = undefined
     await this.router.push({ path: '/login' });
     Loading.hide();
     $notify.ok(null, `👋`, `Come back soon!`);
     return;
   }
 
-  const authorized = (): boolean => !!model.value;
+  const IsExpired = (): boolean => Date.now() > (claims()?.exp || 1) * 1000;
 
-  const SetModel = (res?: AxiosResponse<Auth>): void => {
-    console.log(res);
-    const token = res ? res.data.token : null;
-    model.value = token;
-    api.defaults.headers.common.Authorization = token ? `Bearer ${token}` : null;
-    $log.debug(token ? claims() : null, `Token ${token ? 'set' : 'unset'}: ${token}`);
-  };
-
-  const isAnonymous = (): boolean => claims().aud.includes('anonymous');
-
-  const userID = (): string => claims().jti;
-
-  const IsStu = (): boolean => true;
-
-  const IsCarl = (): boolean => userID() === '01KM010XK0HY8HWWFPJTZGRF0F';
-
-  const IsExpired = (): boolean => {
-    const now = Date.now();
-    const then = claims().exp * 1000;
-    console.debug(new Date(now).toLocaleString(), new Date(then).toLocaleString());
-    return now > then;
-  };
+  const IsGuest = (): boolean => claims()?.jti === '01KM01JC9PS1R4X4FDJNFAR4AZ';
 
   return {
-    token: model,
-    authorized,
-    login,
-    logout,
-    signup,
-    isAnonymous,
-    forgotPass,
-    changePass,
-    userID,
-    postToken,
-    IsStu,
-    IsCarl,
+    model,
     IsExpired,
-    SetModel,
+    IsGuest,
+    Login,
+    Logout,
   };
 };
 
