@@ -54,7 +54,7 @@ const useNotifier = () => {
     if (args.length > 0) {
       msg = args[0] as string;
     }
-    if (msg?.includes(`can't access property "data", result is undefined`) || msg?.includes('Cannot read properties of undefined (reading \'data\')')) {
+    if (msg?.includes(`cancel`)) {
       return false;
     }
     notify(`${symbolSpan(`⛔️`)}${msg}`, '', []);
