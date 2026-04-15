@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <q-btn v-if="$tokenStore.IsStu()" :size="size" dense flat>
+  <q-btn :disable="$tokenStore.IsGuest()" :size="size" dense flat>
     <q-avatar :size="size" square>
       <img src="~assets/shopify-logo.svg" alt="Shopify Logo" />
     </q-avatar>

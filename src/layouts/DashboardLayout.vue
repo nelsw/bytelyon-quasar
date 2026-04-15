@@ -1,17 +1,13 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import LogoImg from 'components/img/LogoImg.vue';
-import { useNodeStore } from 'stores/node-store';
 import NewsBotExpansionItem from 'components/expansion-item/NewsBotExpansionItem.vue';
 import SearchBotExpansionItem from 'components/expansion-item/SearchBotExpansionItem.vue';
 import SitemapBotExpansionItem from 'components/expansion-item/SitemapBotExpansionItem.vue';
-import CollapseBtn from 'components/btn/CollapseBtn.vue';
-
-const $nodeStore = useNodeStore();
+import MenuIcon from 'components/icon/MenuIcon.vue';
 
 const miniState = ref<boolean>(false);
 const leftDrawer = ref<boolean>(true);
-const rightDrawer = ref<boolean>(false);
 </script>
 <template>
   <q-layout view="hHh lpR lFr">
@@ -35,7 +31,7 @@ const rightDrawer = ref<boolean>(false);
       <div class="absolute-top" style="height: 49px">
         <q-item>
           <q-item-section avatar style="min-width: 25px; padding-right: 0">
-            <LogoImg width="25px" />
+            <LogoImg width="25px" random />
           </q-item-section>
           <q-item-section style="margin-left: 12px">
             <span class="text-h5 text-grey-5 text-weight-medium"> ByteLyon </span>
@@ -45,18 +41,18 @@ const rightDrawer = ref<boolean>(false);
       </div>
       <div class="absolute-bottom" style="height: 49px">
         <q-separator />
-        <q-item>
+        <q-item @click="miniState = !miniState" class="text-grey-8" clickable>
           <q-item-section avatar>
-            <CollapseBtn v-model="miniState" collapse="left" inverse />
+            <MenuIcon v-model="miniState" size="md" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              Collapse
+            </q-item-label>
           </q-item-section>
         </q-item>
       </div>
     </q-drawer>
-
-    <q-drawer v-model="rightDrawer" side="right" :width="1250" bordered>
-      <pre>{{ $nodeStore.model }}</pre>
-    </q-drawer>
-
     <q-page-container>
       <q-page>
         <router-view />

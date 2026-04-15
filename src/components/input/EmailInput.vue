@@ -16,6 +16,7 @@ const model = defineModel<string>();
     type="email"
     autofocus
     hint="demo@demo.com"
+    autocomplete="username"
   >
     <template #prepend>
       <q-icon name="mdi-email-outline" />

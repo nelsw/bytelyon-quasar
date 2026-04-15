@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import EmailInput from 'components/input/EmailInput.vue';
-import { QForm } from 'quasar';
-import { useTokenStore } from 'stores/token-store';
 import { reactive } from 'vue';
 import type { AxiosBasicCredentials } from 'boot/axios';
 
-const emit = defineEmits<{ close: [boolean] }>();
 const model = reactive<AxiosBasicCredentials>({ username: '', password: '' });
-const $store = useTokenStore();
-const onSubmit = async () => emit('close', await $store.forgotPass(model));
+const onSubmit = async () => {};
 </script>
 
 <template>

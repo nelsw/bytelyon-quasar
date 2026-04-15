@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { QForm } from 'quasar';
 import PasswordInput from 'components/input/PasswordInput.vue';
 import { reactive } from 'vue';
-import { useTokenStore } from 'stores/token-store';
 import type { AxiosBasicCredentials } from 'boot/axios';
 
-const emit = defineEmits<{ ok: [boolean] }>();
-const $store = useTokenStore();
 const model = reactive<AxiosBasicCredentials>({ username: '', password: '' });
-const onSubmit = async () => emit('ok', await $store.changePass(model));
+const onSubmit = async () => {};
 </script>
 
 <template>

@@ -1,5 +1,4 @@
 import type { RouteRecordRaw } from 'vue-router';
-import TokenPage from 'pages/TokenPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -11,14 +10,7 @@ const routes: RouteRecordRaw[] = [
         path: '',
         alias: '/login',
         component: () => import('pages/LoginPage.vue'),
-      },
-      {
-        path: '/tkn/:type/:id',
-        name: 'token',
-        meta: { requiresAuth: false },
-        component: TokenPage,
-        props: true,
-      },
+      }
     ],
   },
   {
