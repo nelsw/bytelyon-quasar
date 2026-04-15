@@ -25,7 +25,7 @@ const setup = () => {
     const results = find(id)
     if (results.length > 0) {
       resultId.value = results[0]?.id ?? ''
-      if (!force) return;
+      if (force !== true) return;
     }
 
     loading.value = true;

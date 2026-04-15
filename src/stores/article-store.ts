@@ -32,7 +32,7 @@ const setup = () => {
   const create = async () => {
     Loading.show({ spinnerColor: 'primary' });
     return api
-      .post(`/bots?type=news`, article.value)
+      .post(`/articles`, article.value)
       .then((res: AxiosResponse<{ link: string; }>) => {
         show.value = false;
         return $notify.act('Article created successfully!', 'https://bytelyon-public.s3.amazonaws.com/shopify.png', [
