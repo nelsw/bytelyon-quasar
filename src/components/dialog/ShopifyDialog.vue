@@ -61,7 +61,7 @@ const $store = useArticleStore();
           use-chips
           use-input
         />
-        <q-input label="Image" hint=".png required" v-model="$store.article.image">
+        <q-input label="Image" v-model="$store.article.image">
           <template #append>
             <OpenInNewBtn :url="$store.article.image" size="sm" />
           </template>
