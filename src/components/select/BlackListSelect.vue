@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BotType } from 'src/types/model';
+import { type Bot, BotType } from 'src/types/model';
 
-const props = defineProps<{
-  color: string;
-  botType: BotType;
-}>();
-
-const model = defineModel<string[]>();
+const model = defineModel<Bot>({ required: true });
 
 const hint = computed(() => {
-  if (props.botType === BotType.News) {
+  if (model.value.type === BotType.News) {
     return 'Exclude articles that contain these keywords';
   } else {
     return 'Exclude result pages that contain these domains';
@@ -20,8 +15,9 @@ const hint = computed(() => {
 
 <template>
   <q-select
-    v-model="model"
-    :color="color"
+    v-if="model.type !== BotType.Sitemap"
+    v-model="model.blackList"
+    :color="model.id === '' ? 'green-13' : 'amber-13'"
     :hint="hint"
     input-debounce="0"
     label="Exclusions"
@@ -32,7 +28,7 @@ const hint = computed(() => {
     use-input
   >
     <template #prepend>
-      <q-icon name="mdi-alert-circle-outline" :color="color" />
+      <q-icon name="mdi-alert-circle-outline" :color="model.id === '' ? 'green-13' : 'amber-13'" />
     </template>
   </q-select>
 </template>

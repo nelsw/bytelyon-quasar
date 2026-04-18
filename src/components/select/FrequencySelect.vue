@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import type { Bot } from 'src/types/model';
 
 interface Option {
   label: string;
@@ -17,48 +17,33 @@ const hourly: Option = { label: 'Hourly', value: hour };
 const daily: Option = { label: 'Daily', value: day };
 const weekly: Option = { label: 'Weekly', value: week };
 
-const toOption = (n: number): Option => {
-  if (n === 0) {
-    return never;
-  } else if (n === 1) {
-    return once;
-  } else if (n < day) {
-    return hourly;
-  } else if (n < week) {
-    return daily;
-  } else {
-    return weekly;
-  }
-};
-
-const props = defineProps<{
-  color: string;
-  hint: string;
-}>();
-
-const model = defineModel<number>({ required: true });
-
-const options = computed(() => {
-  const opts: Option[] = [once, hourly, daily, weekly];
-  if (props.color === 'amber-13') {
-    opts.unshift(never);
-  }
-  return opts;
-});
+const model = defineModel<Bot>({ required: true });
 </script>
 
 <template>
   <q-select
-    :model-value="toOption(model)"
-    :color="color"
-    :hint="hint"
-    :options="options"
+    :model-value="
+      model.frequency === 0
+        ? never
+        : model.frequency < hour
+          ? once
+          : model.frequency < day
+            ? hourly
+            : model.frequency < week
+              ? daily
+              : weekly
+    "
+    :color="model.id === '' ? 'green-13' : 'amber-13'"
+    :options="
+      model.id === '' ? [once, hourly, daily, weekly] : [never, once, hourly, daily, weekly]
+    "
     label="Repeats"
     hide-dropdown-icon
-    @update:modelValue="(o: Option) => (model = o.value)"
+    hint="Run on a schedule or 'On-Demand' (once & pause)."
+    @update:modelValue="(o: Option) => (model.frequency = o.value)"
   >
     <template #prepend>
-      <q-icon name="mdi-clock-outline" :color="color" />
+      <q-icon name="mdi-clock-outline" :color="model.id === '' ? 'green-13' : 'amber-13'" />
     </template>
   </q-select>
 </template>

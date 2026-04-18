@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
         path: '',
         alias: '/login',
         component: () => import('pages/LoginPage.vue'),
-      }
+      },
     ],
   },
   {
@@ -24,14 +24,9 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/HomePage.vue'),
       },
       {
-        path: '/news',
+        path: '/:botType(news|search|sitemap)/:botId?',
         meta: { requiresAuth: true },
-        component: () => import('pages/news/CreatePage.vue'),
-      },
-      {
-        path: '/news/:id',
-        meta: { requiresAuth: true },
-        component: () => import('pages/news/UpdatePage.vue'),
+        component: () => import('pages/BotPage.vue'),
       },
       {
         path: '/news/results/:botId',
@@ -39,29 +34,9 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/news/ResultsPage.vue'),
       },
       {
-        path: '/search',
-        meta: { requiresAuth: true },
-        component: () => import('pages/search/CreatePage.vue'),
-      },
-      {
-        path: '/search/:id',
-        meta: { requiresAuth: true },
-        component: () => import('pages/search/UpdatePage.vue'),
-      },
-      {
         path: '/search/results/:botId',
         meta: { requiresAuth: true },
         component: () => import('pages/search/ResultsPage.vue'),
-      },
-      {
-        path: '/sitemap',
-        meta: { requiresAuth: true },
-        component: () => import('pages/sitemap/CreatePage.vue'),
-      },
-      {
-        path: '/sitemap/:id',
-        meta: { requiresAuth: true },
-        component: () => import('pages/sitemap/UpdatePage.vue'),
       },
       {
         path: '/sitemap/results/:botId',

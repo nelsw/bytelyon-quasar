@@ -86,7 +86,7 @@ const setup = () => {
 export const useTokenStore = defineStore('token-store', setup, {
   persist: {
     debug: true,
-    storage: sessionStorage
+    storage: localStorage
   }
 });
 

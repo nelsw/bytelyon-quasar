@@ -1,31 +1,26 @@
 import type { QTreeNode } from 'quasar';
 
+export type entry<K, V> = { k: K; v: V };
+
 export class Model<K, V> {
-  entries: {
-    readonly k: K;
-    readonly v: V;
-  }[];
+  e: entry<K, V>[];
 
-  constructor() {
-    this.entries = [];
+  constructor(e?: entry<K, V>[]) {
+    this.e = e ?? [];
   }
 
-  private indexOf(k: K): number {
-    return this.entries.findIndex((e) => e.k === k);
-  }
-
-  set(k: K, v: V): V {
-    const idx = this.indexOf(k);
-    if (idx > -1) {
-      this.entries.splice(idx, 1);
-    }
-    this.entries.push({ k, v });
+  set = (k: K, v: V): V => {
+    this.remove(k);
+    this.e.push({ k, v });
     return v;
-  }
+  };
 
-  get(k: K): V | undefined {
-    return this.entries?.[this.indexOf(k)]?.v;
-  }
+  get = (k: K): V | undefined => this.e.find((e) => e.k === k)?.v;
+
+  remove = (k: K) => {
+    const idx = this.e.findIndex((e) => e.k === k);
+    if (idx > -1) this.e.splice(idx, 1);
+  };
 }
 
 export interface Err {
@@ -48,6 +43,16 @@ export type Bot = {
   blackList: string[];
   workedAt?: Date | undefined;
 };
+
+export const NewBot = (botType: BotType): Bot => ({
+  id: '',
+  type: botType,
+  target: '',
+  frequency: 1,
+  blackList: [],
+});
+
+export const IsBotNew = (bot: Bot): boolean => bot.id === '';
 
 export type BotNode = Bot &
   QTreeNode & {
@@ -129,6 +134,19 @@ export const BotTypeLabel = (botType: BotType): string => {
       return 'Sitemap';
     case BotType.News:
       return 'News';
+    default:
+      return 'Unknown BotType: ' + (botType as string);
+  }
+};
+
+export const BotTypeDescription = (botType: BotType): string => {
+  switch (botType) {
+    case BotType.Search:
+      return '';
+    case BotType.Sitemap:
+      return '';
+    case BotType.News:
+      return 'Aggregate news articles from popular & reputable digital publishers & RSS feeds.';
     default:
       return 'Unknown BotType: ' + (botType as string);
   }

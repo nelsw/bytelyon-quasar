@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import NewsBotExpansionItem from 'components/expansion-item/NewsBotExpansionItem.vue';
-import SearchBotExpansionItem from 'components/expansion-item/SearchBotExpansionItem.vue';
-import SitemapBotExpansionItem from 'components/expansion-item/SitemapBotExpansionItem.vue';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import LogoAvatar from 'components/avatar/LogoAvatar.vue';
 import { useLayoutStore } from 'stores/layout-store';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import NewBotBtn from 'components/btn/NewBotBtn.vue';
+import BotExpansionItem from 'components/expansion-item/BotExpansionItem.vue';
+import { BotType } from 'src/types/model';
 
 const $store = useLayoutStore();
 </script>
@@ -37,9 +36,9 @@ const $store = useLayoutStore();
     >
       <ScrollArea style="height: 100%">
         <q-list separator>
-          <NewsBotExpansionItem />
-          <SearchBotExpansionItem />
-          <SitemapBotExpansionItem />
+          <BotExpansionItem :bot-type="BotType.News" />
+          <BotExpansionItem :bot-type="BotType.Search" />
+          <BotExpansionItem :bot-type="BotType.Sitemap" />
           <q-separator />
         </q-list>
       </ScrollArea>
