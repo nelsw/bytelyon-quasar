@@ -2,13 +2,14 @@
 import { onMounted, reactive, watch } from 'vue';
 import { type Bot, BotType, BotTypeDescription, BotTypeLabel, NewBot } from 'src/types/model';
 import { useBotStore } from 'stores/bot-store';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import TargetInput from 'components/input/TargetInput.vue';
 
 const $route = useRoute();
+const $router = useRouter();
 const $store = useBotStore();
 
 const bot = reactive(NewBot(BotType.News));
@@ -20,15 +21,16 @@ const onSubmit = async () => {
   }
 };
 
+const onDelete = async () => {
+  if (await $store.remove(bot)) await $router.push(`/dashboard/${bot.type}`);
+};
+
 const onChange = (): void => {
-  const botType = ($route.params.botType as BotType) ?? BotType.News;
-  const botId = ($route.params.botId as string) ?? '';
-  const tmp = $store.model?.get(botType)?.get(botId) ?? NewBot(botType);
-  bot.id = tmp.id;
-  bot.type = tmp.type;
-  bot.target = tmp.target;
-  bot.blackList = tmp.blackList;
-  bot.frequency = tmp.frequency;
+  bot.type = ($route.params.botType as BotType) ?? BotType.News;
+  bot.id = ($route.params.botId as string) ?? '';
+  bot.target = $store.target(bot.type, bot.id);
+  bot.blackList = $store.blackList(bot.type, bot.id);
+  bot.frequency = $store.frequency(bot.type, bot.id);
 };
 
 watch(() => $route.params.botType, onChange);
@@ -59,6 +61,15 @@ onMounted(onChange);
       <FrequencySelect v-model="bot" class="q-my-md" />
 
       <SubmitBtn class="q-mt-md" :bot="bot" />
+      <q-btn
+        v-if="bot.id !== ''"
+        @click="onDelete"
+        class="full-width q-mt-md"
+        label="Delete"
+        color="pink-13"
+        size="lg"
+        outline
+      />
     </q-form>
   </div>
 </template>

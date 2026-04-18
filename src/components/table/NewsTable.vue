@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { NewsBotResult } from 'src/types/model';
-import type { QTableColumn } from 'quasar';
+import type { QTableColumn} from 'quasar';
+import { useQuasar } from 'quasar';
 import { date } from 'quasar';
 import { onMounted, ref, watch } from 'vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
@@ -19,13 +20,13 @@ const columns: QTableColumn<NewsBotResult>[] = [
   { name: 'Published', label: 'Published', field: 'publishedAt', align: 'left' },
   { name: 'Source', label: 'Source', field: 'source', align: 'left' },
   { name: 'Title', label: 'Title', field: 'title', align: 'left' },
-  { name: 'Description', label: 'Description', field: 'description', align: 'left' }
+  { name: 'Description', label: 'Description', field: 'description', align: 'left' },
 ];
 
 const props = defineProps<{
   botId: string;
-}>()
-
+}>();
+const $q = useQuasar();
 const $article = useArticleStore();
 const $results = useNewsBotResultsStore();
 const filter = ref<string>('');
@@ -34,10 +35,10 @@ const visibleCols = ref<string[]>(
   columns
     .map((col) => col.name)
     .filter((s) => s !== 'ID')
-    .filter((s) => s !== 'Description')
+    .filter((s) => s !== 'Description'),
 );
-onMounted(async () => $results.load(props.botId))
-watch(props, async () => $results.load(props.botId))
+onMounted(async () => $results.load(props.botId));
+watch(props, async () => $results.load(props.botId));
 </script>
 
 <template>
@@ -47,7 +48,7 @@ watch(props, async () => $results.load(props.botId))
     :filter="filter"
     :loading="$results.busy"
     :pagination="{ sortBy: 'Published', descending: true }"
-    :rows-per-page-options="[20, 50, 100, 0]"
+    :rows-per-page-options="[10, 25, 50, 100, 0]"
     :rows="$results.find(botId)"
     :selected-rows-label="(n: number) => `${n} Article${n > 1 ? 's' : ''} selected`"
     :visible-columns="visibleCols"
@@ -61,10 +62,10 @@ watch(props, async () => $results.load(props.botId))
     flat
   >
     <template #top="props">
-      <TrashBtn :disable="$results.selected.length === 0" @click="$results.remove" size="md"/>
+      <TrashBtn :disable="$results.selected.length === 0" @click="$results.remove" size="md" />
       <q-separator vertical spaced inset />
       <FilterInput :filter="filter" />
-      <div class="flex absolute-center items-center">
+      <div v-if="$q.screen.gt.sm" class="flex absolute-center items-center">
         <div @click="$results.load(botId, true)" class="text-h5 text-weight-medium text-uppercase">
           {{ $results.target(botId) }}
         </div>
@@ -95,12 +96,10 @@ watch(props, async () => $results.load(props.botId))
         </q-td>
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <OpenInNewBtn v-if="col.name === 'Open'" :url="col.value" size="xs" />
-          <ShopifyBtn
-            v-else-if="col.name === 'Post'"
-            @click="$article.load(props.row)"
-            size="xs"
-          />
-          <span v-else-if="col.name === 'Published'">{{ date.formatDate(col.value, 'MM/DD/YY hh:mm') }}</span>
+          <ShopifyBtn v-else-if="col.name === 'Post'" @click="$article.load(props.row)" size="xs" />
+          <span v-else-if="col.name === 'Published'">{{
+            date.formatDate(col.value, 'MM/DD/YY hh:mm')
+          }}</span>
           <span v-else>{{ col.value }}</span>
         </q-td>
       </q-tr>

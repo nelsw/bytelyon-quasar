@@ -17,6 +17,12 @@ export class Model<K, V> {
 
   get = (k: K): V | undefined => this.e.find((e) => e.k === k)?.v;
 
+  getOr = (k: K, or: V): V => {
+    const v = this.e.find((e) => e.k === k)?.v;
+    if (v) return v;
+    return or;
+  }
+
   remove = (k: K) => {
     const idx = this.e.findIndex((e) => e.k === k);
     if (idx > -1) this.e.splice(idx, 1);

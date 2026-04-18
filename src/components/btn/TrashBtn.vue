@@ -16,5 +16,6 @@ defineProps<{
     <q-tooltip v-if="tooltip !== undefined">
       {{ tooltip }}
     </q-tooltip>
+    <slot />
   </q-btn>
 </template>

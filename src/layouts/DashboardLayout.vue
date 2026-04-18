@@ -6,30 +6,41 @@ import MenuBtn from 'components/btn/MenuBtn.vue';
 import NewBotBtn from 'components/btn/NewBotBtn.vue';
 import BotExpansionItem from 'components/expansion-item/BotExpansionItem.vue';
 import { BotType } from 'src/types/model';
-
-const $store = useLayoutStore();
+import { onMounted } from 'vue';
+import { useBotStore } from 'stores/bot-store';
+import DashboardFooter from 'components/footer/DashboardFooter.vue';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
+const $layout = useLayoutStore();
+const $bots = useBotStore();
+onMounted($bots.loadAll);
 </script>
 <template>
-  <q-layout @resize="console.log" view="hHh lpR lFr">
+  <q-layout @resize="console.log" view="lHh lpR lFr">
     <q-header class="bg-dark" bordered>
-      <q-toolbar class="flex row justify-between items-center">
-        <div class="flex flex-col col-grow items-start q-mr-sm">
+      <q-toolbar class="flex row">
+        <div class="col-2">
           <MenuBtn />
         </div>
-        <div class="flex flex-col col-grow items-center">
+        <div class="flex col-8">
+          <q-space />
           <LogoAvatar random />
-          <q-toolbar-title class="text-h5 text-grey-5 text-weight-medium">ByteLyon</q-toolbar-title>
+          <q-toolbar-title v-if="$q.screen.gt.sm" class="text-h5 text-grey-5 text-weight-medium"
+            >ByteLyon</q-toolbar-title
+          >
+          <q-space />
         </div>
-        <div class="flex flex-col items-end">
+        <div class="flex col-2">
+          <q-space />
           <NewBotBtn />
         </div>
       </q-toolbar>
     </q-header>
     <q-drawer
-      v-model="$store.leftDrawer"
+      v-model="$layout.leftDrawer"
       :breakpoint="500"
-      :mini="$store.miniState"
-      :width="350"
+      :mini="$layout.miniState"
+      :width="300"
       side="left"
       bordered
       show-if-above
@@ -43,6 +54,7 @@ const $store = useLayoutStore();
         </q-list>
       </ScrollArea>
     </q-drawer>
+    <DashboardFooter />
     <q-page-container>
       <q-page>
         <router-view />

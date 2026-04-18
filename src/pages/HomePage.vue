@@ -19,7 +19,7 @@ const $router = useRouter();
       :key="botType"
       class="cursor-pointer"
       style="width: 200px"
-      @click="$router.push(`/${botType}`)"
+      @click="$router.push(`/dashboard/${botType}`)"
     >
       <q-card-section style="padding: 100px">
         <q-icon :name="BotTypeIcon(botType)" color="primary" size="5em" class="absolute-center" />

@@ -19,27 +19,27 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DashboardLayout.vue'),
     children: [
       {
-        path: '',
+        path: '/dashboard',
         meta: { requiresAuth: true },
         component: () => import('pages/HomePage.vue'),
       },
       {
-        path: '/:botType(news|search|sitemap)/:botId?',
+        path: '/dashboard/:botType(news|search|sitemap)/:botId?',
         meta: { requiresAuth: true },
         component: () => import('pages/BotPage.vue'),
       },
       {
-        path: '/news/results/:botId',
+        path: '/dashboard/:botType(news)/:botId/results',
         meta: { requiresAuth: true },
         component: () => import('pages/news/ResultsPage.vue'),
       },
       {
-        path: '/search/results/:botId',
+        path: '/dashboard/:botType(search)/:botId/results',
         meta: { requiresAuth: true },
         component: () => import('pages/search/ResultsPage.vue'),
       },
       {
-        path: '/sitemap/results/:botId',
+        path: '/dashboard/:botType(sitemap)/:botId/results',
         meta: { requiresAuth: true },
         component: () => import('pages/sitemap/ResultsPage.vue'),
       },

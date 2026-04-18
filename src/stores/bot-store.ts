@@ -1,6 +1,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosError, type AxiosResponse } from 'boot/axios';
-import type { Bot, BotNode, Err} from 'src/types/model';
+import type { Bot, BotNode, Err } from 'src/types/model';
+import { BotTypes } from 'src/types/model';
 import { Model } from 'src/types/model';
 import { BotType } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
@@ -21,6 +22,34 @@ const IsValidDomain = (s: string) => {
 const setup = () => {
   const busy = ref(false);
   const model = ref<Model<BotType, Model<string, Bot>>>(new Model());
+
+  const target = (botType:BotType, botId:string): string => {
+    try {
+      const bots = model.value.get(botType);
+      if (bots === undefined) return '';
+      const bot = bots?.get(botId);
+      if (!bot) return '';
+      return bot.target;
+    } catch {
+      return '';
+    }
+  }
+
+  const blackList = (botType: BotType, botId: string): string[] => {
+    const bots = model.value.get(botType);
+    if (!bots) return [];
+    const bot = bots?.get(botId);
+    if (!bot) return [];
+    return bot.blackList;
+  };
+
+  const frequency = (botType: BotType, botId: string): number => {
+    const bots = model.value.get(botType);
+    if (!bots) return 1;
+    const bot = bots?.get(botId);
+    if (!bot) return 1;
+    return bot.frequency;
+  };
 
   const Save = async (b: BotNode): Promise<Bot | null> => {
     console.info('save bot', b);
@@ -60,6 +89,20 @@ const setup = () => {
       });
   };
 
+  const Remove = async (botType:BotType, botId:string) => {
+    let target = model.value.get(botType)?.get(botId)?.target ?? '';
+    if (botType === BotType.Sitemap) {
+      target = encodeURIComponent(target).replaceAll('.', ' ');
+    }
+    busy.value = true;
+    return await api
+      .delete(`/bots?type=${botType}&target=${target}`)
+      .then(() => model.value.get(botType)?.remove(botId))
+      .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
+      .catch($notify.err)
+      .finally(() => (busy.value = false));
+  };
+
   const remove = async (b: Bot) => {
     let target = b.target;
     if (b.type === BotType.Sitemap) {
@@ -86,6 +129,10 @@ const setup = () => {
       })
       .catch($notify.err);
   };
+
+  const loadAll = async()=>{
+    await Promise.all(BotTypes.map((botType) => load(botType)));
+  }
 
   const load = async (botType: BotType) => {
     busy.value = true;
@@ -123,8 +170,13 @@ const setup = () => {
   return {
     busy,
     model,
+    blackList,
+    frequency,
+    target,
+    Remove,
     remove,
     load,
+    loadAll,
     save,
     Save,
     Delete,
