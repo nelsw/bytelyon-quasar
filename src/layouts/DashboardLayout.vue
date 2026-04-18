@@ -1,28 +1,46 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
-import LogoImg from 'components/img/LogoImg.vue';
 import NewsBotExpansionItem from 'components/expansion-item/NewsBotExpansionItem.vue';
 import SearchBotExpansionItem from 'components/expansion-item/SearchBotExpansionItem.vue';
 import SitemapBotExpansionItem from 'components/expansion-item/SitemapBotExpansionItem.vue';
-import LogoutItem from 'components/item/LogoutItem.vue';
-import CollapseItem from 'components/item/CollapseItem.vue';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
+import LogoAvatar from 'components/avatar/LogoAvatar.vue';
+import { useLayoutStore } from 'stores/layout-store';
+import MenuBtn from 'components/btn/MenuBtn.vue';
+import LogoutBtn from 'components/btn/LogoutBtn.vue';
+import { computed } from 'vue';
+import { useQuasar } from 'quasar';
 
-const miniState = ref<boolean>(false);
-const leftDrawer = ref<boolean>(true);
+const $q = useQuasar();
+const $store = useLayoutStore();
+
+const menuVisible = computed(() => $q.screen.width <= 500);
 </script>
 <template>
-  <q-layout view="hHh lpR lFr">
+  <q-layout @resize="console.log" view="hHh lpR lFr">
+    <q-header class="bg-dark" bordered>
+      <q-toolbar class="flex row justify-between items-center">
+        <div v-show="menuVisible" class="flex flex-col col-grow items-start q-mr-sm">
+          <MenuBtn />
+        </div>
+        <div class="flex flex-col col-grow items-center">
+          <LogoAvatar random />
+          <q-toolbar-title class="text-grey-5 text-weight-medium">ByteLyon</q-toolbar-title>
+        </div>
+        <div class="flex flex-col items-end">
+          <LogoutBtn />
+        </div>
+      </q-toolbar>
+    </q-header>
     <q-drawer
-      v-model="leftDrawer"
+      v-model="$store.leftDrawer"
       :breakpoint="500"
-      :mini="miniState"
+      :mini="$store.miniState"
       :width="350"
       side="left"
       bordered
       show-if-above
     >
-      <ScrollArea style="height: calc(100% - 49px - 98px); margin-top: 49px">
+      <ScrollArea style="height: 100%">
         <q-list separator>
           <NewsBotExpansionItem />
           <SearchBotExpansionItem />
@@ -30,24 +48,6 @@ const leftDrawer = ref<boolean>(true);
           <q-separator />
         </q-list>
       </ScrollArea>
-      <div class="absolute-top" style="height: 49px">
-        <q-item>
-          <q-item-section avatar style="min-width: 25px; padding-right: 0">
-            <LogoImg width="25px" random />
-          </q-item-section>
-          <q-item-section style="margin-left: 12px">
-            <span class="text-h5 text-grey-5 text-weight-medium"> ByteLyon </span>
-          </q-item-section>
-        </q-item>
-        <q-separator />
-      </div>
-      <div class="absolute-bottom" style="height: 98px">
-        <q-separator />
-        <q-list separator>
-          <LogoutItem />
-          <CollapseItem v-model="miniState" />
-        </q-list>
-      </div>
     </q-drawer>
     <q-page-container>
       <q-page>

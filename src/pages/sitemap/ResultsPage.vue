@@ -51,11 +51,11 @@ onMounted(onChange);
 
 <template>
   <q-page class="absolute-full">
-    <q-splitter v-model="splitterModel" :limits="[35, 65]" class="full-height">
+    <q-splitter v-model="splitterModel" :limits="[15, 85]" class="full-height">
       <template #before>
         <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
         <q-separator inset />
-        <ScrollArea style="height: calc(100vh - 48px)">
+        <ScrollArea style="height: calc(100vh - 49px - 51px); max-width: 100vw;">
           <q-tree
             class="q-px-md q-py-sm"
             ref="my-sitemap-tree"
