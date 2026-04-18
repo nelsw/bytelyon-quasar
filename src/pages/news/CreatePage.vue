@@ -9,9 +9,7 @@ import { useNewsBotStore } from 'stores/news/bot-store';
 
 const color = 'green-13';
 
-
 const $store = useNewsBotStore();
-
 
 const target = ref<string>('');
 const blackList = ref<string[]>([]);
@@ -33,19 +31,18 @@ onMounted(onReset);
 </script>
 
 <template>
-  <div class="absolute-center">
-    <q-form id="my-form" @submit="onSubmit">
-      <div class="flex justify-center align-center">
-        <q-icon name="mdi-new-box" size="6em" :color="color" />
-      </div>
-      <div class="flex justify-center align-center">
-        <div class="text-h4 text-center">News Bot</div>
-      </div>
+  <div class="q-pa-md">
+    <div class="flex justify-center align-center">
+      <q-icon name="mdi-new-box" size="6em" :color="color" />
+    </div>
+    <div class="flex justify-center align-center">
+      <div class="text-h4 text-center">News Bot</div>
+    </div>
 
-      <p class="text-body1 text-center q-mt-sm">
-        Aggregate news articles from popular & <br />reputable digital publishers & RSS feeds.
-      </p>
-
+    <p class="text-body1 text-center q-mt-sm">
+      Aggregate news articles from popular & reputable digital publishers & RSS feeds.
+    </p>
+    <q-form @submit="onSubmit" style="min-width: 320px; max-width: 750px; margin: auto">
       <TargetInput v-model="target" :color="color" :bot-type="BotType.News" />
 
       <BlackListSelect
@@ -59,16 +56,10 @@ onMounted(onReset);
         v-model="frequency"
         class="q-my-md"
         :color="color"
-        hint="Instruct the boat to run on a schedule or 'On-Demand' (once & pause)."
+        hint="Run on a schedule or 'On-Demand' (once & pause)."
       />
 
-      <SubmitBtn :color="color" label="Create" />
+      <SubmitBtn class="q-mt-md" :color="color" label="Create" />
     </q-form>
   </div>
 </template>
-<style scoped lang="scss">
-#my-form {
-  width: 500px;
-  margin-bottom: 48px;
-}
-</style>

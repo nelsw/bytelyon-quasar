@@ -3,45 +3,27 @@ import { date } from 'quasar';
 import { onMounted } from 'vue';
 import { useSearchBotStore } from 'stores/search/bot-store';
 import TrashBtn from 'components/btn/TrashBtn.vue';
-import ChevronIcon from 'components/icon/ChevronIcon.vue';
+import { BotType, BotTypeIcon, BotTypeLabel } from 'src/types/model';
 
+const bot = BotType.Search;
 const $store = useSearchBotStore();
 
 onMounted($store.Load);
 </script>
 
 <template>
-  <q-expansion-item :disable="$store.busy" group="bots" hide-expand-icon expand-icon-toggle>
-    <template #header="{ expanded, toggle }">
-      <q-item-section avatar style="min-width: 25px; padding-right: 0">
-        <q-icon name="mdi-web" />
-      </q-item-section>
-      <q-item-section style="margin-left: 12px">
-        <span class="text-subtitle1 text-weight-regular q-mr-xs">Search</span>
-      </q-item-section>
-
-      <q-item-section side>
-        <div class="q-gutter-sm">
-          <q-btn to="/search" color="green-13" icon="mdi-plus" size="md" dense flat>
-            <q-tooltip>Create a News Bot</q-tooltip>
-          </q-btn>
-          <q-btn @click="$store.Load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
-            <q-tooltip>Refresh News Bots</q-tooltip>
-          </q-btn>
-          <q-btn @click="toggle" color="white" size="md" dense flat>
-            <ChevronIcon :expanded="expanded" />
-            <q-tooltip>Show News Bot Results</q-tooltip>
-          </q-btn>
-          <q-inner-loading :showing="$store.busy && !expanded" size="sm" color="primary" />
-        </div>
-      </q-item-section>
-    </template>
+  <q-expansion-item
+    :disable="$store.busy"
+    :icon="BotTypeIcon(bot)"
+    :label="BotTypeLabel(bot)"
+    group="bots"
+  >
     <q-list dense>
       <q-separator inset />
       <q-item
         v-for="bot in $store.model"
         :key="bot.id"
-        :inset-level="0.5"
+        :inset-level="0.1"
         :disable="$store.busy"
         class="q-mr-xs"
       >

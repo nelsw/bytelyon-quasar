@@ -28,15 +28,14 @@ onMounted(onReset);
 </script>
 
 <template>
-  <div class="absolute-center">
-    <q-form id="my-form" @submit="onSubmit">
-      <div class="flex justify-center align-center">
-        <q-icon name="mdi-new-box" size="6em" :color="color" />
-      </div>
-      <div class="flex justify-center align-center">
-        <div class="text-h4 text-center">Sitemap Bot</div>
-      </div>
-
+  <div class="q-pa-md">
+    <div class="flex justify-center align-center">
+      <q-icon name="mdi-new-box" size="6em" :color="color" />
+    </div>
+    <div class="flex justify-center align-center">
+      <div class="text-h4 text-center">Sitemap Bot</div>
+    </div>
+    <q-form @submit="onSubmit" style="min-width: 320px; max-width: 750px; margin: auto">
       <TargetInput v-model="target" :color="color" :bot-type="BotType.Sitemap" />
 
       <FrequencySelect
@@ -46,13 +45,7 @@ onMounted(onReset);
         hint="Instruct the boat to run on a schedule or 'On-Demand' (once & pause)."
       />
 
-      <SubmitBtn :color="color" label="Create" />
+      <SubmitBtn class="q-mt-md" :color="color" label="Create" />
     </q-form>
   </div>
 </template>
-<style scoped lang="scss">
-#my-form {
-  width: 500px;
-  margin-bottom: 48px;
-}
-</style>

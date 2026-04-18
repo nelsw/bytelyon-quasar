@@ -6,12 +6,9 @@ import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import LogoAvatar from 'components/avatar/LogoAvatar.vue';
 import { useLayoutStore } from 'stores/layout-store';
 import MenuBtn from 'components/btn/MenuBtn.vue';
-import LogoutBtn from 'components/btn/LogoutBtn.vue';
-
+import NewBotBtn from 'components/btn/NewBotBtn.vue';
 
 const $store = useLayoutStore();
-
-
 </script>
 <template>
   <q-layout @resize="console.log" view="hHh lpR lFr">
@@ -22,10 +19,10 @@ const $store = useLayoutStore();
         </div>
         <div class="flex flex-col col-grow items-center">
           <LogoAvatar random />
-          <q-toolbar-title class="text-grey-5 text-weight-medium">ByteLyon</q-toolbar-title>
+          <q-toolbar-title class="text-h5 text-grey-5 text-weight-medium">ByteLyon</q-toolbar-title>
         </div>
         <div class="flex flex-col items-end">
-          <LogoutBtn />
+          <NewBotBtn />
         </div>
       </q-toolbar>
     </q-header>

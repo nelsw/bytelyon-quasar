@@ -4,52 +4,27 @@ import { onMounted } from 'vue';
 import { useSitemapBotStore } from 'stores/sitemap/bot-store';
 import { domain } from 'src/types/base';
 import TrashBtn from 'components/btn/TrashBtn.vue';
+import { BotType, BotTypeIcon, BotTypeLabel } from 'src/types/model';
 
+const bot = BotType.Sitemap;
 const $store = useSitemapBotStore();
 
 onMounted($store.Load);
 </script>
 
 <template>
-  <q-expansion-item :disable="$store.busy" group="bots" hide-expand-icon expand-icon-toggle>
-    <template #header="{ expanded, toggle }">
-      <q-item-section avatar style="min-width: 25px; padding-right: 0">
-        <q-icon name="mdi-sitemap" />
-      </q-item-section>
-      <q-item-section style="margin-left: 12px">
-        <span class="items-center">
-          <span class="text-subtitle1 text-weight-regular q-mr-xs">Sitemap</span>
-        </span>
-      </q-item-section>
-
-      <q-item-section side>
-        <div class="text-grey-8 q-gutter-sm">
-          <q-btn to="/sitemap" color="green-13" icon="mdi-plus" size="md" dense flat>
-            <q-tooltip>Create a Sitemap Bot</q-tooltip>
-          </q-btn>
-          <q-btn @click="$store.Load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
-            <q-tooltip>Refresh Sitemap Bots</q-tooltip>
-          </q-btn>
-          <q-btn
-            @click="toggle"
-            :icon="`mdi-chevron-${expanded ? 'up' : 'down'}`"
-            color="white"
-            size="md"
-            dense
-            flat
-          >
-            <q-tooltip>Show News Bot Results</q-tooltip>
-          </q-btn>
-          <q-inner-loading :showing="$store.busy && !expanded" size="sm" color="primary" />
-        </div>
-      </q-item-section>
-    </template>
+  <q-expansion-item
+    :disable="$store.busy"
+    :icon="BotTypeIcon(bot)"
+    :label="BotTypeLabel(bot)"
+    group="bots"
+  >
     <q-list dense>
       <q-separator inset />
       <q-item
         v-for="bot in $store.model"
         :key="bot.id"
-        :inset-level="0.5"
+        :inset-level="0.1"
         :disable="$store.busy"
         class="q-mr-xs"
       >
