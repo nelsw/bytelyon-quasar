@@ -2,9 +2,11 @@
 import EmailInput from 'components/input/EmailInput.vue';
 import PasswordInput from 'components/input/PasswordInput.vue';
 import { reactive } from 'vue';
-import { type Credentials } from 'src/types/model';
 import { useRouter } from 'vue-router';
 import { useTokenStore } from 'stores/token-store';
+import { type AxiosBasicCredentials } from 'axios';
+
+type Credentials = AxiosBasicCredentials;
 
 const $router = useRouter();
 const $store = useTokenStore();

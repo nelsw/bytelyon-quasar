@@ -1,7 +1,32 @@
-import type { AxiosBasicCredentials } from 'axios';
 import type { QTreeNode } from 'quasar';
 
-export type Credentials = AxiosBasicCredentials;
+export class Model<K, V> {
+  entries: {
+    readonly k: K;
+    readonly v: V;
+  }[];
+
+  constructor() {
+    this.entries = [];
+  }
+
+  private indexOf(k: K): number {
+    return this.entries.findIndex((e) => e.k === k);
+  }
+
+  set(k: K, v: V): V {
+    const idx = this.indexOf(k);
+    if (idx > -1) {
+      this.entries.splice(idx, 1);
+    }
+    this.entries.push({ k, v });
+    return v;
+  }
+
+  get(k: K): V | undefined {
+    return this.entries?.[this.indexOf(k)]?.v;
+  }
+}
 
 export interface Err {
   error: string;
@@ -24,10 +49,11 @@ export type Bot = {
   workedAt?: Date | undefined;
 };
 
-export type BotNode = Bot & QTreeNode & {
-  botId: string;
-  rows: unknown[] | null;
-};
+export type BotNode = Bot &
+  QTreeNode & {
+    botId: string;
+    rows: unknown[] | null;
+  };
 
 export type SearchBotData = {
   botId: string;
@@ -41,12 +67,7 @@ export type SearchBotData = {
   pages: PageData[];
 };
 
-export type PageGroup = {
-  url: string;
-  pages: Page[];
-}
-
-export type Page = {
+export type Page = Record<string, unknown> & {
   url: string;
   title: string;
   meta: Record<string, string>;
@@ -54,7 +75,7 @@ export type Page = {
   screenshotKey: string;
   contentKey: string;
   createdAt: string;
-}
+};
 
 export type PageData = {
   idx: number;
@@ -65,17 +86,6 @@ export type PageData = {
   json: object;
   serp: object;
 };
-
-export type Article = {
-  title: string;
-  body: string;
-  summary: string;
-  tags: string[];
-  image: string;
-  prompt: string;
-  publishedAt: string;
-};
-
 
 export type NewsBotResult = {
   id: string;

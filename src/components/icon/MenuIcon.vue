@@ -5,5 +5,7 @@ defineProps<{
 }>();
 </script>
 <template>
-  <q-icon :name="`mdi-menu-${(model && !right) || (!model && right) ? 'close' : 'open'}`" />
+  <q-icon :name="`mdi-menu-${(model && !right) || (!model && right) ? 'close' : 'open'}`" >
+    <slot/>
+  </q-icon>
 </template>

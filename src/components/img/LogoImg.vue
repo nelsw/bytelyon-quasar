@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = withDefaults(
-  defineProps<{
-    random?: boolean | undefined;
-    width?: number | string;
-  }>(),
-  {
-    random: false,
-    width: '50%',
-  },
-);
+const props = defineProps<{
+  random?: boolean | undefined;
+  width: number | string;
+}>();
 
 const i = computed((): number => (props.random ? Math.floor(Math.random() * 3) : 2));
 </script>

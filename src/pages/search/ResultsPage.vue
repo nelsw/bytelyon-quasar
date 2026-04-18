@@ -13,18 +13,21 @@ const botId = computed(() => $route.params.botId as string);
 
 const $results = useSearchBotResultsStore();
 const splitterModel = ref(200);
-const label = (s:string) => {
+const label = (s: string) => {
   const d = date.extractDate(s, 'MM/DD/YYYY, h:mm:ssA');
-  const ts = date.formatDate(d, 'YYYY-MM-DDTHH:mm:ss.SSSZ').split('.000')[0] + '.000Z'
+  const ts = date.formatDate(d, 'YYYY-MM-DDTHH:mm:ss.SSSZ').split('.000')[0] + '.000Z';
   const dd = date.extractDate(ts, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
   return dd.toLocaleString();
-}
+};
 onMounted(async () => $results.load(botId.value));
-watch(() => $route.params.botId, async () => $results.load(botId.value));
+watch(
+  () => $route.params.botId,
+  async () => $results.load(botId.value),
+);
 </script>
 
 <template>
-  <q-page class="absolute-full">
+  <q-page>
     <q-splitter
       v-model="splitterModel"
       :limits="splitterLimits"
@@ -34,7 +37,7 @@ watch(() => $route.params.botId, async () => $results.load(botId.value));
       unit="px"
     >
       <template #before>
-        <ScrollArea style="height: 100vh">
+        <ScrollArea style="height: calc(100vh - 51px)">
           <q-tree
             ref="my-search-result-tree"
             v-model:selected="$results.resultId"
@@ -46,13 +49,13 @@ watch(() => $route.params.botId, async () => $results.load(botId.value));
             no-selection-unset
           >
             <template v-slot:default-header="prop">
-              {{label(prop.node.label)}}
+              {{ label(prop.node.label) }}
             </template>
           </q-tree>
         </ScrollArea>
       </template>
       <template #after>
-        <ScrollArea style="height: 100vh; max-width: 100vw">
+        <ScrollArea style="height: calc(100vh - 51px); max-width: 100vw">
           <div class="q-pa-md">
             <SearchTable v-if="$results.selection" v-model="$results.selection" />
           </div>
