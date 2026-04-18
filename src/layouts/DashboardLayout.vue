@@ -7,19 +7,17 @@ import LogoAvatar from 'components/avatar/LogoAvatar.vue';
 import { useLayoutStore } from 'stores/layout-store';
 import MenuBtn from 'components/btn/MenuBtn.vue';
 import LogoutBtn from 'components/btn/LogoutBtn.vue';
-import { computed } from 'vue';
-import { useQuasar } from 'quasar';
 
-const $q = useQuasar();
+
 const $store = useLayoutStore();
 
-const menuVisible = computed(() => $q.screen.width <= 500);
+
 </script>
 <template>
   <q-layout @resize="console.log" view="hHh lpR lFr">
     <q-header class="bg-dark" bordered>
       <q-toolbar class="flex row justify-between items-center">
-        <div v-show="menuVisible" class="flex flex-col col-grow items-start q-mr-sm">
+        <div class="flex flex-col col-grow items-start q-mr-sm">
           <MenuBtn />
         </div>
         <div class="flex flex-col col-grow items-center">
