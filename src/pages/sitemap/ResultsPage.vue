@@ -7,6 +7,7 @@ import FilterInput from 'components/input/FilterInput.vue';
 import type { Page, SitemapNode } from 'src/types/model';
 import { usePageStore } from 'stores/page-store';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
+import PageCard from 'components/card/PageCard.vue';
 
 const $route = useRoute();
 const $results = useSitemapBotResultsStore();
@@ -22,7 +23,7 @@ const expanded = ref<string[]>([]);
 const filter = ref<string>('');
 
 const onChange = async () => {
-  await $results.load($route.params.botId as string)
+  await $results.load($route.params.botId as string);
   const node = $results.find($route.params.botId as string);
   if (!node?.label) return;
 
@@ -39,7 +40,7 @@ watch(selected, async (newVal, oldVal) => {
     treeRef.value?.setExpanded(newVal, true);
     const url = (newN as SitemapNode).url;
     await $pages.load(url);
-    pages.value = $pages.model.find((p) => p.url === url)?.pages || [];
+    pages.value = $pages.model.get(url) || [];
   } else if (oldN) {
     treeRef.value?.setExpanded(oldVal, false);
   }
@@ -55,7 +56,7 @@ onMounted(onChange);
       <template #before>
         <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
         <q-separator inset />
-        <ScrollArea style="height: calc(100vh - 49px - 51px); max-width: 100vw;">
+        <ScrollArea style="height: calc(100vh - 49px - 51px); max-width: 100vw">
           <q-tree
             class="q-px-md q-py-sm"
             ref="my-sitemap-tree"
@@ -72,15 +73,10 @@ onMounted(onChange);
         </ScrollArea>
       </template>
       <template #after>
-        <div class="q-pa-lg">
-          <span class="text-h4">
-            Coming soon ... an array of screen shots and downloadable content for comparison and
-            analysis.
-          </span>
-          <pre>
-{{ pages }}
-            </pre
-          >
+        <div class="flex row justify-evenly q-ma-xs">
+          <div v-for="(p, i) in pages" :key="i" class="col-md-6 col-sm-12">
+            <PageCard :page="p" class="q-ma-xs"/>
+          </div>
         </div>
       </template>
     </q-splitter>

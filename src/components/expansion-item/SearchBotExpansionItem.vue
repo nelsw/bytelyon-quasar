@@ -3,6 +3,7 @@ import { date } from 'quasar';
 import { onMounted } from 'vue';
 import { useSearchBotStore } from 'stores/search/bot-store';
 import TrashBtn from 'components/btn/TrashBtn.vue';
+import ChevronIcon from 'components/icon/ChevronIcon.vue';
 
 const $store = useSearchBotStore();
 
@@ -27,14 +28,8 @@ onMounted($store.Load);
           <q-btn @click="$store.Load" color="blue-13" icon="mdi-refresh" size="md" dense flat>
             <q-tooltip>Refresh News Bots</q-tooltip>
           </q-btn>
-          <q-btn
-            @click="toggle"
-            :icon="`mdi-chevron-${expanded ? 'up' : 'down'}`"
-            color="white"
-            size="md"
-            dense
-            flat
-          >
+          <q-btn @click="toggle" color="white" size="md" dense flat>
+            <ChevronIcon :expanded="expanded" />
             <q-tooltip>Show News Bot Results</q-tooltip>
           </q-btn>
           <q-inner-loading :showing="$store.busy && !expanded" size="sm" color="primary" />
