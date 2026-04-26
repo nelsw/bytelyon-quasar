@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { date } from 'quasar';
-import { type BotType, BotTypeIcon, BotTypeLabel } from 'src/types/model';
+import { type Bot, type BotType, BotTypeIcon, BotTypeLabel, type entry } from 'src/types/model';
 import { useBotStore } from 'stores/bot-store';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
   botType: BotType;
 }>();
 
 const $store = useBotStore();
+
+const entries = computed(() => {
+  const bots:entry<string, Bot>[]|undefined = $store.model.get(props.botType)?.e;
+  if (!bots) return [];
+  return bots.sort((a, b) => a.v.target.localeCompare(b.v.target));
+})
 </script>
 
 <template>
@@ -20,7 +27,7 @@ const $store = useBotStore();
     <q-list dense>
       <q-separator inset />
       <q-item
-        v-for="e in $store.model.get(botType)?.e ?? []"
+        v-for="e in entries"
         :key="e.k"
         :disable="$store.busy"
         :to="`/dashboard/${e.v.type}/${e.v.id}/results`"
