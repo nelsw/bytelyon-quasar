@@ -27,40 +27,38 @@ watch(
 </script>
 
 <template>
-  <q-page>
-    <q-splitter
-      v-model="splitterModel"
-      :limits="splitterLimits"
-      class="full-height"
-      separator-class="bg-grey-9"
-      separator-style="width:.5px;"
-      unit="px"
-    >
-      <template #before>
-        <ScrollArea style="height: calc(100vh - 51px)">
-          <q-tree
-            ref="my-search-result-tree"
-            v-model:selected="$results.resultId"
-            :nodes="$results.find(botId)"
-            class="q-mt-sm"
-            node-key="id"
-            selected-color="primary"
-            accordion
-            no-selection-unset
-          >
-            <template v-slot:default-header="prop">
-              {{ label(prop.node.label) }}
-            </template>
-          </q-tree>
-        </ScrollArea>
-      </template>
-      <template #after>
-        <ScrollArea style="height: calc(100vh - 51px); max-width: 100vw">
-          <div class="q-pa-md">
-            <SearchTable v-if="$results.selection" v-model="$results.selection" />
-          </div>
-        </ScrollArea>
-      </template>
-    </q-splitter>
-  </q-page>
+  <q-splitter
+    v-model="splitterModel"
+    :limits="splitterLimits"
+    class="full-height"
+    separator-class="bg-grey-9"
+    separator-style="width:.5px;"
+    unit="px"
+  >
+    <template #before>
+      <ScrollArea style="height: calc(100vh - 49px - 38px)">
+        <q-tree
+          ref="my-search-result-tree"
+          v-model:selected="$results.resultId"
+          :nodes="$results.find(botId)"
+          class="q-mt-sm"
+          node-key="id"
+          selected-color="primary"
+          accordion
+          no-selection-unset
+        >
+          <template v-slot:default-header="prop">
+            {{ label(prop.node.label) }}
+          </template>
+        </q-tree>
+      </ScrollArea>
+    </template>
+    <template #after>
+      <ScrollArea style="height: calc(100vh -  49px - 38px)">
+        <div class="q-pa-md">
+          <SearchTable v-if="$results.selection" v-model="$results.selection" />
+        </div>
+      </ScrollArea>
+    </template>
+  </q-splitter>
 </template>

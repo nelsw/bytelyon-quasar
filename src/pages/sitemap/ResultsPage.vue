@@ -51,34 +51,32 @@ onMounted(onChange);
 </script>
 
 <template>
-  <q-page class="absolute-full">
-    <q-splitter v-model="splitterModel" :limits="[15, 85]" class="full-height">
-      <template #before>
-        <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
-        <q-separator inset />
-        <ScrollArea style="height: calc(100vh - 49px - 51px); max-width: 100vw">
-          <q-tree
-            class="q-px-md q-py-sm"
-            ref="my-sitemap-tree"
-            v-model:selected="selected"
-            v-model:expanded="expanded"
-            node-key="label"
-            :filter="filter"
-            :nodes="nodes"
-            accordion
-            dense
-            default-expand-all
-            selected-color="primary"
-          />
-        </ScrollArea>
-      </template>
-      <template #after>
-        <div class="flex row justify-evenly q-ma-xs">
-          <div v-for="(p, i) in pages" :key="i" class="col-md-6 col-sm-12">
-            <PageCard :page="p" class="q-ma-xs"/>
-          </div>
+  <q-splitter v-model="splitterModel" :limits="[15, 85]" class="full-height">
+    <template #before>
+      <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
+      <q-separator inset />
+      <ScrollArea style="height: calc(100vh - 49px - 49px -  51px); max-width: 100vw">
+        <q-tree
+          class="q-px-md q-py-sm"
+          ref="my-sitemap-tree"
+          v-model:selected="selected"
+          v-model:expanded="expanded"
+          node-key="label"
+          :filter="filter"
+          :nodes="nodes"
+          accordion
+          dense
+          default-expand-all
+          selected-color="primary"
+        />
+      </ScrollArea>
+    </template>
+    <template #after>
+      <div class="flex row justify-evenly q-ma-xs">
+        <div v-for="(p, i) in pages" :key="i" class="col-md-6 col-sm-12">
+          <PageCard :page="p" class="q-ma-xs"/>
         </div>
-      </template>
-    </q-splitter>
-  </q-page>
+      </div>
+    </template>
+  </q-splitter>
 </template>
