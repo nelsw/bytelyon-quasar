@@ -19,7 +19,7 @@ const columns: QTableColumn<NewsBotResult>[] = [
   { name: 'Post', label: 'Post', field: 'id', align: 'center', style: 'width: 0;' },
   { name: 'Published', label: 'Published', field: 'publishedAt', align: 'left' },
   { name: 'Source', label: 'Source', field: 'source', align: 'left' },
-  { name: 'Title', label: 'Title', field: 'title', align: 'left' },
+  { name: 'Title', label: 'Title', field: 'title', align: 'left', sortable: true, },
   { name: 'Description', label: 'Description', field: 'description', align: 'left' },
 ];
 
@@ -64,7 +64,7 @@ watch(props, async () => $results.load(props.botId));
     <template #top="props">
       <TrashBtn :disable="$results.selected.length === 0" @click="$results.remove" size="md" />
       <q-separator vertical spaced inset />
-      <FilterInput :filter="filter" />
+      <FilterInput v-model="filter" />
       <div v-if="$q.screen.gt.sm" class="flex absolute-center items-center">
         <div @click="$results.load(botId, true)" class="text-h5 text-weight-medium text-uppercase">
           {{ $results.target(botId) }}

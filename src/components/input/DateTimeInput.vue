@@ -8,8 +8,7 @@ const model = defineModel<string>({
 </script>
 
 <template>
-  <div style="max-width: 225px">
-    <q-input v-model="model">
+    <q-input v-model="model" input-style="text-align:center;">
       <template v-slot:prepend>
         <q-btn color="primary" icon="mdi-calendar-month" dense flat>
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -34,7 +33,6 @@ const model = defineModel<string>({
         </q-btn>
       </template>
     </q-input>
-  </div>
 </template>
 
 <style scoped lang="scss"></style>

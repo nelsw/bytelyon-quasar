@@ -13,6 +13,8 @@ type Article = {
   image: string;
   prompt: string;
   publishedAt: string;
+  url: string;
+  keywords: string[];
 };
 
 const $notify = useNotifier();
@@ -27,7 +29,9 @@ const setup = () => {
     tags: [],
     image: '',
     prompt: 'You are a lithium ion fire blanket salesman for a company named FireFibers',
-    publishedAt: date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm')
+    publishedAt: date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm'),
+    url: '',
+    keywords: [],
   });
 
   const load = (result: NewsBotResult | undefined) => {
@@ -36,6 +40,9 @@ const setup = () => {
     article.value.summary = result?.description ?? '';
     article.value.image = result?.image ?? '';
     article.value.publishedAt = date.isValid(result?.publishedAt ?? '') ? date.formatDate(result?.publishedAt, 'YYYY-MM-DD HH:mm') : '';
+    article.value.url = result?.url ?? '';
+    article.value.tags = [];
+    article.value.keywords = [];
     show.value = true;
   };
 

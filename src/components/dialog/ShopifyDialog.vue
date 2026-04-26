@@ -13,8 +13,8 @@ const toolbar = [
       icon: $q.iconSet.editor.align,
       fixedLabel: true,
       list: 'only-icons',
-      options: ['left', 'center', 'right', 'justify'],
-    },
+      options: ['left', 'center', 'right', 'justify']
+    }
   ],
   ['unordered', 'ordered'],
   ['bold', 'italic', 'underline'],
@@ -24,7 +24,7 @@ const toolbar = [
       label: $q.lang.editor.formatting,
       icon: $q.iconSet.editor.formatting,
       list: 'no-icons',
-      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'],
+      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code']
     },
     {
       label: $q.lang.editor.fontSize,
@@ -32,13 +32,13 @@ const toolbar = [
       fixedLabel: true,
       fixedIcon: true,
       list: 'no-icons',
-      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7'],
+      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7']
     },
-    'removeFormat',
+    'removeFormat'
   ],
   ['viewsource'],
-  ['fullscreen'],
-]
+  ['fullscreen']
+];
 const $store = useArticleStore();
 </script>
 
@@ -47,21 +47,45 @@ const $store = useArticleStore();
     <template #content>
       <div class="flex column q-col-gutter-y-lg q-pa-md">
         <div class="flex row q-col-gutter-x-md">
-          <q-input class="flex col-grow" label="Title" v-model="$store.article.title" autofocus />
-          <DateTimeInput v-model="$store.article.publishedAt" class="flex col" />
+
+          <q-input class="flex col-grow" label="Title" v-model="$store.article.title" autofocus >
+            <template #append>
+              <OpenInNewBtn :url="$store.article.url" size="sm" />
+            </template>
+          </q-input>
+          <DateTimeInput v-model="$store.article.publishedAt" class="flex col-md-shrink col-sm-12" />
         </div>
-        <q-select
-          v-model="$store.article.tags"
-          class="flex col-grow"
-          input-debounce="0"
-          label="Tags"
-          new-value-mode="add-unique"
-          hide-dropdown-icon
-          multiple
-          use-chips
-          use-input
-        />
-        <q-input label="Image" hint=".png required" v-model="$store.article.image">
+        <div class="flex row q-col-gutter-x-md">
+
+          <q-select
+            v-model="$store.article.keywords"
+            class="flex col-grow"
+            input-debounce="0"
+            label="Keywords"
+            new-value-mode="add-unique"
+            hide-dropdown-icon
+            multiple
+            use-chips
+            use-input
+          />
+          <q-select
+            v-model="$store.article.tags"
+            :options="[
+            'boat fire',
+            'e-bike fire',
+            'e-scooter fire',
+            'ev fire',
+            'golf cart fire',
+            'rv fire',
+            ]"
+            class="flex col-md-1 col-sm-12"
+            label="Tag"
+            input-debounce="0"
+            hide-dropdown-icon
+          />
+        </div>
+
+        <q-input label="Image" v-model="$store.article.image">
           <template #append>
             <OpenInNewBtn :url="$store.article.image" size="sm" />
           </template>
