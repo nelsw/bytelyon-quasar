@@ -10,6 +10,7 @@ import { onMounted } from 'vue';
 import { useBotStore } from 'stores/bot-store';
 import DashboardFooter from 'components/footer/DashboardFooter.vue';
 import { useQuasar } from 'quasar';
+
 const $q = useQuasar();
 const $layout = useLayoutStore();
 const $bots = useBotStore();
@@ -17,23 +18,19 @@ onMounted($bots.loadAll);
 </script>
 <template>
   <q-layout @resize="console.log" view="lHh lpR lFr">
-    <q-header class="bg-dark" bordered>
+    <q-header class="bg-dark" style="height:49px;" bordered>
       <q-toolbar class="flex row">
-        <div class="col-2">
-          <MenuBtn />
-        </div>
-        <div class="flex col-8">
-          <q-space />
-          <LogoAvatar random />
+        <MenuBtn />
+        <q-space />
+        <div class="flex flex-col items-center">
+          <LogoAvatar random width="20%"/>
           <q-toolbar-title v-if="$q.screen.gt.sm" class="text-h5 text-grey-5 text-weight-medium"
-            >ByteLyon</q-toolbar-title
+          >ByteLyon
+          </q-toolbar-title
           >
-          <q-space />
         </div>
-        <div class="flex col-2">
-          <q-space />
-          <NewBotBtn />
-        </div>
+        <q-space />
+        <NewBotBtn />
       </q-toolbar>
     </q-header>
     <q-drawer
