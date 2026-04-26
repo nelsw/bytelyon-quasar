@@ -3,25 +3,27 @@ import { Notify } from 'quasar';
 import type { AxiosError } from 'boot/axios';
 import type { Err } from 'src/types/model';
 
+const options = (msg:string):QNotifyOptions => ({
+  color: 'dark',
+  html: true,
+  message: `<div class="text-right">${msg}</div>`,
+  position: 'bottom-right',
+  textColor: 'white',
+  timeout: 5_000,
+  group: false,
+})
+
 
 const symbolSpan = (s: string): string => `<span style="margin-right: 8px;">${s}</span>`;
-const notify = (msg: string, avatar: string, actions: QNotifyAction[]) => {
-  const opts: QNotifyOptions = {
-    color: 'dark',
-    html: true,
-    message: `<div class="text-right">${msg}</div>`,
-    position: 'bottom-right',
-    textColor: 'white',
-    timeout: 5_000,
-    group: false,
-  };
+const notify = (msg: string, avatar?: string, actions?: QNotifyAction[]) => {
+  const opts = options(msg);
 
-  if (actions.length !== 0) {
+  if (actions && actions.length !== 0) {
     opts.actions = actions;
     opts.timeout = 10_000
   }
 
-  if (avatar !== '') {
+  if (avatar && avatar !== '') {
     opts.avatar = avatar;
   }
 
@@ -86,12 +88,45 @@ const useNotifier = () => {
     return undefined as T
   };
 
+  const Error = (s:string) => {
+    const opts = options(s)
+    opts.icon = 'mdi-alert-circle-outline'
+    opts.iconColor = 'pink-13'
+    Notify.create(opts);
+  }
+
+  const OK = (s:string) => {
+    const opts = options(s)
+    opts.icon = 'mdi-check-circle-outline'
+    opts.iconColor = 'green-13'
+    Notify.create(opts);
+  }
+
+  const Icon = (msg:string, icon:string, color?:string)=> {
+    const opts = options(msg)
+    opts.icon = icon
+    if (color) {
+      opts.iconColor = color;
+    }
+    Notify.create(opts);
+  }
+
+  const Message = (s:string) => Notify.create(options(s));
+
+  const Create = (opts:QNotifyOptions) => Notify.create(opts);
+
   return {
+    notify,
     act,
     ok,
     err,
     warn,
     Err,
+    Error,
+    OK,
+    Icon,
+    Message,
+    Create,
   };
 };
 

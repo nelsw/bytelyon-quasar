@@ -10,7 +10,9 @@ type Token = string | null | undefined;
 
 type Auth = {
   token: Token;
-  message?: string;
+  context?: {
+    message: string;
+  }
 }
 
 type Claims = {
@@ -53,9 +55,15 @@ const setup = () => {
     Loading.show({ spinnerColor: 'primary' });
     return await api
       .post(`/auth?action=login`, {}, { auth })
-      .then((r:AxiosResponse<Auth>) => model.value = r.data.token)
-      .then((): boolean => $notify.ok(null, `👋`, `Welcome`))
-      .catch($notify.err)
+      .then((r:AxiosResponse<Auth>) => {
+        if (r.data.context) {
+          $notify.Error(r.data.context.message)
+          return false;
+        }
+        model.value = r.data.token
+        $notify.Icon('Welcome', 'mdi-human-greeting', 'green-13')
+        return true;
+      })
       .finally(() => Loading.hide());
   };
 
