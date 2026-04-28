@@ -8,7 +8,6 @@ import BotExpansionItem from 'components/expansion-item/BotExpansionItem.vue';
 import { BotType } from 'src/types/model';
 import { onMounted } from 'vue';
 import { useBotStore } from 'stores/bot-store';
-import DashboardFooter from 'components/footer/DashboardFooter.vue';
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
@@ -51,7 +50,6 @@ onMounted($bots.loadAll);
         </q-list>
       </ScrollArea>
     </q-drawer>
-    <DashboardFooter />
     <q-page-container>
       <q-page>
         <router-view />
