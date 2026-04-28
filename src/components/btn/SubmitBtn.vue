@@ -1,17 +1,18 @@
 <script setup lang="ts">
 defineProps<{
   color: string;
+  fullwidth?: boolean | undefined;
 }>();
 </script>
 
 <template>
   <q-btn
-    class="full-width"
-    :label="color === 'green-13' ? 'Create' : 'Update'"
+    :class="`${fullwidth ? 'full-width' : ''}`"
     :color="color"
-    v-close-popup
-    type="submit"
-    text-color="dark"
+    label="Submit"
     size="lg"
+    text-color="dark"
+    type="submit"
+    v-close-popup
   />
 </template>

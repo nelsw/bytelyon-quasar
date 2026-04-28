@@ -7,7 +7,7 @@ const $route = useRoute();
 
 <template>
   <q-btn
-    :to="`/dashboard/${$route.params.botType as BotType}/${$route.params.botId as string}`"
+    :to="`/${$route.params.botType as BotType}/${$route.params.botId as string}`"
     color="amber-13"
     icon="mdi-pencil"
     size="md"

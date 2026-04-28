@@ -32,7 +32,7 @@ const iconSize = computed(() => {
       <q-icon :size="`${$q.screen.gt.sm ? 18 : 12}px`" name="mdi-chevron-right" color="grey-8" />
     </template>
 
-    <q-breadcrumbs-el v-if="botType" :to="`/dashboard/${botType}`">
+    <q-breadcrumbs-el v-if="botType" :to="`/${botType}`">
       <template #default>
         <q-icon :name="BotTypeIcon(botType)" :size="iconSize" color="green-13" />
         <div v-if="$q.screen.gt.sm" class="text-grey-3 q-ml-sm">
@@ -40,7 +40,7 @@ const iconSize = computed(() => {
         </div>
       </template>
     </q-breadcrumbs-el>
-    <q-breadcrumbs-el v-if="botType && botId" :to="`/dashboard/${botType}/${botId}`">
+    <q-breadcrumbs-el v-if="botType && botId" :to="`/${botType}/${botId}`">
       <template #default>
         <q-icon name="mdi-pencil-box" :size="iconSize" color="amber-13" />
         <div class="text-grey-3 q-ml-sm">
@@ -49,7 +49,7 @@ const iconSize = computed(() => {
       </template>
     </q-breadcrumbs-el>
 
-    <q-breadcrumbs-el v-if="botType && botId" :to="`/dashboard/${botType}/${botId}/results`">
+    <q-breadcrumbs-el v-if="botType && botId" :to="`/${botType}/${botId}/results`">
       <template #default>
         <q-icon name="mdi-table-large" :size="iconSize" color="primary" />
         <div v-if="$q.screen.gt.sm" class="text-grey-3 q-ml-sm">Results</div>

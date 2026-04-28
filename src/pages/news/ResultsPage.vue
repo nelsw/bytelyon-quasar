@@ -18,7 +18,7 @@ const $results = useNewsBotResultsStore();
 const onDelete = async () => {
   const ok = await $bots.Delete(BotType.News, $route.params.botId as string);
   if (ok) {
-    await $router.push(`/dashboard/${BotType.News}`);
+    await $router.push(`/${BotType.News}`);
   }
 };
 

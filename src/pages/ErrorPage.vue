@@ -17,7 +17,7 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/dashboard"
+        :to="{name: 'home'}"
         label="Let's go 🏠 mkay?"
         no-caps
         size="lg"
@@ -25,7 +25,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-//
-</script>

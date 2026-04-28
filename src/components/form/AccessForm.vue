@@ -16,7 +16,7 @@ const onSubmit = async (): Promise<void> => {
   if (!await $store.Login(credentials)) {
     return;
   }
-  await $router.push('/dashboard');
+  await $router.push({name:'home'});
   credentials.username = '';
   credentials.password = '';
 };

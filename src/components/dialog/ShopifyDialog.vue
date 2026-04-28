@@ -34,7 +34,6 @@ const toolbar = [
       list: 'no-icons',
       options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7']
     },
-    'removeFormat'
   ],
   ['viewsource'],
   ['fullscreen']
