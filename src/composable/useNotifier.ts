@@ -111,6 +111,22 @@ const useNotifier = () => {
     Notify.create(opts);
   }
 
+  const Actions = (
+    msg: string,
+    icon: string,
+    color: string,
+    actions: QNotifyAction[],
+    progress?: boolean,
+  ) => {
+    const opts = options(msg);
+    opts.icon = icon;
+    opts.progressClass = `text-${color}`;
+    opts.iconColor = color;
+    opts.actions = actions;
+    opts.progress = progress ?? false;
+    return Notify.create(opts);
+  };
+
   const Message = (s:string) => Notify.create(options(s));
 
   const Create = (opts:QNotifyOptions) => Notify.create(opts);
@@ -127,6 +143,7 @@ const useNotifier = () => {
     Icon,
     Message,
     Create,
+    Actions,
   };
 };
 

@@ -29,6 +29,23 @@ export class Model<K, V> {
   };
 }
 
+export class Map<T> {
+  map: { [id: string]: T };
+
+  constructor() {
+    this.map = {};
+  }
+
+  get = (id: string, t: T): T => this.map[id] ?? t;
+
+  has = (id: string, ...ff: ((t: T) => boolean)[]): boolean =>
+    ff.filter((f) => f(this.map[id] as T)).length > 0;
+
+  set = (id: string, value: T): T => (this.map[id] = value);
+
+  drop = (id: string) => delete this.map[id];
+}
+
 export interface Err {
   error: string;
 }

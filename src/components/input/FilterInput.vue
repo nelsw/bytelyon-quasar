@@ -2,8 +2,9 @@
 import { QInput } from 'quasar';
 defineProps<{
   disabled?: boolean | undefined;
-}>()
-const model = defineModel<string>()
+  placeholder?: string | undefined;
+}>();
+const model = defineModel<string>();
 </script>
 
 <template>
@@ -12,15 +13,19 @@ const model = defineModel<string>()
     v-model="model"
     :disabled="disabled"
     color="primary"
-    placeholder="Filter"
+    :placeholder="placeholder || 'Filter'"
     autofocus
-    clearable
-    clear-icon="mdi-close"
     dense
     borderless
   >
     <template #prepend>
-      <q-icon name="mdi-filter-variant" color="primary" />
+      <q-icon
+        v-if="model?.length ?? 0 > 0"
+        @click="model = ''"
+        class="cursor-pointer"
+        name="mdi-close"
+      />
+      <q-icon v-else name="mdi-filter-variant" color="primary" />
     </template>
   </q-input>
 </template>

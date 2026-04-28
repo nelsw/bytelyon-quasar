@@ -1,35 +1,21 @@
 <script setup lang="ts">
-import { BotTypeIcon, BotTypes } from 'src/types/model';
-import { useRouter } from 'vue-router';
-
-const $router = useRouter();
+import LogoImg from 'components/img/LogoImg.vue';
 </script>
 
 <template>
-  <div class="full-width flex justify-center absolute-center q-gutter-md">
-    <div class="full-width justify-center text-subtitle1">
-      <div class="text-h3 text-center">
-        Create a
-        <q-icon name="mdi-new-box" size="2em" color="green-13" />
-        Bot
+  <div class="">
+    <div class="column" style="height: calc(100vh - 49px)">
+      <div class="col-2"></div>
+      <div class="col-4">
+        <div class="flex items-center justify-center">
+          <LogoImg width="250px" random />
+        </div>
+      </div>
+      <div class="col">
+        <div class="flex items-center justify-center q-mt-md">
+        <span class="text-h3 text-weight-medium text-center"> Welcome to the jungle. </span>
+        </div>
       </div>
     </div>
-    <q-card
-      v-for="botType in BotTypes"
-      :key="botType"
-      class="cursor-pointer"
-      style="width: 200px"
-      @click="$router.push(`/dashboard/${botType}`)"
-    >
-      <q-card-section style="padding: 100px">
-        <q-icon :name="BotTypeIcon(botType)" color="primary" size="5em" class="absolute-center" />
-      </q-card-section>
-      <q-separator />
-      <q-card-actions class="flex justify-center">
-        <div class="q-pa-md text-h6 text-capitalize">{{ botType }}</div>
-      </q-card-actions>
-    </q-card>
   </div>
 </template>
-
-<style scoped lang="scss"></style>

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import type { Bot } from 'src/types/model';
-
 interface Option {
   label: string;
   value: number;
 }
+
+defineProps<{
+  color: string;
+}>();
 
 // values in nanoseconds (int64)
 const hour = 3600000000000;
@@ -17,33 +19,33 @@ const hourly: Option = { label: 'Hourly', value: hour };
 const daily: Option = { label: 'Daily', value: day };
 const weekly: Option = { label: 'Weekly', value: week };
 
-const model = defineModel<Bot>({ required: true });
+const model = defineModel<number>({ required: true });
 </script>
 
 <template>
   <q-select
     :model-value="
-      model.frequency === 0
+      model === 0
         ? never
-        : model.frequency < hour
+        : model < hour
           ? once
-          : model.frequency < day
+          : model < day
             ? hourly
-            : model.frequency < week
+            : model < week
               ? daily
               : weekly
     "
-    :color="model.id === '' ? 'green-13' : 'amber-13'"
+    :color="color"
     :options="
-      model.id === '' ? [once, hourly, daily, weekly] : [never, once, hourly, daily, weekly]
+      color === 'green-13' ? [once, hourly, daily, weekly] : [never, once, hourly, daily, weekly]
     "
     label="Repeats"
     hide-dropdown-icon
     hint="Run on a schedule or 'On-Demand' (once & pause)."
-    @update:modelValue="(o: Option) => (model.frequency = o.value)"
+    @update:modelValue="(o: Option) => (model = o.value)"
   >
     <template #prepend>
-      <q-icon name="mdi-clock-outline" :color="model.id === '' ? 'green-13' : 'amber-13'" />
+      <q-icon name="mdi-clock-outline" :color="color" />
     </template>
   </q-select>
 </template>

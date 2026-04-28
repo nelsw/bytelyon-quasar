@@ -1,6 +1,3 @@
-<script setup lang="ts">
-
-</script>
 <template>
-  <q-btn  text-color="grey-8" icon="mdi-refresh" />
+  <q-btn text-color="primary" icon="mdi-refresh" dense flat/>
 </template>
