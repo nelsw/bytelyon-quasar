@@ -67,7 +67,11 @@ export const useBots = defineStore(
         .then((r: AxiosResponse<Bot>) => r.data)
         .then((bot: Bot) => {
           const bots = model.value.get(type, []);
-          bots[bots.findIndex((b) => b.id === id)] = bot;
+          const idx = bots.findIndex((b) => b.id === id)
+          if (idx > -1) {
+            bots.splice(idx, 1);
+          }
+          bots.push(bot);
           model.value.set(type, bots);
           $notify.ok(null, `💾`, id === '' ? 'Created' : 'Updated');
           return bot;
