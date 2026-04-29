@@ -23,11 +23,19 @@ const timestamps = ref<string[]>([]);
 const target = ref('');
 const frequency = ref<number>(1);
 const blackList = ref<string[]>([]);
+const headless = ref<boolean>();
 
 const onDeleteBot = async () => await $bots.Delete(BotType.Search, $route.params.botId as string);
 
-const onModifyBot = async (n: number, l: string[]) =>
-  await $bots.Save(BotType.Search, $route.params.botId as string, target.value, n, l);
+const onModifyBot = async () =>
+  await $bots.Save(
+    BotType.Search,
+    $route.params.botId as string,
+    target.value,
+    frequency.value,
+    blackList.value,
+    headless.value,
+  );
 
 const onChangeBot = async () => {
   await $results.Load($route.params.botId as string);
@@ -38,6 +46,7 @@ const onChangeBot = async () => {
   target.value = bot.target;
   frequency.value = bot.frequency;
   blackList.value = bot.blackList ?? [];
+  headless.value = bot.headless;
 
   timestamps.value = $results.model.get(bot.id, []).map((d: SearchBotData) => d.label);
 
@@ -88,13 +97,26 @@ onMounted(onChangeBot);
               <FrequencySelect
                 color="amber-13"
                 v-model="frequency"
-                @update:model-value="onModifyBot(frequency, blackList)"
+                @update:model-value="onModifyBot"
               />
               <BlackListSelect
                 color="amber-13"
                 v-model="blackList"
-                @update:model-value="onModifyBot(frequency, blackList)"
+                @update:model-value="onModifyBot"
               />
+              <q-toggle
+                v-model="headless"
+                @update:model-value="onModifyBot"
+                :indeterminate-value="undefined"
+                indeterminate-icon="mdi-ghost-off-outline"
+                checked-icon="mdi-ghost"
+                unchecked-icon="mdi-ghost-outline"
+                color="amber-13"
+              >
+                <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
+                  {{ `${headless === undefined ? 'Undefined' : headless ? 'Headless' : 'Headful'} Browser` }}
+                </q-tooltip>
+              </q-toggle>
             </div>
             <div class="flex row q-gutter-x-sm">
               <TrashBtn @delete="onDeleteBot" size="md">
@@ -214,7 +236,7 @@ onMounted(onChangeBot);
           <div class="flex items-center justify-center">
             <img
               src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXdzN2ZhZ3FtZWFnaGN1dmc1cWtmZDE4bWJvNmRyY21qMDB0OGZoeSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NfzERYyiWcXU4/giphy.gif"
-              alt="404"
+              alt="425"
               style="max-width: 350px"
             />
           </div>

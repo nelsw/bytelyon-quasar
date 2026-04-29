@@ -64,6 +64,7 @@ export type Bot = {
   target: string;
   frequency: number;
   blackList: string[];
+  headless?: boolean | undefined;
   workedAt?: Date | undefined;
 };
 export type Article = {

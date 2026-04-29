@@ -7,7 +7,6 @@ import useNotifier from 'src/composable/useNotifier';
 import { useRouter } from 'vue-router';
 import { Loading } from 'quasar';
 
-const $router = useRouter();
 const $notify = useNotifier();
 const IsValidDomain = (s: string) => {
   return new RegExp(
@@ -23,7 +22,7 @@ const IsValidDomain = (s: string) => {
 export const useBots = defineStore(
   'bots',
   () => {
-
+    const $router = useRouter();
     const loading = ref(true);
     const model = ref<Map<Bot[]>>(new Map());
     const busy = computed(() => loading.value);
@@ -48,11 +47,9 @@ export const useBots = defineStore(
         .then(() => model.value.get(botType, []).filter((i) => i.id !== botId))
         .then((bots) => model.value.set(botType, bots))
         .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
+        .then(() => $router.push(`/${BotType.Search}`))
         .catch($notify.err)
-        .finally(async () => {
-          await $router.push(`/${BotType.Search}`);
-          Loading.hide();
-        });
+        .finally(Loading.hide);
     };
 
     const Save = async (
@@ -61,6 +58,7 @@ export const useBots = defineStore(
       target: string,
       frequency: number,
       blackList: string[],
+      headless?: boolean,
     ) => {
 
       if (id === '' && type === BotType.Sitemap && !IsValidDomain(target)) {
@@ -71,7 +69,7 @@ export const useBots = defineStore(
       Loading.show({ spinnerColor: 'primary' });
 
       return await api
-        .put(`/bots?type=${type}`, { id, type, target, frequency, blackList })
+        .put(`/bots?type=${type}`, { id, type, target, frequency, blackList, headless })
         .then((r: AxiosResponse<Bot>) => r.data)
         .then((bot: Bot) => {
           const bots = model.value.get(type, []);
