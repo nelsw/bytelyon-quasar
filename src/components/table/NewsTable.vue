@@ -45,9 +45,7 @@ const visibleCols = ref<string[]>(
     .filter((s) => s !== 'Description'),
 );
 
-const onDelete = async (id: string) => {
-  await $results.Delete(props.botId, id);
-};
+const onDeleteResult = async (id: string) => await $results.Delete(props.botId, id);
 </script>
 
 <template>
@@ -70,12 +68,17 @@ const onDelete = async (id: string) => {
       <FilterInput v-model="filter" placeholder="Filter News Results" />
     </template>
     <template #top-right>
-      <ColumnsBtn v-model="visibleCols" :names="columnNames" color="grey-6" />
+      <ColumnsBtn v-model="visibleCols" :names="columnNames" />
     </template>
     <template #body="props">
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <TrashBtn v-if="col.name === 'Delete'" @delete="onDelete(props.row.id)" size="sm" />
+          <TrashBtn
+            v-if="col.name === 'Delete'"
+            @delete="onDeleteResult(props.row.id)"
+            size="sm"
+            outline
+          />
           <OpenInNewBtn v-else-if="col.name === 'Open'" :url="col.value" size="sm" color="teal" />
           <ShopifyBtn v-else-if="col.name === 'Post'" @click="$article.load(props.row)" size="xs" />
           <span v-else>{{ col.value }}</span>

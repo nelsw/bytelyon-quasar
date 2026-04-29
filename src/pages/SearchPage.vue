@@ -25,9 +25,9 @@ const frequency = ref<number>(1);
 const blackList = ref<string[]>([]);
 
 const onDeleteBot = async () => await $bots.Delete(BotType.Search, $route.params.botId as string);
-const onModifyBot = async (n: number, l: string[]) => {
+
+const onModifyBot = async (n: number, l: string[]) =>
   await $bots.Save(BotType.Search, $route.params.botId as string, target.value, n, l);
-};
 
 const onChangeBot = async () => {
   await $results.Load($route.params.botId as string);
@@ -77,7 +77,7 @@ onMounted(onChangeBot);
 
 <template>
   <div class="q-px-sm q-gutter-y-sm">
-    <div class="  ">
+    <div>
       <q-card flat style="background-color: transparent">
         <q-card-section>
           <div class="flex row justify-between items-center">
@@ -228,7 +228,6 @@ onMounted(onChangeBot);
             </span>
           </div>
         </div>
-
       </div>
     </div>
   </div>
