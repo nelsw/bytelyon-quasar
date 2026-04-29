@@ -9,6 +9,7 @@ import DateTimeInput from 'components/input/DateTimeInput.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import type { Article } from 'src/types/model';
+import { useTokenStore } from 'stores/token-store';
 
 const color = 'green-13';
 const systemPlaceholder =
@@ -17,6 +18,7 @@ const messagePlaceholder =
   'Write a blog post summarizing {body}. Include the following keywords {keywords} and a link to {url} for the original article.';
 
 const $notify = useNotifier();
+const $auth = useTokenStore();
 
 const url = ref<string>('');
 const title = ref<string>('');
@@ -34,6 +36,10 @@ const result = ref('');
 const working = ref(false);
 
 const onPublish = async () => {
+  if ($auth.IsGuest()) {
+    $notify.MembersOnly();
+    return;
+  }
   Loading.show({ spinnerColor: 'primary' });
   const a: Article = {
     title: title.value,
@@ -51,6 +57,10 @@ const onPublish = async () => {
 };
 
 const onSubmit = async (system: string, message: string, html: boolean) => {
+  if ($auth.IsGuest()) {
+    $notify.MembersOnly();
+    return;
+  }
   working.value = true;
   if (system === '') {
     system = systemPlaceholder;

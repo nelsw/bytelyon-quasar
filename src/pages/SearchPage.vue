@@ -10,6 +10,7 @@ import SearchTable from 'components/table/SearchTable.vue';
 import SerpTable from 'components/table/SerpTable.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
+import HeadToggle from 'components/toggle/HeadToggle.vue';
 
 const $route = useRoute();
 
@@ -95,28 +96,21 @@ onMounted(onChangeBot);
                 {{ target }}
               </div>
               <FrequencySelect
-                color="amber-13"
                 v-model="frequency"
                 @update:model-value="onModifyBot"
+                color="amber-13"
               />
               <BlackListSelect
-                color="amber-13"
                 v-model="blackList"
                 @update:model-value="onModifyBot"
+                color="amber-13"
               />
-              <q-toggle
+              <HeadToggle
                 v-model="headless"
                 @update:model-value="onModifyBot"
-                :indeterminate-value="undefined"
-                indeterminate-icon="mdi-ghost-off-outline"
-                checked-icon="mdi-ghost"
-                unchecked-icon="mdi-ghost-outline"
                 color="amber-13"
-              >
-                <q-tooltip anchor="bottom middle" self="top middle" :offset="[10, 10]">
-                  {{ `${headless === undefined ? 'Undefined' : headless ? 'Headless' : 'Headful'} Browser` }}
-                </q-tooltip>
-              </q-toggle>
+                tooltip
+              />
             </div>
             <div class="flex row q-gutter-x-sm">
               <TrashBtn @delete="onDeleteBot" size="md">

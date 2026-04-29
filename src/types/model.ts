@@ -1,5 +1,3 @@
-import type { QTreeNode } from 'quasar';
-
 export type entry<K, V> = { k: K; v: V };
 
 export class Model<K, V> {
@@ -17,12 +15,6 @@ export class Model<K, V> {
 
   get = (k: K): V | undefined => this.e.find((e) => e.k === k)?.v;
 
-  getOr = (k: K, or: V): V => {
-    const v = this.e.find((e) => e.k === k)?.v;
-    if (v) return v;
-    return or;
-  }
-
   remove = (k: K) => {
     const idx = this.e.findIndex((e) => e.k === k);
     if (idx > -1) this.e.splice(idx, 1);
@@ -38,16 +30,7 @@ export class Map<T> {
 
   get = (id: string, t: T): T => this.map[id] ?? t;
 
-  has = (id: string, ...ff: ((t: T) => boolean)[]): boolean =>
-    ff.filter((f) => f(this.map[id] as T)).length > 0;
-
   set = (id: string, value: T): T => (this.map[id] = value);
-
-  drop = (id: string) => delete this.map[id];
-}
-
-export interface Err {
-  error: string;
 }
 
 export const enum BotType {
@@ -67,6 +50,7 @@ export type Bot = {
   headless?: boolean | undefined;
   workedAt?: Date | undefined;
 };
+
 export type Article = {
   title: string;
   body: string;
@@ -78,21 +62,6 @@ export type Article = {
   url?: string;
   keywords?: string[];
 };
-export const NewBot = (botType: BotType): Bot => ({
-  id: '',
-  type: botType,
-  target: '',
-  frequency: 1,
-  blackList: [],
-});
-
-export const IsBotNew = (bot: Bot): boolean => bot.id === '';
-
-export type BotNode = Bot &
-  QTreeNode & {
-    botId: string;
-    rows: unknown[] | null;
-  };
 
 export type SearchBotData = {
   botId: string;
@@ -138,8 +107,7 @@ export type SerpResult = {
   snippet: string;
   source: string;
   title: string;
-}
-
+};
 
 export type NewsBotResult = {
   id: string;
@@ -160,43 +128,4 @@ export type SitemapNode = {
   url: string;
   label: string;
   children: SitemapNode[];
-};
-
-export const BotTypeIcon = (botType: BotType): string => {
-  switch (botType) {
-    case BotType.Search:
-      return 'mdi-web';
-    case BotType.Sitemap:
-      return 'mdi-sitemap';
-    case BotType.News:
-      return 'mdi-newspaper';
-    default:
-      return 'Unknown BotType: ' + (botType as string);
-  }
-};
-
-export const BotTypeLabel = (botType: BotType): string => {
-  switch (botType) {
-    case BotType.Search:
-      return 'Search';
-    case BotType.Sitemap:
-      return 'Sitemap';
-    case BotType.News:
-      return 'News';
-    default:
-      return 'Unknown BotType: ' + (botType as string);
-  }
-};
-
-export const BotTypeDescription = (botType: BotType): string => {
-  switch (botType) {
-    case BotType.Search:
-      return '';
-    case BotType.Sitemap:
-      return '';
-    case BotType.News:
-      return 'Aggregate news articles from popular & reputable digital publishers & RSS feeds.';
-    default:
-      return 'Unknown BotType: ' + (botType as string);
-  }
 };

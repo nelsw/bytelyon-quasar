@@ -5,14 +5,20 @@ import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import { api } from 'boot/axios';
 import { copyToClipboard, Loading } from 'quasar';
 import useNotifier from 'src/composable/useNotifier';
+import { useTokenStore } from 'stores/token-store';
 
 const $notify = useNotifier();
+const $auth = useTokenStore();
 
 const system = ref('');
 const message = ref('');
 const result = ref('');
 
 const onSubmit = async (system: string, message: string, html: boolean) => {
+  if ($auth.IsGuest()) {
+    $notify.MembersOnly()
+    return;
+  }
   Loading.show({ spinnerColor: 'primary' });
   await api
     .post<{ text: string }>(`/ai`, { system, message, html })

@@ -10,6 +10,7 @@ import { BotType } from 'src/types/model';
 import { useNewsBotResultsStore } from 'stores/news/result-store';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
+import HeadToggle from 'components/toggle/HeadToggle.vue';
 
 const $route = useRoute();
 const $bots = useBots();
@@ -18,11 +19,19 @@ const $results = useNewsBotResultsStore();
 const target = ref('');
 const frequency = ref<number>(1);
 const blackList = ref<string[]>([]);
+const headless = ref<boolean>();
 
 const onDeleteBot = async () => await $bots.Delete(BotType.News, $route.params.botId as string);
 
-const onModifyBot = async (n: number, l: string[]) =>
-  await $bots.Save(BotType.News, $route.params.botId as string, target.value, n, l);
+const onModifyBot = async () =>
+  await $bots.Save(
+    BotType.News,
+    $route.params.botId as string,
+    target.value,
+    frequency.value,
+    blackList.value,
+    headless.value,
+  );
 
 const onChangeBot = async () => {
   await $results.Load($route.params.botId as string);
@@ -33,6 +42,7 @@ const onChangeBot = async () => {
   target.value = bot.target;
   frequency.value = bot.frequency;
   blackList.value = bot.blackList ?? [];
+  headless.value = bot.headless;
 };
 
 watch(() => $route.params.botId, onChangeBot);
@@ -51,30 +61,35 @@ onMounted(onChangeBot);
                 {{ target }}
               </div>
               <FrequencySelect
-                color="amber-13"
                 v-model="frequency"
-                @update:model-value="onModifyBot(frequency, blackList)"
+                @update:model-value="onModifyBot"
+                color="amber-13"
               />
               <BlackListSelect
-                color="amber-13"
                 v-model="blackList"
-                @update:model-value="onModifyBot(frequency, blackList)"
+                @update:model-value="onModifyBot"
+                color="amber-13"
+              />
+              <HeadToggle
+                v-model="headless"
+                @update:model-value="onModifyBot"
+                color="amber-13"
+                tooltip
               />
             </div>
             <div class="flex row q-gutter-x-sm">
-              <TrashBtn @delete="onDeleteBot" size="md" >
+              <TrashBtn @delete="onDeleteBot" size="md">
                 <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
                   Delete Bot
                 </q-tooltip>
               </TrashBtn>
             </div>
           </div>
-
         </q-card-section>
       </q-card>
     </div>
     <div class="q-mx-md">
-        <NewsTable :bot-id="$route.params.botId as string" />
+      <NewsTable :bot-id="$route.params.botId as string" />
     </div>
   </div>
 </template>

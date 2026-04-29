@@ -1,10 +1,11 @@
 import type { QNotifyAction, QNotifyOptions } from 'quasar';
-import  { openURL } from 'quasar';
+import { openURL } from 'quasar';
 import { Notify } from 'quasar';
 import type { AxiosError } from 'boot/axios';
-import type { Err } from 'src/types/model';
 
-const options = (msg:string):QNotifyOptions => ({
+type Err = { error: string };
+
+const options = (msg: string): QNotifyOptions => ({
   color: 'dark',
   html: true,
   message: `<div class="text-right">${msg}</div>`,
@@ -12,8 +13,7 @@ const options = (msg:string):QNotifyOptions => ({
   textColor: 'white',
   timeout: 5_000,
   group: false,
-})
-
+});
 
 const symbolSpan = (s: string): string => `<span style="margin-right: 8px;">${s}</span>`;
 const notify = (msg: string, avatar?: string, actions?: QNotifyAction[]) => {
@@ -21,7 +21,7 @@ const notify = (msg: string, avatar?: string, actions?: QNotifyAction[]) => {
 
   if (actions && actions.length !== 0) {
     opts.actions = actions;
-    opts.timeout = 10_000
+    opts.timeout = 10_000;
   }
 
   if (avatar && avatar !== '') {
@@ -32,7 +32,6 @@ const notify = (msg: string, avatar?: string, actions?: QNotifyAction[]) => {
 };
 
 const useNotifier = () => {
-
   const ok = (u: unknown, ...args: string[]) => {
     if (u) {
       console.debug(u);
@@ -51,7 +50,6 @@ const useNotifier = () => {
 
     return true;
   };
-
 
   const err = (e: AxiosError<Err>, ...args: string[]) => {
     console.error(e);
@@ -81,37 +79,37 @@ const useNotifier = () => {
     return true;
   };
 
-  const Err = <T = unknown>(e: AxiosError<Err>):T => {
+  const Err = <T = unknown>(e: AxiosError<Err>): T => {
     const msg = e.response?.data?.error || e?.message;
     if (!msg?.includes(`cancel`)) {
       notify(`${symbolSpan(`⛔️`)}${msg}`, '', []);
     }
-    return undefined as T
+    return undefined as T;
   };
 
-  const Error = (s:string) => {
-    const opts = options(s)
-    opts.icon = 'mdi-alert-circle-outline'
-    opts.iconColor = 'pink-13'
+  const Error = (s: string) => {
+    const opts = options(s);
+    opts.icon = 'mdi-alert-circle-outline';
+    opts.iconColor = 'pink-13';
     Notify.create(opts);
-  }
+  };
 
-  const OK = (s:string):boolean => {
-    const opts = options(s)
-    opts.icon = 'mdi-check-circle-outline'
-    opts.iconColor = 'green-13'
+  const OK = (s: string): boolean => {
+    const opts = options(s);
+    opts.icon = 'mdi-check-circle-outline';
+    opts.iconColor = 'green-13';
     Notify.create(opts);
     return true;
-  }
+  };
 
-  const Icon = (msg:string, icon:string, color?:string)=> {
-    const opts = options(msg)
-    opts.icon = icon
+  const Icon = (msg: string, icon: string, color?: string) => {
+    const opts = options(msg);
+    opts.icon = icon;
     if (color) {
       opts.iconColor = color;
     }
     Notify.create(opts);
-  }
+  };
 
   const Actions = (
     msg: string,
@@ -129,7 +127,7 @@ const useNotifier = () => {
     return Notify.create(opts);
   };
 
-  const ArticleCreated = (link:string)=> {
+  const ArticleCreated = (link: string) => {
     const opts = options('Article Created!');
     opts.avatar = 'https://bytelyon-public.s3.amazonaws.com/shopify.png';
     opts.actions = [
@@ -140,11 +138,18 @@ const useNotifier = () => {
       },
     ];
     Notify.create(opts);
+  };
+
+  const Message = (s: string) => Notify.create(options(s));
+
+  const Create = (opts: QNotifyOptions) => Notify.create(opts);
+
+  const MembersOnly = () => {
+    const opts = options(`We're sorry! This feature is for members only.`);
+    opts.icon = 'mdi-emoticon-sad';
+    opts.iconColor = 'pink-13';
+    Notify.create(opts);
   }
-
-  const Message = (s:string) => Notify.create(options(s));
-
-  const Create = (opts:QNotifyOptions) => Notify.create(opts);
 
   return {
     ArticleCreated,
@@ -160,6 +165,7 @@ const useNotifier = () => {
     Message,
     Create,
     Actions,
+    MembersOnly,
   };
 };
 
