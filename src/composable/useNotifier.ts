@@ -131,7 +131,7 @@ const useNotifier = () => {
 
   const ArticleCreated = (link:string)=> {
     const opts = options('Article Created!');
-    opts.icon = 'https://bytelyon-public.s3.amazonaws.com/shopify.png';
+    opts.avatar = 'https://bytelyon-public.s3.amazonaws.com/shopify.png';
     opts.actions = [
       {
         label: 'View it!',

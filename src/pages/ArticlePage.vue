@@ -53,11 +53,14 @@ const onPublish = async () => {
 const onSubmit = async (system: string, message: string, html: boolean) => {
   working.value = true;
   if (system === '') {
-    system = systemPlaceholder
+    system = systemPlaceholder;
   }
   if (message === '') {
     message = messagePlaceholder;
   }
+  message = message.replaceAll(`{body}`, body.value);
+  message = message.replaceAll(`{keywords}`, keywords.value.join(','));
+  message = message.replaceAll(`{url}`, url.value);
   await api
     .post<{ text: string }>(`/ai`, { system, message, html })
     .then((r) => (result.value = r.data.text))
@@ -248,7 +251,7 @@ const onAccept = () => {
       <q-card-section>
         <div class="flex justify-around items-center q-gutter-sm">
           <div class="text-h4">Article Optimizer</div>
-          <div class="text-body2 text-center">
+          <div v-if="result === ''" class="text-body2 text-center">
             Use the following context inputs to instruct AI on how to best optimize your text.
           </div>
           <div>

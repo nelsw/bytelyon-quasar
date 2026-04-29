@@ -16,6 +16,5 @@ defineProps<{
     :text-color="outline ? (color ?? 'green-13') : 'dark'"
     size="lg"
     type="submit"
-    v-close-popup
   />
 </template>
