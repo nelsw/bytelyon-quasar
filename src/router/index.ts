@@ -37,8 +37,8 @@ export default defineRouter(async function () {
   Router.beforeEach((to, from, next) => {
     const $auth = useTokenStore();
 
-    if (to.name !== 'Login' && ($auth.IsEmpty() || $auth.IsExpired())) {
-      next({name: 'Login'});
+    if (to.name !== 'Home' && $auth.IsInvalid()) {
+      next({name: 'Home'});
     } else {
       next();
     }

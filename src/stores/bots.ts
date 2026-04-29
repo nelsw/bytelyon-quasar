@@ -47,7 +47,7 @@ export const useBots = defineStore(
         .then(() => model.value.get(botType, []).filter((i) => i.id !== botId))
         .then((bots) => model.value.set(botType, bots))
         .then(() => $notify.ok(null, `🗑️`, `${botType} Bot Deleted`))
-        .then(() => $router.push(`/dashboard/${botType}`))
+        .then(() => $router.push(`/${botType}`))
         .catch($notify.err)
         .finally(Loading.hide);
     };

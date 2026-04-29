@@ -80,9 +80,12 @@ const setup = () => {
   const IsExpired = (): boolean => !IsEmpty() && Date.now() > (claims()?.exp || 1) * 1000;
   const IsEmpty = (): boolean => model.value?.length === 0;
   const IsGuest = (): boolean => claims()?.jti === '01KM01JC9PS1R4X4FDJNFAR4AZ';
-
+  const IsValid = (): boolean => !IsEmpty() && !IsExpired();
+  const IsInvalid = (): boolean => !IsValid();
   return {
     model,
+    IsValid,
+    IsInvalid,
     IsEmpty,
     IsExpired,
     IsGuest,
@@ -94,7 +97,7 @@ const setup = () => {
 export const useTokenStore = defineStore('token-store', setup, {
   persist: {
     debug: true,
-    storage: localStorage
+    storage: sessionStorage
   }
 });
 

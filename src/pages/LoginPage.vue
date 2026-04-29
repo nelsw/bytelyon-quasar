@@ -7,19 +7,17 @@ import { useRouter } from 'vue-router';
 import { useTokenStore } from 'stores/token-store';
 import { reactive } from 'vue';
 
-type Credentials = AxiosBasicCredentials;
-
 const $router = useRouter();
 const $store = useTokenStore();
-const credentials = reactive<Credentials>({ username: '', password: '' });
+
+const credentials = reactive<AxiosBasicCredentials>({ username: '', password: '' });
 
 const onSubmit = async (): Promise<void> => {
-  if (!(await $store.Login(credentials))) {
-    return;
+  if (await $store.Login(credentials)) {
+    await $router.push({name: 'Home'})
+    credentials.username = '';
+    credentials.password = '';
   }
-  await $router.push('/dashboard');
-  credentials.username = '';
-  credentials.password = '';
 };
 </script>
 <template>

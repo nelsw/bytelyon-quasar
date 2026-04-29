@@ -17,7 +17,7 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/dashboard"
+        :to="{name: 'Home'}"
         label="Let's go 🏠 mkay?"
         no-caps
         size="lg"
