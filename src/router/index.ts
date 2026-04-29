@@ -34,14 +34,11 @@ export default defineRouter(async function () {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach(async (to, from, next) => {
+  Router.beforeEach((to, from, next) => {
     const $auth = useTokenStore();
 
-    if (to.matched.some((record) => record.meta.requiresAuth) && ($auth.IsEmpty() || $auth.IsExpired())) {
-      await Router.replace({
-        path: '/login',
-        query: { next: to.fullPath },
-      });
+    if (to.name !== 'Login' && ($auth.IsEmpty() || $auth.IsExpired())) {
+      next({name: 'Login'});
     } else {
       next();
     }

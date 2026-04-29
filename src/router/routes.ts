@@ -9,6 +9,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         alias: '/login',
+        name: 'Login',
         meta: { requiresAuth: false },
         component: () => import('pages/LoginPage.vue'),
       },
@@ -21,7 +22,6 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '/dashboard',
-        name: 'dash',
         meta: { requiresAuth: true },
         component: () => import('pages/HomePage.vue'),
       },
