@@ -6,6 +6,9 @@ interface Option {
 
 defineProps<{
   color: string;
+  hint?: boolean | undefined;
+  icon?: boolean | undefined;
+  label?: boolean | undefined;
 }>();
 
 // values in nanoseconds (int64)
@@ -39,13 +42,20 @@ const model = defineModel<number>({ required: true });
     :options="
       color === 'green-13' ? [once, hourly, daily, weekly] : [never, once, hourly, daily, weekly]
     "
-    label="Repeats"
+    :label="label ? `Repeats` : undefined"
     hide-dropdown-icon
-    hint="Run on a schedule or 'On-Demand' (once & pause)."
+    :hint="hint ? `Run on a schedule or 'On-Demand' (once & pause).` : undefined"
     @update:modelValue="(o: Option) => (model = o.value)"
+    dense
+
+    hide-bottom-space
+    filled
+    options-dense
+    square
   >
     <template #prepend>
-      <q-icon name="mdi-clock-outline" :color="color" />
+      <q-icon name="mdi-calendar-sync-outline" :color="color" />
     </template>
   </q-select>
 </template>
+

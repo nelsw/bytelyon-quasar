@@ -1,82 +1,86 @@
 <script setup lang="ts">
-import type { PageData, SearchBotData } from 'src/types/model';
+import type { PageData } from 'src/types/model';
 import type { QTableColumn } from 'quasar';
-import FullScreenBtn from 'components/btn/FullScreenBtn.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { domain, path } from 'src/types/base';
 import FilterInput from 'components/input/FilterInput.vue';
-import TrashBtn from 'components/btn/TrashBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
-import ViewJsonBtn from 'components/btn/ViewJsonBtn.vue';
-import { useSearchBotResultsStore } from 'stores/search/result-store';
 
 const columns: QTableColumn<PageData>[] = [
-  { name: 'Open', label: 'Open', field: 'url', align: 'center', style: 'width: 0;', },
-  { name: 'Domain', label: 'Domain', field: 'url', align: 'left', style: 'width: 0;', format: (val: string) => domain(val), },
-  { name: 'Path', label: 'Path', field: 'url', align: 'left', style: 'width: 0;', format: (val: string) => path(val), },
-  { name: 'Title', label: 'Title', field: 'title', align: 'left', style: 'width: 100;', },
+  {
+    name: 'Rank',
+    label: 'Rank',
+    field: 'url',
+    align: 'center',
+  },
+  {
+    name: 'Domain',
+    label: 'Domain',
+    field: 'url',
+    align: 'left',
+    style: 'width: 0;',
+    format: domain,
+  },
+  {
+    name: 'Path',
+    label: 'Path',
+    field: 'url',
+    align: 'left',
+    style: 'width: 0;',
+    format: path,
+  },
+  { name: 'Title', label: 'Title', field: 'title', align: 'left', style: 'width: 100;' },
+  { name: 'View', label: '', field: 'img', align: 'center', style: 'width: 0;' },
+  { name: 'Open', label: '', field: 'url', align: 'center', style: 'width: 0;' },
 ];
 
-const $store = useSearchBotResultsStore();
-
-const model = defineModel<SearchBotData>({ required: true });
+defineProps<{
+  loading: boolean;
+  pages: PageData[];
+}>();
 
 const filter = ref<string>('');
-const visibleCols = ref<string[]>(columns.map((col) => col.name).filter((s) => s !== 'ID' && s !== 'Path'));
+const columnNames = ref<string[]>(columns.map((col) => col.name));
+const visibleCols = ref<string[]>(columns.map((col) => col.name));
+
+const group = ref('Sponsored');
+watch(group, () => {});
 </script>
 
 <template>
   <q-table
     :columns="columns"
     :filter="filter"
-    :loading="$store.busy"
-    :pagination="{ sortBy: 'ID', descending: false }"
-    :rows-per-page-options="[25, 50, 100, 0]"
-    :rows="model.pages"
+    :loading="loading"
+    :rows-per-page-options="[5, 50, 100, 0]"
+    :rows="pages.slice(1)"
     :visible-columns="visibleCols"
     color="primary"
-    row-key="ID"
+    row-key="url"
     rowsPerPageLabel="Results per page"
-    bordered
     binary-state-sort
     dense
     flat
   >
-    <template #top="props">
-      <TrashBtn @click="$store.remove(model.botId, model.id)" size="md"/>
-      <q-separator vertical spaced inset />
-      <ViewJsonBtn
-        v-if="model.pages[0]?.url.includes('google.com')"
-        :title="model.pages[0]?.title as string"
-        :content="model.pages[0]?.serp as object"
-      />
-      <q-separator
-        v-if="model.pages.length > 0 && model.pages[0]?.url.includes('google.com')"
-        vertical
-        spaced
-        inset
-      />
-      <FilterInput v-model="filter" />
-      <div @click="$store.load(model.botId, true)" class="absolute-center">
-        <span class="text-h5 text-weight-medium">{{ model.target }}</span>
-      </div>
-      <q-space />
-      <ColumnsBtn v-model="visibleCols" :names="columns.map((col) => col.name)" />
-      <q-separator vertical spaced inset />
-      <FullScreenBtn :fullscreen="props.inFullscreen" @click="props.toggleFullscreen" />
+    <template #top-left>
+      <FilterInput v-model="filter" placeholder="Filter Sponsored Results" />
+    </template>
+    <template #top-right>
+      <ColumnsBtn v-model="visibleCols" :names="columnNames" color="primary" />
     </template>
     <template #body="props">
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <span v-if="col.name === 'Open'">
-            <ViewImgBtn
-              :title="props.row.title"
-              :url="`${props.row.img}`"
-            />
-            <OpenInNewBtn :url="col.value" size="xs" />
-          </span>
+          <ViewImgBtn
+            v-if="col.name === 'View'"
+            :title="props.row.title"
+            :url="`${props.row.img}`"
+          />
+          <OpenInNewBtn v-else-if="col.name === 'Open'" :url="col.value" size="sm" color="teal" />
+
+          <span v-else-if="col.name === 'Rank'">{{ pages.indexOf(props.row) }}</span>
           <span v-else>{{ col.value }}</span>
         </q-td>
       </q-tr>

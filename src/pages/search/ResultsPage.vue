@@ -56,7 +56,7 @@ watch(
     <template #after>
       <ScrollArea style="height: calc(100vh -  49px - 38px)">
         <div class="q-pa-md">
-          <SearchTable v-if="$results.selection" v-model="$results.selection" />
+          <SearchTable v-if="$results.selection" :pages="$results.selection.pages" :loading="$results.busy"/>
         </div>
       </ScrollArea>
     </template>

@@ -12,7 +12,7 @@ const props = defineProps<{
 const $notify = useNotifier();
 const model = defineModel<boolean>({ default: false });
 const disabled = computed(() => !props.content);
-const color = computed(() => (disabled.value ? 'grey' : 'yellow-6'));
+const color = computed(() => (disabled.value ? 'grey' : 'teal-6'));
 const onCopy = async () => {
   await copyToClipboard(JSON.stringify(props.content))
     .then(() => $notify.ok(null, 'Copied content to clipboard'))
@@ -21,8 +21,8 @@ const onCopy = async () => {
 </script>
 
 <template>
-  <q-btn @click="model = true" :disable="disabled" size="md" dense flat>
-    <q-icon name="mdi-code-json" :color="color"  />
+  <q-btn @click="model = true" :color="color" :disable="disabled" icon="mdi-code-json" dense flat>
+    <q-tooltip anchor="bottom middle" self="top end" :offset="[10, 10]"> SERP JSON </q-tooltip>
   </q-btn>
   <ToolbarDialog v-model="model" @copy="onCopy" :title="title" copy>
     <template #content>

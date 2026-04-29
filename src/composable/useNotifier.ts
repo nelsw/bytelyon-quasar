@@ -95,11 +95,12 @@ const useNotifier = () => {
     Notify.create(opts);
   }
 
-  const OK = (s:string) => {
+  const OK = (s:string):boolean => {
     const opts = options(s)
     opts.icon = 'mdi-check-circle-outline'
     opts.iconColor = 'green-13'
     Notify.create(opts);
+    return true;
   }
 
   const Icon = (msg:string, icon:string, color?:string)=> {

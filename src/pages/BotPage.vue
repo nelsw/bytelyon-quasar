@@ -63,11 +63,11 @@ onMounted(onChange);
     <q-form @submit="onSubmit" class="my-form">
       <TargetInput v-model="target" :color="color" />
 
-      <BlackListSelect v-model="blackList" :color="color" class="q-mt-md" />
+      <BlackListSelect v-model="blackList" :color="color" class="q-mt-md" hint icon label/>
 
-      <FrequencySelect v-model="frequency" :color="color" class="q-my-md" />
+      <FrequencySelect v-model="frequency" :color="color" class="q-my-md" hint icon label/>
 
-      <SubmitBtn class="q-mt-md" :color="color" />
+      <SubmitBtn class="q-mt-md" :color="color" fullwidth/>
     </q-form>
   </div>
 </template>

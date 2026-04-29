@@ -7,7 +7,7 @@ const model = defineModel<string[]>();
 
 <template>
   <q-btn icon="mdi-view-column-outline" flat dense>
-    <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
+    <q-tooltip anchor="bottom middle" self="top end" :offset="[10, 10]">
       Columns Visibility
     </q-tooltip>
     <q-menu transition-show="fade" transition-hide="fade" transition-duration="500">

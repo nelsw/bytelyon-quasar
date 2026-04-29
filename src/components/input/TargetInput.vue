@@ -41,6 +41,11 @@ const hint = computed(() => {
     :hint="hint"
     :label="label"
     class="text-body1"
+    hide-bottom-space
+    filled
+    options-dense
+    square
+    dense
   >
     <template #prepend>
       <q-icon name="mdi-help-circle-outline" :color="color" />

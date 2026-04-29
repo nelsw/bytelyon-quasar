@@ -40,7 +40,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: '/:botType(search)/:botId/results',
-        component: () => import('pages/search/ResultsPage.vue'),
+        component: () => import('pages/SearchPage.vue'),
       },
       {
         path: '/:botType(sitemap)/:botId/results',

@@ -1,10 +1,13 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { type Bot, BotType } from 'src/types/model';
 import { Map } from 'src/types/model';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
+import { useRouter } from 'vue-router';
+import { Loading } from 'quasar';
 
+const $router = useRouter();
 const $notify = useNotifier();
 const IsValidDomain = (s: string) => {
   return new RegExp(
@@ -20,21 +23,22 @@ const IsValidDomain = (s: string) => {
 export const useBots = defineStore(
   'bots',
   () => {
-    const busy = ref(true);
 
+    const loading = ref(true);
     const model = ref<Map<Bot[]>>(new Map());
+    const busy = computed(() => loading.value);
 
     const Load = async (botType: BotType) => {
-      busy.value = true;
+      loading.value = true;
       return await api
         .get<Bot[]>(`/bots?type=${botType}`)
         .then((r: AxiosResponse<Bot[]>) => model.value.set(botType, r.data))
         .catch($notify.err)
-        .finally(() => (busy.value = false));
+        .finally(() => loading.value = false);
     };
 
     const Delete = async (botType: BotType, botId: string) => {
-      busy.value = true;
+      Loading.show({ spinnerColor: 'primary' });
       let target = model.value.get(botType, []).find((i) => i.id === botId)?.target as string;
       if (botType === BotType.Sitemap) {
         target = encodeURIComponent(target).replaceAll('.', ' ');
@@ -45,7 +49,10 @@ export const useBots = defineStore(
         .then((bots) => model.value.set(botType, bots))
         .then(() => $notify.ok(null, `🗑️`, `Bot Deleted`))
         .catch($notify.err)
-        .finally(() => (busy.value = false));
+        .finally(async () => {
+          await $router.push(`/${BotType.Search}`);
+          Loading.hide();
+        });
     };
 
     const Save = async (
@@ -55,19 +62,20 @@ export const useBots = defineStore(
       frequency: number,
       blackList: string[],
     ) => {
-      busy.value = true;
 
       if (id === '' && type === BotType.Sitemap && !IsValidDomain(target)) {
         $notify.warn('Invalid Domain');
         return false;
       }
 
+      Loading.show({ spinnerColor: 'primary' });
+
       return await api
         .put(`/bots?type=${type}`, { id, type, target, frequency, blackList })
         .then((r: AxiosResponse<Bot>) => r.data)
         .then((bot: Bot) => {
           const bots = model.value.get(type, []);
-          const idx = bots.findIndex((b) => b.id === id)
+          const idx = bots.findIndex((b) => b.id === id);
           if (idx > -1) {
             bots.splice(idx, 1);
           }
@@ -77,7 +85,7 @@ export const useBots = defineStore(
           return bot;
         })
         .catch($notify.err)
-        .finally(() => (busy.value = false));
+        .finally(Loading.hide);
     };
 
     return {

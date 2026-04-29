@@ -51,9 +51,6 @@ const onClick = async (soft: boolean) => {
     dense
     flat
   >
-    <q-tooltip v-if="tooltip !== undefined" :offset="[10, 10]">
-      {{ tooltip }}
-    </q-tooltip>
     <slot />
   </q-btn>
 </template>

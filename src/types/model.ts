@@ -112,8 +112,23 @@ export type PageData = {
   img: string;
   png: string;
   json: object;
-  serp: object;
+  serp: Serp;
 };
+
+export type Serp = {
+  organic: SerpResult[];
+  people_also_search_for: SerpResult[];
+  people_also_ask: SerpResult[];
+};
+
+export type SerpResult = {
+  link: string;
+  position: number;
+  snippet: string;
+  source: string;
+  title: string;
+}
+
 
 export type NewsBotResult = {
   id: string;
