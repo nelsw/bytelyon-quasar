@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PageData } from 'src/types/model';
 import type { QTableColumn } from 'quasar';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { domain, path } from 'src/types/base';
 import FilterInput from 'components/input/FilterInput.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
@@ -14,6 +14,7 @@ const columns: QTableColumn<PageData>[] = [
     label: 'Rank',
     field: 'url',
     align: 'center',
+    style: 'width: 0;'
   },
   {
     name: 'Domain',
@@ -32,8 +33,8 @@ const columns: QTableColumn<PageData>[] = [
     format: path,
   },
   { name: 'Title', label: 'Title', field: 'title', align: 'left', style: 'width: 100;' },
-  { name: 'View', label: '', field: 'img', align: 'center', style: 'width: 0;' },
-  { name: 'Open', label: '', field: 'url', align: 'center', style: 'width: 0;' },
+  { name: 'View', label: 'View', field: 'img', align: 'center', style: 'width: 0;' },
+  { name: 'Open', label: 'Open', field: 'url', align: 'center', style: 'width: 0;' },
 ];
 
 defineProps<{
@@ -44,9 +45,6 @@ defineProps<{
 const filter = ref<string>('');
 const columnNames = ref<string[]>(columns.map((col) => col.name));
 const visibleCols = ref<string[]>(columns.map((col) => col.name));
-
-const group = ref('Sponsored');
-watch(group, () => {});
 </script>
 
 <template>
@@ -54,36 +52,38 @@ watch(group, () => {});
     :columns="columns"
     :filter="filter"
     :loading="loading"
-    :rows-per-page-options="[5, 50, 100, 0]"
+    :rows-per-page-options="[25, 50, 100, 0]"
     :rows="pages.slice(1)"
     :visible-columns="visibleCols"
     color="primary"
     row-key="url"
-    rowsPerPageLabel="Results per page"
-    binary-state-sort
+    rowsPerPageLabel="Sponsored Results per page"
     dense
     flat
+    :hide-bottom="pages.length <= 25"
   >
-    <template #top-left>
-      <FilterInput v-model="filter" placeholder="Filter Sponsored Results" />
-    </template>
-    <template #top-right>
+    <template #top>
+      <FilterInput v-model="filter" class="col-grow" placeholder="Filter Sponsored Results" autofocus/>
+      <q-space />
       <ColumnsBtn v-model="visibleCols" :names="columnNames" color="primary" />
     </template>
-    <template #body="props">
-      <q-tr :props="props">
-        <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <ViewImgBtn
-            v-if="col.name === 'View'"
-            :title="props.row.title"
-            :url="`${props.row.img}`"
-          />
-          <OpenInNewBtn v-else-if="col.name === 'Open'" :url="col.value" size="sm" color="teal" />
 
-          <span v-else-if="col.name === 'Rank'">{{ pages.indexOf(props.row) }}</span>
-          <span v-else>{{ col.value }}</span>
-        </q-td>
-      </q-tr>
+    <template #body-cell-Rank="props">
+      <q-td :props="props">
+        <q-badge outline color="primary" size="sm" >
+          <span class="text-white">{{props.pageIndex+1}}</span>
+        </q-badge>
+      </q-td>
+    </template>
+    <template #body-cell-Open="props">
+      <q-td :props="props">
+        <OpenInNewBtn  :url="props.value" size="sm" color="teal" />
+      </q-td>
+    </template>
+    <template #body-cell-View="props">
+      <q-td :props="props">
+        <ViewImgBtn :title="props.row.title" :url="`${props.row.img}`" size="sm" />
+      </q-td>
     </template>
   </q-table>
 </template>

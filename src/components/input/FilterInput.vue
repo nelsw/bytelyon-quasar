@@ -14,9 +14,9 @@ const model = defineModel<string>();
     :disabled="disabled"
     color="primary"
     :placeholder="placeholder || 'Filter'"
-    autofocus
     dense
     borderless
+    @keydown.esc="model=undefined"
   >
     <template #prepend>
       <q-icon

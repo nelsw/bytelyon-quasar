@@ -4,6 +4,7 @@ import type { SerpResult } from 'src/types/model';
 import { computed, ref } from 'vue';
 import FilterInput from 'components/input/FilterInput.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
+import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 
 const props = defineProps<{
   loading: boolean;
@@ -13,24 +14,23 @@ const props = defineProps<{
 
 const columns = computed(() => {
   if (props.name.includes('Also ')) {
-    return [{ name: 'Title', label: 'Title', field: 'title', align: 'left' }] as QTableColumn[];
+    return [
+      { name: 'Rank', label: 'Rank', field: 'position', align: 'center', format: (val) => val+1 },
+      { name: 'Title', label: 'Title', field: 'title', align: 'left' },
+    ] as QTableColumn[];
   }
   return [
     { name: 'Rank', label: 'Rank', field: 'position', align: 'center', format: (val) => val+1 },
     { name: 'Source', label: 'Source', field: 'source', align: 'left' },
     { name: 'Title', label: 'Title', field: 'title', align: 'left' },
     { name: 'Description', label: 'Description', field: 'snippet', align: 'left' },
+    { name: 'Open', label: 'Open', field: 'url', align: 'center', style: 'width: 0;' },
   ] as QTableColumn[];
 });
 
 const filter = ref<string>('');
-const columnNames = ref<string[]>(columns.value.map((col) => col.name).filter((s) => s !== ''));
+const columnNames = ref<string[]>(columns.value.map((col) => col.name));
 const visibleCols = ref<string[]>(columnNames.value);
-
-const onRowClick = (_evt: Event, row: SerpResult): void => {
-  open(row.link, '_blank');
-  return;
-};
 </script>
 
 <template>
@@ -38,25 +38,34 @@ const onRowClick = (_evt: Event, row: SerpResult): void => {
     :loading="loading"
     :columns="columns"
     :filter="filter"
-    :rows-per-page-options="[10, 25, 50, 100, 0]"
+    :rows-per-page-options="[0]"
     :rows="results"
     :visible-columns="visibleCols"
     color="primary"
     row-key="Rank"
-    rowsPerPageLabel="Results per page"
+    rowsPerPageLabel="Organic Results per page"
     binary-state-sort
     dense
     flat
     :hide-header="name.includes('Also ')"
-    @rowClick="onRowClick"
+    hide-bottom
   >
-    <template #top-left>
-      <FilterInput v-model="filter" :placeholder="`Filter ${name} Results`" />
+    <template #top>
+      <FilterInput v-model="filter" :placeholder="`${name} Results`" />
+      <q-space />
+      <ColumnsBtn v-if="name === 'Organic'" v-model="visibleCols" :names="columnNames" color="primary" />
     </template>
-    <template v-if="name === 'Organic'" #top-right>
-      <ColumnsBtn v-model="visibleCols" :names="columnNames" color="primary" />
+    <template #body-cell-Rank="props">
+      <q-td :props="props">
+        <q-badge outline color="primary" size="sm" >
+          <span class="text-white">{{props.value}}</span>
+        </q-badge>
+      </q-td>
+    </template>
+    <template #body-cell-Open="props">
+      <q-td :props="props">
+        <OpenInNewBtn :url="props.value" size="sm"/>
+      </q-td>
     </template>
   </q-table>
 </template>
-
-<style scoped lang="scss"></style>

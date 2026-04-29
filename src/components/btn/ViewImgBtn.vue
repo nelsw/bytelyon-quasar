@@ -6,6 +6,7 @@ defineProps<{
   title: string;
   url: string;
   color?: string | undefined;
+  size?: string | undefined;
 }>();
 
 const model = ref<boolean>(false);
@@ -19,6 +20,7 @@ const model = ref<boolean>(false);
     dense
     flat
     :disable="url === ''"
+    :size="size"
   >
     <slot />
   </q-btn>
