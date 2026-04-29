@@ -7,7 +7,6 @@ import axios, {
   type InternalAxiosRequestConfig
 } from 'axios';
 import { useTokenStore } from 'stores/token-store';
-import useNotifier from 'src/composable/useNotifier';
 
 declare module 'vue' {
   interface ComponentCustomProperties {
@@ -27,7 +26,7 @@ export default defineBoot(({ app, store, router }) => {
 
   // for browser refresh
   const $token = useTokenStore(store);
-  const $notify = useNotifier();
+
   const loginRedirect = async () => {
     await router.replace({
       path: '/login',
@@ -45,11 +44,10 @@ export default defineBoot(({ app, store, router }) => {
         return c;
       }
 
-      // else warn and redirect to login page
-      if ($token.IsExpired()) {
-        $notify.warn('Please log in to continue');
-      }
-      await loginRedirect();
+      await router.replace({
+        path: '/login',
+        query: { next: router.currentRoute.value.fullPath },
+      });
 
       // and abort request
       const controller = new AbortController();

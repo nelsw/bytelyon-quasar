@@ -2,48 +2,57 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/login',
+    path: '',
     meta: { requiresAuth: false },
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {
-        path: '/login',
+        path: '',
+        alias: '/login',
+        meta: { requiresAuth: false },
         component: () => import('pages/LoginPage.vue'),
       },
     ],
   },
   {
-    path: '',
+    path: '/dashboard',
     meta: { requiresAuth: true },
     component: () => import('layouts/DashboardLayout.vue'),
     children: [
       {
-        path: '',
-        name: 'home',
+        path: '/dashboard',
+        name: 'dash',
+        meta: { requiresAuth: true },
         component: () => import('pages/HomePage.vue'),
       },
       {
-        path: '/prompt',
+        path: '/dashboard/prompt',
+        meta: { requiresAuth: true },
         component: () => import('pages/PromptPage.vue'),
       },
       {
-        path: '/article',
+        path: '/dashboard/article',
+        meta: { requiresAuth: true },
         component: () => import('pages/ArticlePage.vue'),
       },
       {
-        path: '/:botType(news|search|sitemap)/:botId?',
+        path: '/dashboard/:botType(news|search|sitemap)/:botId?',
+        meta: { requiresAuth: true },
         component: () => import('pages/BotPage.vue'),
       },
       {
-        path: '/:botType(news)/:botId/results',
+        path: '/dashboard/:botType(news)/:botId/results',
+        meta: { requiresAuth: true },
         component: () => import('pages/news/ResultsPage.vue'),
       },
       {
-        path: '/:botType(search)/:botId/results',
+        path: '/dashboard/:botType(search)/:botId/results',
+        meta: { requiresAuth: true },
         component: () => import('pages/SearchPage.vue'),
       },
       {
-        path: '/:botType(sitemap)/:botId/results',
+        path: '/dashboard/:botType(sitemap)/:botId/results',
+        meta: { requiresAuth: true },
         component: () => import('pages/sitemap/ResultsPage.vue'),
       },
     ],

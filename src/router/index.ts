@@ -6,6 +6,7 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
+import { useTokenStore } from 'stores/token-store';
 
 /*
  * If not building with SSR mode, you can
@@ -33,9 +34,17 @@ export default defineRouter(async function () {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach((to,) => {
+  Router.beforeEach(async (to, from, next) => {
+    const $auth = useTokenStore();
 
-
+    if (to.matched.some((record) => record.meta.requiresAuth) && ($auth.IsEmpty() || $auth.IsExpired())) {
+      await Router.replace({
+        path: '/login',
+        query: { next: to.fullPath },
+      });
+    } else {
+      next();
+    }
 
     const tkn = to.query['tkn'];
     if (tkn !== undefined) {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { BotType, BotTypes } from 'src/types/model';
-import { onMounted } from 'vue';
 import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useBots } from 'stores/bots';
+import { onMounted } from 'vue';
 
 const $bots = useBots();
 const $route = useRoute();
@@ -17,16 +17,16 @@ onMounted(async () => {
 <template>
   <q-btn-group spread square stretch>
     <HeaderBtnDropdown
-      @click="$router.push('/prompt')"
-      :active="$route.path === '/prompt'"
+      @click="$router.push('/dashboard/prompt')"
+      :active="$route.path === '/dashboard/prompt'"
       color="teal-3"
       icon="mdi-flask-plus"
       label="Prompt"
       $
     />
     <HeaderBtnDropdown
-      @click="$router.push('/article')"
-      :active="$route.path === '/article'"
+      @click="$router.push('/dashboard/article')"
+      :active="$route.path === '/dashboard/article'"
       color="lime-3"
       icon="mdi-receipt-text-send"
       label="Article"
@@ -38,7 +38,7 @@ onMounted(async () => {
       label="News"
     >
       <q-list>
-        <q-item :to="`/${BotType.News}`" clickable v-ripple active-class="text-green-13">
+        <q-item :to="`/dashboard/${BotType.News}`" clickable v-ripple active-class="text-green-13">
           <q-item-section class="q-pr-none" style="min-width: 32px" avatar>
             <q-icon name="mdi-plus" color="green-13" />
           </q-item-section>
@@ -53,7 +53,7 @@ onMounted(async () => {
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
           :disable="$bots.busy"
-          :to="`/${BotType.News}/${e.id}/results`"
+          :to="`/dashboard/${BotType.News}/${e.id}/results`"
           clickable
           v-ripple
         >
@@ -72,7 +72,7 @@ onMounted(async () => {
       label="Search"
     >
       <q-list>
-        <q-item :to="`/${BotType.Search}`" clickable v-ripple>
+        <q-item :to="`/dashboard/${BotType.Search}`" clickable v-ripple>
           <q-item-section class="q-pr-none" style="min-width: 32px" avatar>
             <q-icon name="mdi-plus" color="green-13" />
           </q-item-section>
@@ -87,7 +87,7 @@ onMounted(async () => {
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
           :disable="$bots.busy"
-          :to="`/${BotType.Search}/${e.id}/results`"
+          :to="`/dashboard/${BotType.Search}/${e.id}/results`"
           clickable
           v-ripple
         >
@@ -104,7 +104,7 @@ onMounted(async () => {
         <span class="q-ml-sm text-white"> Sitemap </span>
       </template>
       <q-list>
-        <q-item :to="`/${BotType.Sitemap}`" clickable v-ripple>
+        <q-item :to="`/dashboard/${BotType.Sitemap}`" clickable v-ripple>
           <q-item-section class="q-pr-none" style="min-width: 32px" avatar>
             <q-icon name="mdi-plus" color="green-13" />
           </q-item-section>
