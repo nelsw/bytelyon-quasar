@@ -2,20 +2,59 @@
 import { useQuasar } from 'quasar';
 import { computed } from 'vue';
 
+const $q = useQuasar();
+const allToolbarOptions = [
+  [
+    {
+      label: $q.lang.editor.align,
+      icon: $q.iconSet.editor.align,
+      fixedLabel: true,
+      list: 'only-icons',
+      options: ['left', 'center', 'right', 'justify'],
+    },
+  ],
+  ['unordered', 'ordered'],
+  ['bold', 'italic', 'underline'],
+  ['hr', 'link'],
+  [
+    {
+      label: $q.lang.editor.formatting,
+      icon: $q.iconSet.editor.formatting,
+      list: 'no-icons',
+      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'],
+    },
+    {
+      label: $q.lang.editor.fontSize,
+      icon: $q.iconSet.editor.fontSize,
+      fixedLabel: true,
+      fixedIcon: true,
+      list: 'no-icons',
+      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7'],
+    },
+  ],
+  ['viewsource'],
+  ['fullscreen'],
+];
+
 const props = defineProps<{
+  kitchenSink?: boolean | undefined;
+  color?: string | undefined;
   empty?: boolean | undefined;
   align?: boolean | undefined;
   order?: boolean | undefined;
   effect?: boolean | undefined;
   format?: boolean | undefined;
-  size?: string | undefined;
+  size?: boolean | undefined;
   full?: boolean | undefined;
+  placeholder?: string | undefined;
 }>();
 
-const $q = useQuasar();
 const model = defineModel<string>({ required: true });
+
 const toolbar = computed(() => {
+  if (props.kitchenSink) return allToolbarOptions;
   if (props.empty) return [];
+
   const bar = [];
   if (props.align) {
     bar.push([
@@ -67,5 +106,12 @@ const toolbar = computed(() => {
 </script>
 
 <template>
-  <q-editor v-model="model" :toolbar="toolbar" min-height="25vh" dense />
+  <q-editor
+    v-model="model"
+    :toolbar="toolbar"
+    :placeholder="placeholder ?? 'Text Editor'"
+    :toolbar-toggle-color="color ?? 'primary'"
+    dense
+    dark
+  />
 </template>

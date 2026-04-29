@@ -49,7 +49,7 @@ const $store = useArticleStore();
 
           <q-input class="flex col-grow" label="Title" v-model="$store.article.title" autofocus >
             <template #append>
-              <OpenInNewBtn :url="$store.article.url" size="sm" />
+              <OpenInNewBtn :url="$store.article.url as string" size="sm" />
             </template>
           </q-input>
           <DateTimeInput v-model="$store.article.publishedAt" class="flex col-md-shrink col-sm-12" />

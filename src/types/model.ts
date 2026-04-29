@@ -66,7 +66,17 @@ export type Bot = {
   blackList: string[];
   workedAt?: Date | undefined;
 };
-
+export type Article = {
+  title: string;
+  body: string;
+  summary: string;
+  tags: string[];
+  image: string;
+  publishedAt: string;
+  prompt?: string;
+  url?: string;
+  keywords?: string[];
+};
 export const NewBot = (botType: BotType): Bot => ({
   id: '',
   type: botType,

@@ -1,4 +1,5 @@
 import type { QNotifyAction, QNotifyOptions } from 'quasar';
+import  { openURL } from 'quasar';
 import { Notify } from 'quasar';
 import type { AxiosError } from 'boot/axios';
 import type { Err } from 'src/types/model';
@@ -128,11 +129,25 @@ const useNotifier = () => {
     return Notify.create(opts);
   };
 
+  const ArticleCreated = (link:string)=> {
+    const opts = options('Article Created!');
+    opts.icon = 'https://bytelyon-public.s3.amazonaws.com/shopify.png';
+    opts.actions = [
+      {
+        label: 'View it!',
+        textColor: 'light-green',
+        handler: () => openURL(link),
+      },
+    ];
+    Notify.create(opts);
+  }
+
   const Message = (s:string) => Notify.create(options(s));
 
   const Create = (opts:QNotifyOptions) => Notify.create(opts);
 
   return {
+    ArticleCreated,
     notify,
     act,
     ok,

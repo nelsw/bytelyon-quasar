@@ -1,21 +1,11 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { NewsBotResult } from 'src/types/model';
+import type { Article, NewsBotResult } from 'src/types/model';
 import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
 import { date, Loading, openURL } from 'quasar';
 
-type Article = {
-  title: string;
-  body: string;
-  summary: string;
-  tags: string[];
-  image: string;
-  prompt: string;
-  publishedAt: string;
-  url: string;
-  keywords: string[];
-};
+
 
 const $notify = useNotifier();
 
