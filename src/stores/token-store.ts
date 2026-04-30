@@ -1,9 +1,8 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosBasicCredentials, type AxiosResponse } from 'boot/axios';
 import { Loading } from 'quasar';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import useNotifier from 'src/composable/useNotifier';
-import { useBots } from 'stores/bots';
 
 type Auth = {
   token?: string;
@@ -25,12 +24,6 @@ const $notify = useNotifier();
 
 export const useTokenStore = defineStore('token-store', () => {
   const model = ref<Auth>();
-
-  watch(model, (oldVal, newVal) => {
-    console.log(JSON.stringify({
-      oldVal,newVal
-    }, null, 2));
-  })
 
   const claims = (): Claims | undefined => {
     if (!model.value) return;
@@ -54,23 +47,15 @@ export const useTokenStore = defineStore('token-store', () => {
     }
   };
 
-  const Login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
-
+  const Login = async (auth: AxiosBasicCredentials) => {
     Loading.show({ spinnerColor: 'primary' });
-
     return await api
       .post(`/auth?action=login`, {}, { auth })
       .then((r: AxiosResponse<Auth>) => model.value = r.data)
       .then((a: Auth) => a.context?.message
         ? $notify.Error(a.context.message)
         : $notify.Icon('Welcome', 'mdi-human-greeting', 'green-13'))
-      .then(async (b) => {
-        if (b) {
-          await useBots().LoadAll();
-        }
-        return b;
-      })
-      .finally(() => Loading.hide())
+      .finally(() => Loading.hide());
   };
 
   const IsExpired = (): boolean => Date.now() > (claims()?.exp || 1) * 1000;

@@ -4,9 +4,19 @@ import PasswordInput from 'components/input/PasswordInput.vue';
 import EmailInput from 'components/input/EmailInput.vue';
 import { useTokenStore } from 'stores/token-store';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useBots } from 'stores/bots';
 
+const $router = useRouter();
 const $auth = useTokenStore();
+const $bots = useBots();
 const credentials = ref({ username: '', password: '' });
+
+const onSubmit = async () => {
+  if (!(await $auth.Login(credentials.value))) return;
+  await $bots.LoadAll()
+  await $router.push(($router.currentRoute.value.query.next as string) ?? '/');
+}
 </script>
 <template>
     <div class="absolute-center q-px-md">
@@ -30,7 +40,7 @@ const credentials = ref({ username: '', password: '' });
         </p>
 
       </div>
-      <q-form @submit.prevent="$auth.Login(credentials)" class="row">
+      <q-form @submit.prevent="onSubmit" class="row">
         <EmailInput v-model="credentials.username" />
         <PasswordInput v-model="credentials.password" />
         <q-btn
