@@ -6,7 +6,7 @@ import FrequencySelect from 'components/select/FrequencySelect.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import TargetInput from 'components/input/TargetInput.vue';
 import { useBots } from 'stores/bots';
-import HeadToggle from 'components/toggle/HeadToggle.vue';
+import BrowserSelect from 'components/select/BrowserSelect.vue';
 
 const props = defineProps<{
   botType: BotType,
@@ -55,13 +55,9 @@ const onSubmit = async () => {
     </p>
     <q-form @submit="onSubmit" class="my-form">
       <TargetInput v-model="target" :color="color" />
-
-      <BlackListSelect v-model="blackList" :color="color" class="q-mt-md" hint icon label />
-
-      <FrequencySelect v-model="frequency" :color="color" class="q-my-md" hint icon label />
-
-      <HeadToggle v-model="headless" :color="color" class="q-my-md" size="lg" label />
-
+      <BrowserSelect v-model="headless"  :color="color" class="q-my-md" hint label />
+      <FrequencySelect v-model="frequency" :color="color" class="q-my-md" hint label />
+      <BlackListSelect v-model="blackList" :color="color" class="q-mt-md" hint label />
       <SubmitBtn class="q-mt-md" :color="color" fullwidth />
     </q-form>
   </div>

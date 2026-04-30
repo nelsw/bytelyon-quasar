@@ -7,7 +7,6 @@ interface Option {
 defineProps<{
   color: string;
   hint?: boolean | undefined;
-  icon?: boolean | undefined;
   label?: boolean | undefined;
 }>();
 
@@ -27,6 +26,7 @@ const model = defineModel<number>({ required: true });
 
 <template>
   <q-select
+    @update:modelValue="(o: Option) => (model = o.value)"
     :model-value="
       model === 0
         ? never
@@ -39,18 +39,15 @@ const model = defineModel<number>({ required: true });
               : weekly
     "
     :color="color"
+    :label="label ? `Repeats` : undefined"
+    :hint="hint ? `Run on a schedule or 'On-Demand' (once & pause).` : undefined"
     :options="
       color === 'green-13' ? [once, hourly, daily, weekly] : [never, once, hourly, daily, weekly]
     "
-    :label="label ? `Repeats` : undefined"
-    hide-dropdown-icon
-    :hint="hint ? `Run on a schedule or 'On-Demand' (once & pause).` : undefined"
-    @update:modelValue="(o: Option) => (model = o.value)"
     dense
-
-    hide-bottom-space
     filled
-    options-dense
+    hide-bottom-space
+    hide-dropdown-icon
     square
   >
     <template #prepend>

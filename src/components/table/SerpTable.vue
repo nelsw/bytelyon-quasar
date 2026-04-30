@@ -58,7 +58,7 @@ const visibleCols = ref<string[]>(columnNames.value);
     <template #body-cell-Rank="props">
       <q-td :props="props">
         <q-badge outline color="primary" size="sm" >
-          <span class="text-white">{{props.value}}</span>
+          <span class="text-white">{{props.pageIndex+1}}</span>
         </q-badge>
       </q-td>
     </template>

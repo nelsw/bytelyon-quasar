@@ -8,7 +8,9 @@ import SearchTable from 'components/table/SearchTable.vue';
 import SerpTable from 'components/table/SerpTable.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
-import HeadToggle from 'components/toggle/HeadToggle.vue';
+import BrowserSelect from 'components/select/BrowserSelect.vue';
+
+const color = 'amber-13'
 
 const props = defineProps<{
   botType: BotType,
@@ -25,11 +27,11 @@ const timestamps = ref<string[]>([]);
 const target = ref('');
 const frequency = ref<number>(1);
 const blackList = ref<string[]>([]);
-const headless = ref<boolean>();
+const headless = ref<boolean>(true);
 
 const onDeleteBot = async () => await $bots.Delete(props.botType, props.botId);
 
-const onModifyBot = async () =>
+const onUpdate = async () =>
   await $bots.Save(
     props.botType,
     props.botId,
@@ -48,7 +50,7 @@ const onChangeBot = async () => {
   target.value = bot.target;
   frequency.value = bot.frequency;
   blackList.value = bot.blackList ?? [];
-  headless.value = bot.headless;
+  headless.value = bot.headless ?? true;
 
   timestamps.value = $results.model.get(bot.id, []).map((d: SearchBotData) => d.label);
 
@@ -96,22 +98,9 @@ onMounted(onChangeBot);
               <div class="text-h5 text-weight-medium text-uppercase">
                 {{ target }}
               </div>
-              <FrequencySelect
-                v-model="frequency"
-                @update:model-value="onModifyBot"
-                color="amber-13"
-              />
-              <BlackListSelect
-                v-model="blackList"
-                @update:model-value="onModifyBot"
-                color="amber-13"
-              />
-              <HeadToggle
-                v-model="headless"
-                @update:model-value="onModifyBot"
-                color="amber-13"
-                tooltip
-              />
+              <BrowserSelect v-model="headless" @update:model-value="onUpdate" :color="color" />
+              <FrequencySelect v-model="frequency" @update:model-value="onUpdate" :color="color" />
+              <BlackListSelect v-model="blackList" @update:model-value="onUpdate" :color="color" />
             </div>
             <div class="flex row q-gutter-x-sm">
               <TrashBtn @delete="onDeleteBot" size="md">

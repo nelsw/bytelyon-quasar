@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { BotType } from 'src/types/model';
-import { useRoute } from 'vue-router';
 
 defineProps<{
   color: string;
@@ -8,8 +7,6 @@ defineProps<{
   icon?: boolean | undefined;
   label?: boolean | undefined;
 }>();
-
-const $route = useRoute();
 
 const model = defineModel<string[]>({ required: true });
 </script>
@@ -29,12 +26,14 @@ const model = defineModel<string[]>({ required: true });
     input-debounce="0"
     label="Exclusions"
     new-value-mode="add-unique"
+    dense
+    filled
     hide-dropdown-icon
+    hide-bottom-space
     multiple
     use-chips
     use-input
-    dense
-    filled
+    square
   >
     <template #prepend>
       <q-icon name="mdi-playlist-remove" :color="color" />
