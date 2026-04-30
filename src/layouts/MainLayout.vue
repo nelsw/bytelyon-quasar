@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import HeaderBtnGroup from 'components/btn/group/HeaderBtnGroup.vue';
+import { useBots } from 'stores/bots';
+import { onMounted } from 'vue';
+onMounted(useBots().LoadAll)
 </script>
 <template>
   <q-layout view="lHh lpR lFr">
