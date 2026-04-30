@@ -7,7 +7,6 @@ import {
 } from 'vue-router';
 import routes from './routes';
 import { useTokenStore } from 'stores/token-store';
-import { useBots } from 'stores/bots';
 
 /*
  * If not building with SSR mode, you can
@@ -61,17 +60,12 @@ export default defineRouter(async function () {
     }
   });
 
-  Router.afterEach(async (g) => {
-
+  Router.afterEach((g) => {
     console.log(`Router (After): ${JSON.stringify({
       path: g.path,
       params: g.params,
       query: g.query,
     }, null, 2)}`);
-
-    if (g.name === 'Home') {
-      await useBots().LoadAll();
-    }
   });
 
   return new Promise((resolve) => resolve(Router));
