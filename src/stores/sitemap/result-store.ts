@@ -7,10 +7,10 @@ import useNotifier from 'src/composable/useNotifier';
 const $notify = useNotifier();
 
 const setup = () => {
-  const loading = ref(true);
+  const loading = ref(false);
   const model = ref<SitemapNode[]>([]);
 
-  const Load = async (botId: string, domain:string) => {
+  const Load = async (domain:string) => {
     return await api
       .get<SitemapNode>(`/sitemaps?domain=${domain}`)
       .then((r: AxiosResponse<SitemapNode>) => {

@@ -7,6 +7,7 @@ import {
 } from 'vue-router';
 import routes from './routes';
 import { useTokenStore } from 'stores/token-store';
+import { useBots } from 'stores/bots';
 
 /*
  * If not building with SSR mode, you can
@@ -35,33 +36,41 @@ export default defineRouter(async function () {
   });
 
   Router.beforeEach((to, from, next) => {
+
+    console.log(`Router (Before): ${JSON.stringify({
+      from: {
+        path: from.path,
+        params: from.params,
+        query: from.query,
+      },
+      to: {
+        path: to.path,
+        params: to.params,
+        query: to.query,
+      },
+    }, null, 2)}`);
+
     const $auth = useTokenStore();
 
-    if (to.name !== 'Home' && $auth.IsInvalid()) {
-      next({name: 'Home'});
-    } else {
+    if (to.name === 'Login' || $auth.IsValid()) {
       next();
+    } else if (to.name === 'Home') {
+      next({ name: 'Login' });
+    } else {
+      next({ name: 'Login', query: { next: to.fullPath} });
     }
+  });
 
-    const tkn = to.query['tkn'];
-    if (tkn !== undefined) {
-      // call it
-      // it should return a login payload with jwt token
-    }
+  Router.afterEach(async (g) => {
 
+    console.log(`Router (After): ${JSON.stringify({
+      path: g.path,
+      params: g.params,
+      query: g.query,
+    }, null, 2)}`);
 
-    const typ = to.query.typ;
-    if (typ !== undefined) {
-
-      if (typ === 'confirm') {
-        // just redirect to dash
-        // enjoy your new token
-        // bye
-      }
-
-      if (typ === 'reset') {
-        // display persistent dialog and make them submit a new password
-      }
+    if (g.name === 'Home') {
+      await useBots().LoadAll();
     }
   });
 

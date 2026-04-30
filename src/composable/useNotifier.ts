@@ -87,11 +87,12 @@ const useNotifier = () => {
     return undefined as T;
   };
 
-  const Error = (s: string) => {
+  const Error = (s: string):boolean => {
     const opts = options(s);
     opts.icon = 'mdi-alert-circle-outline';
     opts.iconColor = 'pink-13';
     Notify.create(opts);
+    return false;
   };
 
   const OK = (s: string): boolean => {
@@ -109,6 +110,7 @@ const useNotifier = () => {
       opts.iconColor = color;
     }
     Notify.create(opts);
+    return true
   };
 
   const Actions = (

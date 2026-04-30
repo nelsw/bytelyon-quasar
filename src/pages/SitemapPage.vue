@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
-import { useRoute } from 'vue-router';
 import { useSitemapBotResultsStore } from 'stores/sitemap/result-store';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
-import type { Page, SitemapNode } from 'src/types/model';
-import { BotType } from 'src/types/model';
+import type { BotType, Page, SitemapNode } from 'src/types/model';
 import { usePageStore } from 'stores/page-store';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import PageCard from 'components/card/PageCard.vue';
 import { useBots } from 'stores/bots';
 
-const $route = useRoute();
 const $results = useSitemapBotResultsStore();
 const $pages = usePageStore();
 const $bots = useBots();
@@ -24,13 +21,17 @@ const selected = ref<string>('');
 const expanded = ref<string[]>([]);
 const filter = ref<string>('');
 
+const props = defineProps<{
+  botType: BotType,
+  botId: string;
+}>()
+
 const onChange = async () => {
-  const botId = $route.params.botId as string;
 
-  await $bots.Load(BotType.Sitemap);
-  const domain = $bots.model.get(BotType.Sitemap, []).find((b) => b.id === botId)?.target as string;
+  await $bots.Load(props.botType);
+  const domain = $bots.model.get(props.botType, []).find((b) => b.id === props.botId)?.target as string;
 
-  await $results.Load(botId, domain);
+  await $results.Load(domain);
   const node = $results.model.find((n: SitemapNode) => n.label === domain);
 
   nodes.value = node ? [node] : [];
@@ -51,7 +52,7 @@ watch(selected, async (newVal, oldVal) => {
     treeRef.value?.setExpanded(oldVal, false);
   }
 });
-watch(() => $route.params.botId, onChange);
+watch(props, onChange);
 onMounted(onChange);
 </script>
 

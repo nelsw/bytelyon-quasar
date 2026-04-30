@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { Bot, PageData, SerpResult } from 'src/types/model';
-import { BotType, type SearchBotData } from 'src/types/model';
+import type { Bot, BotType, PageData, SerpResult, SearchBotData } from 'src/types/model';
 import TrashBtn from 'components/btn/TrashBtn.vue';
-import { useRoute } from 'vue-router';
 import { useBots } from 'stores/bots';
 import { onMounted, ref, watch } from 'vue';
 import { useSearches } from 'stores/searches';
@@ -12,7 +10,10 @@ import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import HeadToggle from 'components/toggle/HeadToggle.vue';
 
-const $route = useRoute();
+const props = defineProps<{
+  botType: BotType,
+  botId: string;
+}>()
 
 const $bots = useBots();
 const $results = useSearches();
@@ -26,12 +27,12 @@ const frequency = ref<number>(1);
 const blackList = ref<string[]>([]);
 const headless = ref<boolean>();
 
-const onDeleteBot = async () => await $bots.Delete(BotType.Search, $route.params.botId as string);
+const onDeleteBot = async () => await $bots.Delete(props.botType, props.botId);
 
 const onModifyBot = async () =>
   await $bots.Save(
-    BotType.Search,
-    $route.params.botId as string,
+    props.botType,
+    props.botId,
     target.value,
     frequency.value,
     blackList.value,
@@ -39,10 +40,10 @@ const onModifyBot = async () =>
   );
 
 const onChangeBot = async () => {
-  await $results.Load($route.params.botId as string);
+  await $results.Load(props.botId);
   const bot = $bots.model
-    .get(BotType.Search, [])
-    .find((b) => b.id === ($route.params.botId as string)) as Bot;
+    .get(props.botType, [])
+    .find((b) => b.id === (props.botId)) as Bot;
 
   target.value = bot.target;
   frequency.value = bot.frequency;
@@ -57,7 +58,7 @@ const onChangeBot = async () => {
 };
 
 const onDeleteResult = async (resultId: string) => {
-  const ok = await $results.Delete($route.params.botId as string, resultId);
+  const ok = await $results.Delete(props.botId, resultId);
   if (!ok) return;
   const idx = timestamps.value.indexOf(timestamp.value);
   if (idx > -1) timestamps.value.splice(idx, 1);
@@ -66,7 +67,7 @@ const onDeleteResult = async (resultId: string) => {
 
 const onChangeResult = (label: string) => {
   searchData.value = $results.model
-    .get($route.params.botId as string, [])
+    .get(props.botId, [])
     .find((d: SearchBotData) => d.label === label);
 
   const sections = [];
@@ -80,7 +81,7 @@ const onChangeResult = (label: string) => {
   serpSections.value = sections;
 };
 
-watch(() => $route.params.botId, onChangeBot);
+watch(props, onChangeBot);
 watch(timestamp, onChangeResult);
 onMounted(onChangeBot);
 </script>

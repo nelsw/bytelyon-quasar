@@ -2,17 +2,19 @@
 import ShopifyDialog from 'components/dialog/ShopifyDialog.vue';
 import NewsTable from 'components/table/NewsTable.vue';
 import { onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import { useBots } from 'stores/bots';
-import type { Bot } from 'src/types/model';
-import { BotType } from 'src/types/model';
+import type { Bot, BotType } from 'src/types/model';
 import { useNewsBotResultsStore } from 'stores/news/result-store';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import HeadToggle from 'components/toggle/HeadToggle.vue';
 
-const $route = useRoute();
+const props = defineProps<{
+  botType: BotType,
+  botId: string;
+}>()
+
 const $bots = useBots();
 const $results = useNewsBotResultsStore();
 
@@ -21,12 +23,12 @@ const frequency = ref<number>(1);
 const blackList = ref<string[]>([]);
 const headless = ref<boolean>();
 
-const onDeleteBot = async () => await $bots.Delete(BotType.News, $route.params.botId as string);
+const onDeleteBot = async () => await $bots.Delete(props.botType, props.botId);
 
 const onModifyBot = async () =>
   await $bots.Save(
-    BotType.News,
-    $route.params.botId as string,
+    props.botType,
+    props.botId,
     target.value,
     frequency.value,
     blackList.value,
@@ -34,10 +36,10 @@ const onModifyBot = async () =>
   );
 
 const onChangeBot = async () => {
-  await $results.Load($route.params.botId as string);
+  await $results.Load(props.botId);
   const bot = $bots.model
-    .get(BotType.News, [])
-    .find((b) => b.id === ($route.params.botId as string)) as Bot;
+    .get(props.botType, [])
+    .find((b) => b.id === (props.botId)) as Bot;
 
   target.value = bot.target;
   frequency.value = bot.frequency;
@@ -45,7 +47,7 @@ const onChangeBot = async () => {
   headless.value = bot.headless;
 };
 
-watch(() => $route.params.botId, onChangeBot);
+watch(props, onChangeBot);
 onMounted(onChangeBot);
 </script>
 
@@ -89,7 +91,7 @@ onMounted(onChangeBot);
       </q-card>
     </div>
     <div class="q-mx-md">
-      <NewsTable :bot-id="$route.params.botId as string" />
+      <NewsTable :bot-id="botId" />
     </div>
   </div>
 </template>

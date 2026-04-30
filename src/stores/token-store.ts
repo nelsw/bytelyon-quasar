@@ -1,15 +1,12 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { api, type AxiosBasicCredentials, type AxiosResponse } from 'boot/axios';
 import { Loading } from 'quasar';
-import { ref } from 'vue';
-import { type NavigationFailure } from 'vue-router';
+import { ref, watch } from 'vue';
 import useNotifier from 'src/composable/useNotifier';
-
-type thisType = ReturnType<typeof useTokenStore>;
-type Token = string | null | undefined;
+import { useBots } from 'stores/bots';
 
 type Auth = {
-  token: Token;
+  token?: string;
   context?: {
     message: string;
   }
@@ -24,16 +21,22 @@ type Claims = {
   jti: string; //'48e36a74-5526-4998-acfa-16fe4968971e';
   aud: string[]; // anonymous or identified
 }
-
 const $notify = useNotifier();
 
-const setup = () => {
-  const model = ref<Token>();
+export const useTokenStore = defineStore('token-store', () => {
+  const model = ref<Auth>();
+
+  watch(model, (oldVal, newVal) => {
+    console.log(JSON.stringify({
+      oldVal,newVal
+    }, null, 2));
+  })
 
   const claims = (): Claims | undefined => {
+    if (!model.value) return;
     try {
       // Convert Base64Url to regular Base64
-      const base64Payload = (model.value?.split('.')[1] as string)
+      const base64Payload = (model.value?.token?.split('.')[1] as string)
         .replace(/-/g, '+')
         .replace(/_/g, '/');
 
@@ -52,49 +55,38 @@ const setup = () => {
   };
 
   const Login = async (auth: AxiosBasicCredentials): Promise<boolean> => {
+
     Loading.show({ spinnerColor: 'primary' });
+
     return await api
       .post(`/auth?action=login`, {}, { auth })
-      .then((r:AxiosResponse<Auth>) => {
-        if (r.data.context) {
-          $notify.Error(r.data.context.message)
-          return false;
+      .then((r: AxiosResponse<Auth>) => model.value = r.data)
+      .then((a: Auth) => a.context?.message
+        ? $notify.Error(a.context.message)
+        : $notify.Icon('Welcome', 'mdi-human-greeting', 'green-13'))
+      .then(async (b) => {
+        if (b) {
+          await useBots().LoadAll();
         }
-        model.value = r.data.token
-        $notify.Icon('Welcome', 'mdi-human-greeting', 'green-13')
-        return true;
+        return b;
       })
-      .finally(() => Loading.hide());
+      .finally(() => Loading.hide())
   };
 
-  // Cannot be an arrow function give "this"
-  async function Logout(this: thisType): Promise<NavigationFailure | void | undefined> {
-    Loading.show({ spinnerColor: 'primary' });
-    model.value = undefined
-    await this.router.push({ path: '/login' });
-    Loading.hide();
-    $notify.ok(null, `👋`, `Come back soon!`);
-    return;
-  }
-
-  const IsExpired = (): boolean => !IsEmpty() && Date.now() > (claims()?.exp || 1) * 1000;
-  const IsEmpty = (): boolean => model.value?.length === 0;
+  const IsExpired = (): boolean => Date.now() > (claims()?.exp || 1) * 1000;
   const IsGuest = (): boolean => claims()?.jti === '01KM01JC9PS1R4X4FDJNFAR4AZ';
-  const IsValid = (): boolean => !IsEmpty() && !IsExpired();
   const IsInvalid = (): boolean => !IsValid();
+  const IsValid = (): boolean => !IsExpired();
+
   return {
     model,
     IsValid,
     IsInvalid,
-    IsEmpty,
     IsExpired,
     IsGuest,
-    Login,
-    Logout,
+    Login
   };
-};
-
-export const useTokenStore = defineStore('token-store', setup, {
+}, {
   persist: {
     debug: true,
     storage: sessionStorage

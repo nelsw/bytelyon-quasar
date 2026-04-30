@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { BotType, BotTypes } from 'src/types/model';
+import { BotType } from 'src/types/model';
 import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useBots } from 'stores/bots';
-import { onMounted } from 'vue';
 
 const $bots = useBots();
 const $route = useRoute();
 const $router = useRouter();
-
-onMounted(async () => {
-  await Promise.all(BotTypes.map((botType) => $bots.Load(botType)));
-});
 </script>
 
 <template>
@@ -22,7 +17,6 @@ onMounted(async () => {
       color="teal-3"
       icon="mdi-flask-plus"
       label="Prompt"
-      $
     />
     <HeaderBtnDropdown
       @click="$router.push('/article')"
@@ -52,8 +46,7 @@ onMounted(async () => {
             .get(BotType.News, [])
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
-          :disable="$bots.busy"
-          :to="`/${BotType.News}/${e.id}/results`"
+          :to="`/${BotType.News}/${e.id}`"
           clickable
           v-ripple
         >
@@ -86,8 +79,7 @@ onMounted(async () => {
             .get(BotType.Search, [])
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
-          :disable="$bots.busy"
-          :to="`/${BotType.Search}/${e.id}/results`"
+          :to="`/${BotType.Search}/${e.id}`"
           clickable
           v-ripple
         >
@@ -118,8 +110,7 @@ onMounted(async () => {
             .get(BotType.Sitemap, [])
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
-          :disable="$bots.busy"
-          :to="`/${BotType.Sitemap}/${e.id}/results`"
+          :to="`/${BotType.Sitemap}/${e.id}`"
           clickable
           v-ripple
         >

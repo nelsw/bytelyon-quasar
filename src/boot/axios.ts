@@ -27,31 +27,17 @@ export default defineBoot(({ app, store, router }) => {
   // for browser refresh
   const $token = useTokenStore(store);
 
-  const loginRedirect = async () => {
-    await router.replace({
-      path: '/login',
-      query: { next: router.currentRoute.value.fullPath }
-    })
-  };
-
   // handle bad token
   api.interceptors.request.use(
     async (c: InternalAxiosRequestConfig) => {
 
-      // bail if we're not logging in or the token is valid
-      if (c.url === '/auth?action=login' || !$token.IsExpired()) {
-        c.headers.Authorization = 'Bearer ' + $token.model;
-        return c;
-      }
+      c.headers.Authorization = 'Bearer ' + $token.model?.token;
 
-      await router.replace({
-        path: '/login',
-        query: { next: router.currentRoute.value.fullPath },
-      });
-
-      // and abort request
       const controller = new AbortController();
-      controller.abort();
+      if (c.url !== '/auth?action=login' && $token.IsInvalid()) {
+        controller.abort();
+        await router.replace({ name: 'Login', query: { next: router.currentRoute.value.path, } });
+      }
 
       return {
         ...c,
@@ -72,9 +58,6 @@ export default defineBoot(({ app, store, router }) => {
     },
     async (e: AxiosError) => {
       console.error(e);
-      if (e.status === 401 || e.status === 403) {
-        await loginRedirect();
-      }
       return Promise.reject(e);
     }
   );

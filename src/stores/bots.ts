@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { type Bot, BotType } from 'src/types/model';
+import { type Bot, BotType, BotTypes } from 'src/types/model';
 import { Map } from 'src/types/model';
 import { computed, ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
@@ -23,9 +23,14 @@ export const useBots = defineStore(
   'bots',
   () => {
     const $router = useRouter();
-    const loading = ref(true);
+    const loading = ref(false);
     const model = ref<Map<Bot[]>>(new Map());
     const busy = computed(() => loading.value);
+
+    const LoadAll = async () => {
+      await Promise.all(BotTypes.map((botType) => Load(botType)));
+      return true;
+    }
 
     const Load = async (botType: BotType) => {
       loading.value = true;
@@ -82,6 +87,7 @@ export const useBots = defineStore(
           $notify.ok(null, `💾`, id === '' ? 'Created' : 'Updated');
           return bot;
         })
+        .then(b => $router.push(`/${b.type}/${b.id}`))
         .catch($notify.err)
         .finally(Loading.hide);
     };
@@ -89,6 +95,7 @@ export const useBots = defineStore(
     return {
       Delete,
       Load,
+      LoadAll,
       Save,
       busy,
       model,

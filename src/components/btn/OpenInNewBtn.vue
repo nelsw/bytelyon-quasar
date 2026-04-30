@@ -1,13 +1,20 @@
 <script setup lang="ts">
-defineProps<{
-  url: string;
+const props = defineProps<{
+  url?: string | undefined;
   color?: string | undefined;
 }>();
-const onClick = (s: string) => open(s, '_blank');
+const onClick = () => open(props.url, '_blank');
 </script>
 
 <template>
-  <q-btn @click="onClick(url)" :color="url === '' ? 'grey-8' : color ?? 'teal'" dense flat icon="mdi-open-in-new" :disable="url === ''">
+  <q-btn
+    @click="onClick"
+    :color="url === '' ? 'grey-8' : color ?? 'teal'"
+    dense
+    flat
+    icon="mdi-open-in-new"
+    :disable="!url"
+  >
     <slot/>
     </q-btn>
 </template>
