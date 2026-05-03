@@ -7,9 +7,9 @@ import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import FilterInput from 'components/input/FilterInput.vue';
 import ShopifyBtn from 'components/btn/ShopifyBtn.vue';
-import { useNewsBotResultsStore } from 'stores/news/result-store';
-import { useArticleStore } from 'stores/article-store';
 import { Days, Minutes } from 'src/types/base';
+import { useArticles } from 'stores/articles';
+import { useNews } from 'stores/news';
 
 const columns: QTableColumn<NewsBotResult>[] = [
   { name: 'ID', label: 'ID', field: 'id', align: 'left', style: 'width: 0;' },
@@ -33,8 +33,8 @@ const props = defineProps<{
   botId: string;
 }>();
 
-const $article = useArticleStore();
-const $results = useNewsBotResultsStore();
+const $article = useArticles();
+const $results = useNews();
 const filter = ref<string>('');
 const columnNames = ref<string[]>(columns.map((col) => col.name));
 const visibleCols = ref<string[]>(

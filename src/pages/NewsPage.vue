@@ -5,10 +5,10 @@ import { onMounted, ref, watch } from 'vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import { useBots } from 'stores/bots';
 import type { Bot, BotType } from 'src/types/model';
-import { useNewsBotResultsStore } from 'stores/news/result-store';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
+import { useNews } from 'stores/news';
 
 const color = 'amber-13'
 
@@ -18,7 +18,7 @@ const props = defineProps<{
 }>()
 
 const $bots = useBots();
-const $results = useNewsBotResultsStore();
+const $news = useNews();
 
 const target = ref('');
 const frequency = ref<number>(1);
@@ -38,7 +38,7 @@ const onUpdate = async () =>
   );
 
 const onChangeBot = async () => {
-  await $results.Load(props.botId);
+  await $news.Load(props.botId);
   const bot = $bots.model
     .get(props.botType, [])
     .find((b) => b.id === (props.botId)) as Bot;

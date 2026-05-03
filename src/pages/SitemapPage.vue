@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
-import { useSitemapBotResultsStore } from 'stores/sitemap/result-store';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
-import type { BotType, Page, SitemapNode } from 'src/types/model';
-import { usePageStore } from 'stores/page-store';
+import type { BotType, Page, Sitemap, SitemapNode } from 'src/types/model';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import PageCard from 'components/card/PageCard.vue';
 import { useBots } from 'stores/bots';
+import { useSitemaps } from 'stores/sitemaps';
+import { usePages } from 'stores/pages';
 
-const $results = useSitemapBotResultsStore();
-const $pages = usePageStore();
+const $sitemaps = useSitemaps();
+const $pages = usePages();
 const $bots = useBots();
 
 const nodes = ref<SitemapNode[]>([]);
@@ -31,8 +31,9 @@ const onChange = async () => {
   await $bots.Load(props.botType);
   const domain = $bots.model.get(props.botType, []).find((b) => b.id === props.botId)?.target as string;
 
-  await $results.Load(domain);
-  const node = $results.model.find((n: SitemapNode) => n.label === domain);
+  await $sitemaps.Load(domain);
+  const sitemap = $sitemaps.model.get(domain, {} as Sitemap);
+  const node = sitemap.nodes.find((n: SitemapNode) => n.label === domain);
 
   nodes.value = node ? [node] : [];
   expanded.value = [node?.label ?? ''];
@@ -42,12 +43,11 @@ const onChange = async () => {
 watch(selected, async (newVal, oldVal) => {
   const newN = treeRef.value?.getNodeByKey(newVal);
   const oldN = treeRef.value?.getNodeByKey(oldVal);
-  console.log('sitemap page selection', newN?.label, oldN?.label);
   if (newN) {
     treeRef.value?.setExpanded(newVal, true);
     const url = (newN as SitemapNode).url;
     await $pages.load(url);
-    pages.value = $pages.model.get(url) || [];
+    pages.value = $pages.model.get(url, []);
   } else if (oldN) {
     treeRef.value?.setExpanded(oldVal, false);
   }

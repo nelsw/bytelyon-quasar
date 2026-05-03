@@ -1,25 +1,19 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
 import { api, type AxiosResponse } from 'boot/axios';
-import type { SitemapNode } from 'src/types/model';
+import  { type Sitemap, Map } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 
 const $notify = useNotifier();
 
-const setup = () => {
+export const useSitemaps = defineStore('sitemaps', () => {
   const loading = ref(false);
-  const model = ref<SitemapNode[]>([]);
+  const model = ref<Map<Sitemap>>(new Map());
 
   const Load = async (domain:string) => {
     return await api
-      .get<SitemapNode>(`/sitemaps?domain=${domain}`)
-      .then((r: AxiosResponse<SitemapNode>) => {
-        const idx = model.value.findIndex(n => n.label === domain);
-        if (idx > -1) {
-          model.value.splice(idx, 1);
-        }
-        model.value.push(r.data);
-      })
+      .get<Sitemap>(`/sitemaps?domain=${domain}`)
+      .then((r: AxiosResponse<Sitemap>) => model.value.set(domain, r.data))
       .then(() => $notify.ok(null, `🤖`, `Sitemap Results Loaded`))
       .catch($notify.err)
       .finally(() => (loading.value = false));
@@ -30,9 +24,7 @@ const setup = () => {
     model,
     Load,
   };
-};
-
-export const useSitemapBotResultsStore = defineStore('sitemap-bot-results-store', setup, {
+}, {
   persist: {
     debug: true,
     storage: sessionStorage,
@@ -40,5 +32,5 @@ export const useSitemapBotResultsStore = defineStore('sitemap-bot-results-store'
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useSitemapBotResultsStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useSitemaps, import.meta.hot));
 }

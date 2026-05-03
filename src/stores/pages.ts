@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
-import { Model, type Page } from 'src/types/model';
+import { Map, type Page } from 'src/types/model';
 import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
 
@@ -8,7 +8,7 @@ const $notify = useNotifier();
 
 const setup = () => {
   const loading = ref(true);
-  const model = ref<Model<string, Page[]>>(new Model());
+  const model = ref<Map<Page[]>>(new Map());
 
   const load = async (url: string): Promise<boolean> => {
     loading.value = true;
@@ -27,7 +27,7 @@ const setup = () => {
   };
 };
 
-export const usePageStore = defineStore('page-store', setup, {
+export const usePages = defineStore('pages', setup, {
   persist: {
     debug: true,
     storage: sessionStorage,
@@ -35,5 +35,5 @@ export const usePageStore = defineStore('page-store', setup, {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(usePageStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(usePages, import.meta.hot));
 }

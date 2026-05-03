@@ -5,11 +5,9 @@ import { api, type AxiosResponse } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
 import { date, Loading, openURL } from 'quasar';
 
-
-
 const $notify = useNotifier();
 
-const setup = () => {
+export const useArticles = defineStore('articles', () => {
   const show = ref(false);
 
   const article = ref<Article>({
@@ -60,9 +58,7 @@ const setup = () => {
     article, show,
     create, load
   };
-};
-
-export const useArticleStore = defineStore('article-store', setup, {
+}, {
   persist: {
     debug: true,
     storage: sessionStorage
@@ -70,5 +66,5 @@ export const useArticleStore = defineStore('article-store', setup, {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useArticleStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useArticles, import.meta.hot));
 }

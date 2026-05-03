@@ -2,7 +2,7 @@
 import ToolbarDialog from 'components/dialog/ToolbarDialog.vue';
 import DateTimeInput from 'components/input/DateTimeInput.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
-import { useArticleStore } from 'stores/article-store';
+import { useArticles } from 'stores/articles';
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
@@ -38,7 +38,7 @@ const toolbar = [
   ['viewsource'],
   ['fullscreen']
 ];
-const $store = useArticleStore();
+const $store = useArticles();
 </script>
 
 <template>

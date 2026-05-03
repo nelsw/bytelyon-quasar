@@ -1,26 +1,3 @@
-export type entry<K, V> = { k: K; v: V };
-
-export class Model<K, V> {
-  e: entry<K, V>[];
-
-  constructor(e?: entry<K, V>[]) {
-    this.e = e ?? [];
-  }
-
-  set = (k: K, v: V): V => {
-    this.remove(k);
-    this.e.push({ k, v });
-    return v;
-  };
-
-  get = (k: K): V | undefined => this.e.find((e) => e.k === k)?.v;
-
-  remove = (k: K) => {
-    const idx = this.e.findIndex((e) => e.k === k);
-    if (idx > -1) this.e.splice(idx, 1);
-  };
-}
-
 export class Map<T> {
   map: { [id: string]: T };
 
@@ -123,9 +100,15 @@ export type NewsBotResult = {
   type: BotType;
 };
 
+export type Sitemap = {
+  created_at: Date;
+  updated_at: Date;
+  domain: string;
+  nodes: SitemapNode[];
+}
+
 export type SitemapNode = {
-  botId: string;
-  url: string;
   label: string;
-  children: SitemapNode[];
-};
+  url: string;
+  children?: SitemapNode[];
+}

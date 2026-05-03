@@ -1,13 +1,13 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { api, type AxiosResponse } from 'boot/axios';
+import { api, type AxiosResponse } from 'src/boot/axios';
 import { Map, type NewsBotResult } from 'src/types/model';
 import useNotifier from 'src/composable/useNotifier';
 
 const $notify = useNotifier();
 
-export const useNewsBotResultsStore = defineStore(
-  'news-bot-results-store',
+export const useNews = defineStore(
+  'news',
   () => {
     const removing = ref(false);
     const loading = ref(false);
@@ -47,17 +47,17 @@ export const useNewsBotResultsStore = defineStore(
       model,
       busy,
       Load,
-      Delete,
+      Delete
     };
   },
   {
     persist: {
       debug: true,
-      storage: sessionStorage,
-    },
-  },
+      storage: sessionStorage
+    }
+  }
 );
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useNewsBotResultsStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useNews, import.meta.hot));
 }
