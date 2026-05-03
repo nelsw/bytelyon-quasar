@@ -130,13 +130,14 @@ const onAccept = () => {
           <!--title-->
           <div class="col-grow">
             <q-input
-              label="Title"
               v-model="title"
               :color="color"
               hint="The title of the blog post; Short & sweet is best."
+              label="Title"
               autofocus
-              dense
               filled
+              dense
+              square
             />
           </div>
         </div>
@@ -146,6 +147,7 @@ const onAccept = () => {
             <!--tag-->
             <q-select
               v-model="tags"
+              :color="color"
               :options="[
                 'boat fire',
                 'e-bike fire',
@@ -155,13 +157,13 @@ const onAccept = () => {
                 'rv fire',
               ]"
               class="flex col-md-1 col-sm-12"
-              label="Tag"
+              hint="Post category."
               input-debounce="0"
-              hide-dropdown-icon
-              :color="color"
+              label="Tag"
               dense
               filled
-              hint="Post category."
+              hide-dropdown-icon
+              square
             />
           </div>
           <!--timestamp-->
@@ -169,7 +171,7 @@ const onAccept = () => {
             <DateTimeInput
               v-model="publishedAt"
               :color="color"
-              hint="Define a publication date; Can be back dated."
+              hint="Publication date; Can be back dated."
             />
           </div>
         </div>
@@ -177,25 +179,27 @@ const onAccept = () => {
         <!--excerpt-->
         <div class="col-grow q-mb-md">
           <q-input
-            label="Excerpt"
-            hint="Post summary; Appears on home page & blog page."
             v-model="summary"
             :color="color"
+            hint="Post summary; Appears on home page & blog page."
+            label="Excerpt"
             dense
             filled
             hide-bottom-space
+            square
           />
         </div>
 
         <!--img-->
         <div class="col-grow q-mb-md">
           <q-input
-            label="Image"
             v-model="image"
             :color="color"
             hint="URL for main image of the post; Must be .webp, .jpg, .jpeg, or .png."
+            label="Image"
             filled
             dense
+            square
           >
             <template #append>
               <ViewImgBtn title="Shopify Blog Post Image Preview" :url="image" :color="color">
@@ -211,30 +215,32 @@ const onAccept = () => {
         <div class="col-grow q-mb-md">
           <q-select
             v-model="keywords"
+            :color="color"
             class="flex col-grow"
+            hint="Keywords are query terms that relate to our store (requires optimization)."
             input-debounce="0"
             label="Keywords"
             new-value-mode="add-unique"
+            dense
+            filled
             hide-dropdown-icon
             multiple
+            square
             use-chips
             use-input
-            filled
-            dense
-            :color="color"
-            hint="Keywords are query terms that relate to our store (requires optimization)."
           />
         </div>
 
         <!--url-->
         <div class="col-grow q-mb-md">
           <q-input
-            label="URL"
             v-model="url"
             :color="color"
+            label="URL"
             hint="URL relating to this post; Use for backlinks (required optimization)."
-            filled
             dense
+            filled
+            square
           >
             <template #append>
               <OpenInNewBtn :url="url" :color="color">

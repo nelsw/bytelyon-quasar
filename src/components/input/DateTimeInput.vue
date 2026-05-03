@@ -20,6 +20,7 @@ const model = defineModel<string>({
     :hint="hint"
     filled
     dense
+    square
   >
     <template v-slot:prepend>
       <q-btn :color="color ?? 'primary'" icon="mdi-calendar-month" dense flat>
@@ -33,6 +34,7 @@ const model = defineModel<string>({
             today-btn
             :color="color ?? 'primary'"
             text-color="dark"
+            square
           >
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" :color="color ?? 'primary'" flat />
@@ -55,6 +57,7 @@ const model = defineModel<string>({
             now-btn
             :color="color ?? 'primary'"
             text-color="dark"
+            square
           >
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" :color="color ?? 'primary'" flat />
