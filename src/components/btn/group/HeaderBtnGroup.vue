@@ -1,29 +1,28 @@
 <script setup lang="ts">
 import { BotType } from 'src/types/model';
 import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useBots } from 'stores/bots';
 
 const $bots = useBots();
 const $route = useRoute();
-const $router = useRouter();
 </script>
 
 <template>
   <q-btn-group spread square stretch>
     <HeaderBtnDropdown
-      @click="$router.push('/prompt')"
       :active="$route.path === '/prompt'"
       color="teal-3"
       icon="mdi-flask-plus"
       label="Prompt"
+      to="/prompt"
     />
     <HeaderBtnDropdown
-      @click="$router.push('/article')"
       :active="$route.path === '/article'"
       color="lime-3"
       icon="mdi-receipt-text-send"
       label="Article"
+      to="/article"
     />
     <HeaderBtnDropdown
       :active="$route.params.botType === 'news'"
@@ -91,10 +90,12 @@ const $router = useRouter();
         </q-item>
       </q-list>
     </HeaderBtnDropdown>
-    <q-btn-dropdown dropdown-icon="mdi-sitemap" text-color="indigo-3" auto-close noIconAnimation>
-      <template v-if="$q.screen.gt.xs" #label>
-        <span class="q-ml-sm text-white"> Sitemap </span>
-      </template>
+    <HeaderBtnDropdown
+      :active="$route.params.botType === 'sitemap'"
+      icon="mdi-sitemap"
+      color="indigo-3"
+      label="Sitemap"
+    >
       <q-list>
         <q-item :to="`/${BotType.Sitemap}`" clickable v-ripple>
           <q-item-section class="q-pr-none" style="min-width: 32px" avatar>
@@ -121,6 +122,6 @@ const $router = useRouter();
           </q-item-section>
         </q-item>
       </q-list>
-    </q-btn-dropdown>
+    </HeaderBtnDropdown>
   </q-btn-group>
 </template>

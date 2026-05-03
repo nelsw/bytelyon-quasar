@@ -10,12 +10,11 @@ const setup = () => {
   const loading = ref(true);
   const model = ref<Map<Page[]>>(new Map());
 
-  const load = async (url: string): Promise<boolean> => {
+  const load = async (url: string) => {
     loading.value = true;
     return api
       .get(`/pages?url=${url}`)
       .then((r: AxiosResponse<Page[]>) => model.value.set(url, r.data))
-      .then((p: Page[]) => $notify.ok(p, `🤖`, `${p.length} Pages Loaded`))
       .catch($notify.err)
       .finally(() => (loading.value = false));
   };

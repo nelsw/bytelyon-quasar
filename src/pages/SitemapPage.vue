@@ -28,12 +28,10 @@ const props = defineProps<{
 
 const onChange = async () => {
 
-  await $bots.Load(props.botType);
   const domain = $bots.model.get(props.botType, []).find((b) => b.id === props.botId)?.target as string;
 
   await $sitemaps.Load(domain);
-  const sitemap = $sitemaps.model.get(domain, {} as Sitemap);
-  const node = sitemap.nodes.find((n: SitemapNode) => n.label === domain);
+  const node = $sitemaps.model.get(domain, {} as Sitemap).nodes.find((n: SitemapNode) => n.label === domain);
 
   nodes.value = node ? [node] : [];
   expanded.value = [node?.label ?? ''];
@@ -61,7 +59,7 @@ onMounted(onChange);
     <template #before>
       <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
       <q-separator inset />
-      <ScrollArea style="height: calc(100vh - 49px - 49px - 51px); max-width: 100vw">
+      <ScrollArea style="height: calc(100vh - 49px - 36px); max-width: 100vw">
         <q-tree
           class="q-px-md q-py-sm"
           ref="my-sitemap-tree"
