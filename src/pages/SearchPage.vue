@@ -9,6 +9,7 @@ import SerpTable from 'components/table/SerpTable.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
+import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 
 const color = 'amber-13'
 
@@ -112,7 +113,7 @@ onMounted(onChangeBot);
           </div>
           <q-separator spaced />
           <div v-if="searchData" class="flex row justify-between">
-            <div class="flex row justify-start">
+            <div class="flex row justify-start items-center">
               <div>
                 <q-select
                   v-model="timestamp"
@@ -129,6 +130,9 @@ onMounted(onChangeBot);
                     <q-icon name="mdi-calendar-clock-outline" color="primary" />
                   </template>
                 </q-select>
+              </div>
+              <div class="q-ml-sm">
+                <ViewImgBtn title="Google SERP" :url="searchData?.pages?.[0]?.img || ''" />
               </div>
               <div>
                 <q-toggle

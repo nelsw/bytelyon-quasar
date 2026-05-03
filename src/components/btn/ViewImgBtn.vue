@@ -16,11 +16,11 @@ const model = ref<boolean>(false);
   <q-btn
     @click="model = true"
     :color="url === '' ? 'grey-8' : (color ?? 'cyan-6')"
+    :disable="url === ''"
+    :size="size"
     icon="mdi-monitor-screenshot"
     dense
     flat
-    :disable="url === ''"
-    :size="size"
   >
     <slot />
   </q-btn>
