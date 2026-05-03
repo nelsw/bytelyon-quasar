@@ -2,16 +2,30 @@
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
-import type { BotType, Page, Sitemap, SitemapNode } from 'src/types/model';
+import type { Bot, BotType, Page, Sitemap, SitemapNode } from 'src/types/model';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import PageCard from 'components/card/PageCard.vue';
 import { useBots } from 'stores/bots';
 import { useSitemaps } from 'stores/sitemaps';
 import { usePages } from 'stores/pages';
+import BrowserSelect from 'components/select/BrowserSelect.vue';
+import TrashBtn from 'components/btn/TrashBtn.vue';
+import FrequencySelect from 'components/select/FrequencySelect.vue';
+
+const color = 'amber-13';
+
+const props = defineProps<{
+  botType: BotType,
+  botId: string;
+}>();
 
 const $sitemaps = useSitemaps();
 const $pages = usePages();
 const $bots = useBots();
+
+const target = ref('');
+const frequency = ref<number>(1);
+const headless = ref<boolean>(true);
 
 const nodes = ref<SitemapNode[]>([]);
 const pages = ref<Page[]>([]);
@@ -21,22 +35,39 @@ const selected = ref<string>('');
 const expanded = ref<string[]>([]);
 const filter = ref<string>('');
 
-const props = defineProps<{
-  botType: BotType,
-  botId: string;
-}>()
+const onDeleteBot = async () => await $bots.Delete(props.botType, props.botId);
 
 const onChange = async () => {
 
-  const domain = $bots.model.get(props.botType, []).find((b) => b.id === props.botId)?.target as string;
+  const bot = $bots.model
+    .get(props.botType, [])
+    .find((b) => b.id === props.botId) as Bot;
 
-  await $sitemaps.Load(domain);
-  const node = $sitemaps.model.get(domain, {} as Sitemap).nodes.find((n: SitemapNode) => n.label === domain);
+  await $sitemaps.Load(bot.target);
+
+  target.value = bot.target;
+  frequency.value = bot.frequency;
+  headless.value = bot.headless ?? true;
+
+  const node = $sitemaps.model
+    .get(bot.target, {} as Sitemap)
+    .nodes
+    .find((n: SitemapNode) => n.label === bot.target);
 
   nodes.value = node ? [node] : [];
   expanded.value = [node?.label ?? ''];
   selected.value = node?.label ?? '';
 };
+
+const onUpdate = async () =>
+  await $bots.Save(
+    props.botType,
+    props.botId,
+    target.value,
+    frequency.value,
+    [],
+    headless.value
+  );
 
 watch(selected, async (newVal, oldVal) => {
   const newN = treeRef.value?.getNodeByKey(newVal);
@@ -55,11 +86,34 @@ onMounted(onChange);
 </script>
 
 <template>
+  <div class="q-pa-sm q-gutter-y-sm">
+    <q-card flat style="background-color: transparent">
+      <q-card-section>
+        <div class="flex justify-between items-center">
+          <div class="flex items-center q-gutter-sm">
+            <div class="text-h5 text-weight-medium text-uppercase">
+              {{ target }}
+            </div>
+            <BrowserSelect v-model="headless" @update:model-value="onUpdate" :color="color" />
+            <FrequencySelect v-model="frequency" @update:model-value="onUpdate" :color="color" />
+          </div>
+          <div class="flex row q-gutter-x-sm">
+            <TrashBtn @delete="onDeleteBot" size="md">
+              <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
+                Delete Bot
+              </q-tooltip>
+            </TrashBtn>
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </div>
+  <q-separator />
   <q-splitter v-model="splitterModel" :limits="[15, 85]" class="full-height">
     <template #before>
       <FilterInput v-model="filter" class="q-pt-sm q-px-md" />
       <q-separator inset />
-      <ScrollArea style="height: calc(100vh - 49px - 36px); max-width: 100vw">
+      <ScrollArea style="height: calc(100vh - 48px - 38px - 88px); max-width: 100vw">
         <q-tree
           class="q-px-md q-py-sm"
           ref="my-sitemap-tree"
