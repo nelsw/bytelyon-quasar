@@ -24,6 +24,8 @@ export default defineConfig(() => {
       env: {
         // Public API
         API: 'https://api.bytelyon.com',
+        DEBUG_ROUTER: false,
+        DEBUG_RESPONSE: false,
       },
       vitePlugins: [
         [

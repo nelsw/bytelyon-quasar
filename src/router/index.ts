@@ -36,18 +36,20 @@ export default defineRouter(async function () {
 
   Router.beforeEach((to, from, next) => {
 
-    console.log(`Router (Before): ${JSON.stringify({
-      from: {
-        path: from.path,
-        params: from.params,
-        query: from.query,
-      },
-      to: {
-        path: to.path,
-        params: to.params,
-        query: to.query,
-      },
-    }, null, 2)}`);
+    if (process.env.DEBUG_ROUTER) {
+      console.log(`Router (Before): ${JSON.stringify({
+        from: {
+          path: from.path,
+          params: from.params,
+          query: from.query,
+        },
+        to: {
+          path: to.path,
+          params: to.params,
+          query: to.query,
+        },
+      }, null, 2)}`);
+    }
 
     const $auth = useTokenStore();
 
@@ -61,11 +63,13 @@ export default defineRouter(async function () {
   });
 
   Router.afterEach((g) => {
-    console.log(`Router (After): ${JSON.stringify({
-      path: g.path,
-      params: g.params,
-      query: g.query,
-    }, null, 2)}`);
+    if (process.env.DEBUG_ROUTER) {
+      console.log(`Router (After): ${JSON.stringify({
+        path: g.path,
+        params: g.params,
+        query: g.query,
+      }, null, 2)}`);
+    }
   });
 
   return new Promise((resolve) => resolve(Router));

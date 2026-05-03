@@ -50,10 +50,9 @@ export default defineBoot(({ app, store, router }) => {
   // handle unauthorized & forbidden response status
   api.interceptors.response.use(
     (r: AxiosResponse) => {
-      console.debug(JSON.stringify({
-        url: r.config.url,
-        data: r.data
-      }, null, 2));
+      if (process.env.DEBUG_RESPONSE) {
+        console.debug(JSON.stringify({ url: r.config.url, data: r.data }, null, 2));
+      }
       return r;
     },
     async (e: AxiosError) => {
