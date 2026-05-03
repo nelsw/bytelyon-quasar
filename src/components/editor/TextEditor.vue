@@ -47,6 +47,7 @@ const props = defineProps<{
   size?: boolean | undefined;
   full?: boolean | undefined;
   placeholder?: string | undefined;
+  label?: string | undefined;
 }>();
 
 const model = defineModel<string>({ required: true });
@@ -106,12 +107,27 @@ const toolbar = computed(() => {
 </script>
 
 <template>
+<div>
   <q-editor
     v-model="model"
     :toolbar="toolbar"
     :placeholder="placeholder ?? 'Text Editor'"
     :toolbar-toggle-color="color ?? 'primary'"
+    toolbar-bg="#2d2d2d"
+    content-style="background-color: rgba(255, 255, 255, 0.07)"
     dense
     dark
+    square
   />
+  <span v-if="label" class="q-ml-md text-grey-5" style="font-size: 11px">
+    {{ label }}
+  </span>
+</div>
+
 </template>
+
+<style lang="scss">
+.wat {
+  color: rgba(255, 255, 255, 0.07)
+}
+</style>

@@ -126,8 +126,8 @@ const onAccept = () => {
 
     <q-card flat bordered>
       <q-card-section>
+        <!--title-->
         <div class="flex items-center q-mb-md q-gutter-md">
-          <!--title-->
           <div class="col-grow">
             <q-input
               v-model="title"
@@ -142,9 +142,10 @@ const onAccept = () => {
           </div>
         </div>
 
+        <!--tag & timestamp -->
         <div class="flex items-center q-mb-md q-gutter-md">
+          <!--tag-->
           <div class="col-grow">
-            <!--tag-->
             <q-select
               v-model="tags"
               :color="color"
@@ -195,7 +196,7 @@ const onAccept = () => {
           <q-input
             v-model="image"
             :color="color"
-            hint="URL for main image of the post; Must be .webp, .jpg, .jpeg, or .png."
+            hint="Main image of the post; .webp, .jpg, .jpeg, or .png required."
             label="Image"
             filled
             dense
@@ -217,7 +218,7 @@ const onAccept = () => {
             v-model="keywords"
             :color="color"
             class="flex col-grow"
-            hint="Keywords are query terms that relate to our store (requires optimization)."
+            hint="Query terms that relate to this post (optimization)."
             input-debounce="0"
             label="Keywords"
             new-value-mode="add-unique"
@@ -237,7 +238,7 @@ const onAccept = () => {
             v-model="url"
             :color="color"
             label="URL"
-            hint="URL relating to this post; Use for backlinks (required optimization)."
+            hint="URL relating to this post (optimization)."
             dense
             filled
             square
@@ -251,16 +252,21 @@ const onAccept = () => {
             </template>
           </q-input>
         </div>
+
+        <!--editor-->
+        <div class="col-grow">
+          <TextEditor
+            v-model="body"
+            :color="color"
+            placeholder="Body"
+            label="Main content of blog post (styling supported)."
+            kitchen-sink
+          />
+        </div>
       </q-card-section>
     </q-card>
 
-    <!--editor-->
-    <TextEditor
-      v-model="body"
-      :color="color"
-      :placeholder="`Text editor for blog post body (styling supported).`"
-      kitchen-sink
-    />
+
   </div>
   <q-dialog v-model="dialog" position="bottom" full-width persistent>
     <q-card>
