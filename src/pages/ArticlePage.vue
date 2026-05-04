@@ -91,65 +91,42 @@ const onAccept = () => {
 </script>
 
 <template>
-  <div class="q-pa-sm q-gutter-y-sm">
-    <q-card style="background-color: transparent" flat>
-      <q-card-section>
-        <div class="flex justify-between items-center q-gutter-sm">
-          <div class="flex items-center">
-            <span class="text-h5 text-weight-medium text-uppercase q-mr-sm">Article Spinner</span>
-            <div class="text-subtitle2">
-              Publish blog posts to Shopify with content optimized by AI.
-            </div>
-          </div>
-          <div class="flex justify-end items-center">
-            <SubmitBtn
-              @click="dialog = true"
-              size="md"
-              class="q-ml-sm"
-              label="Optimize"
-              outline
-              :disable="body === ''"
-            />
-            <SubmitBtn
-              @click="onPublish"
-              size="md"
-              class="q-ml-sm"
-              label="Publish"
-              :disable="
-                title === '' || image === '' || summary === '' || tags.length === 0 || body === ''
-              "
-            />
-          </div>
-        </div>
-      </q-card-section>
-    </q-card>
+  <q-card class="bg-transparent" flat>
 
-    <q-card flat bordered>
-      <q-card-section>
-        <!--title-->
-        <div class="flex items-center q-mb-md q-gutter-md">
-          <div class="col-grow">
-            <q-input
-              v-model="title"
-              :color="color"
-              hint="The title of the blog post; Short & sweet is best."
-              label="Title"
-              autofocus
-              filled
-              dense
-              square
-            />
-          </div>
-        </div>
+    <q-card-section>
+      <div class="flex items-center q-gutter-sm">
+        <span class="text-h5 text-weight-medium text-uppercase">Article Spinner</span>
+        <span class="text-subtitle2">
+          Publish blog posts to Shopify with content optimized by AI.
+        </span>
+      </div>
+    </q-card-section>
 
-        <!--tag & timestamp -->
-        <div class="flex items-center q-mb-md q-gutter-md">
-          <!--tag-->
-          <div class="col-grow">
-            <q-select
-              v-model="tags"
-              :color="color"
-              :options="[
+    <q-card-section class="q-py-none">
+      <!--title-->
+      <div class="flex items-center q-mb-md">
+        <div class="col-grow">
+          <q-input
+            v-model="title"
+            :color="color"
+            hint="The title of the blog post; Short & sweet is best."
+            label="Title"
+            autofocus
+            filled
+            dense
+            square
+          />
+        </div>
+      </div>
+
+      <!--tag & timestamp -->
+      <div class="flex items-center q-mb-md q-gutter-md">
+        <!--tag-->
+        <div class="col-grow">
+          <q-select
+            v-model="tags"
+            :color="color"
+            :options="[
                 'boat fire',
                 'e-bike fire',
                 'e-scooter fire',
@@ -157,117 +134,132 @@ const onAccept = () => {
                 'golf cart fire',
                 'rv fire',
               ]"
-              class="flex col-md-1 col-sm-12"
-              hint="Post category."
-              input-debounce="0"
-              label="Tag"
-              dense
-              filled
-              hide-dropdown-icon
-              square
-            />
-          </div>
-          <!--timestamp-->
-          <div class="col-shrink">
-            <DateTimeInput
-              v-model="publishedAt"
-              :color="color"
-              hint="Publication date; Can be back dated."
-            />
-          </div>
-        </div>
-
-        <!--excerpt-->
-        <div class="col-grow q-mb-md">
-          <q-input
-            v-model="summary"
-            :color="color"
-            hint="Post summary; Appears on home page & blog page."
-            label="Excerpt"
-            dense
-            filled
-            hide-bottom-space
-            square
-          />
-        </div>
-
-        <!--img-->
-        <div class="col-grow q-mb-md">
-          <q-input
-            v-model="image"
-            :color="color"
-            hint="Main image of the post; .webp, .jpg, .jpeg, or .png required."
-            label="Image"
-            filled
-            dense
-            square
-          >
-            <template #append>
-              <ViewImgBtn title="Shopify Blog Post Image Preview" :url="image" :color="color">
-                <q-tooltip anchor="bottom middle" self="top end" :offset="[10, 10]">
-                  Image Preview
-                </q-tooltip>
-              </ViewImgBtn>
-            </template>
-          </q-input>
-        </div>
-
-        <!--keywords-->
-        <div class="col-grow q-mb-md">
-          <q-select
-            v-model="keywords"
-            :color="color"
-            class="flex col-grow"
-            hint="Query terms that relate to this post (optimization)."
+            class="flex col-md-1 col-sm-12"
+            hint="Post category."
             input-debounce="0"
-            label="Keywords"
-            new-value-mode="add-unique"
+            label="Tag"
             dense
             filled
             hide-dropdown-icon
-            multiple
             square
-            use-chips
-            use-input
           />
         </div>
-
-        <!--url-->
-        <div class="col-grow q-mb-md">
-          <q-input
-            v-model="url"
+        <!--timestamp-->
+        <div class="col-shrink">
+          <DateTimeInput
+            v-model="publishedAt"
             :color="color"
-            label="URL"
-            hint="URL relating to this post (optimization)."
-            dense
-            filled
-            square
-          >
-            <template #append>
-              <OpenInNewBtn :url="url" :color="color">
-                <q-tooltip anchor="bottom middle" self="top end" :offset="[10, 10]">
-                  Open in new tab
-                </q-tooltip>
-              </OpenInNewBtn>
-            </template>
-          </q-input>
-        </div>
-
-        <!--editor-->
-        <div class="col-grow">
-          <TextEditor
-            v-model="body"
-            :color="color"
-            placeholder="Body"
-            label="Main content of blog post (styling supported)."
-            kitchen-sink
+            hint="Publication date; Can be back dated."
           />
         </div>
-      </q-card-section>
-    </q-card>
+      </div>
 
+      <!--excerpt-->
+      <div class="col-grow q-mb-md">
+        <q-input
+          v-model="summary"
+          :color="color"
+          hint="Post summary; Appears on home page & blog page."
+          label="Excerpt"
+          dense
+          filled
+          hide-bottom-space
+          square
+        />
+      </div>
 
-  </div>
+      <!--img-->
+      <div class="col-grow q-mb-md">
+        <q-input
+          v-model="image"
+          :color="color"
+          hint="Main image of the post; .webp, .jpg, .jpeg, or .png required."
+          label="Image"
+          filled
+          dense
+          square
+        >
+          <template #append>
+            <ViewImgBtn title="Shopify Blog Post Image Preview" :url="image" :color="color">
+              <q-tooltip anchor="bottom middle" self="top end" :offset="[10, 10]">
+                Image Preview
+              </q-tooltip>
+            </ViewImgBtn>
+          </template>
+        </q-input>
+      </div>
+
+      <!--keywords-->
+      <div class="col-grow q-mb-md">
+        <q-select
+          v-model="keywords"
+          :color="color"
+          class="flex col-grow"
+          hint="Query terms that relate to this post (optimization)."
+          input-debounce="0"
+          label="Keywords"
+          new-value-mode="add-unique"
+          dense
+          filled
+          hide-dropdown-icon
+          multiple
+          square
+          use-chips
+          use-input
+        />
+      </div>
+
+      <!--url-->
+      <div class="col-grow q-mb-md">
+        <q-input
+          v-model="url"
+          :color="color"
+          label="URL"
+          hint="URL relating to this post (optimization)."
+          dense
+          filled
+          square
+        >
+          <template #append>
+            <OpenInNewBtn :url="url" :color="color">
+              <q-tooltip anchor="bottom middle" self="top end" :offset="[10, 10]">
+                Open in new tab
+              </q-tooltip>
+            </OpenInNewBtn>
+          </template>
+        </q-input>
+      </div>
+
+      <!--editor-->
+      <div class="col-grow">
+        <TextEditor
+          v-model="body"
+          :color="color"
+          placeholder="Body"
+          label="Main content of blog post (styling supported)."
+          kitchen-sink
+        />
+      </div>
+    </q-card-section>
+    <q-card-actions class="justify-end q-mr-sm">
+      <SubmitBtn
+        @click="dialog = true"
+        size="md"
+        label="Optimize"
+        outline
+        :disable="body === ''"
+      />
+      <SubmitBtn
+        @click="onPublish"
+        size="md"
+        class="q-ml-sm"
+        label="Publish"
+        :disable="
+                title === '' || image === '' || summary === '' || tags.length === 0 || body === ''
+              "
+      />
+    </q-card-actions>
+  </q-card>
   <q-dialog v-model="dialog" position="bottom" full-width persistent>
     <q-card>
       <q-card-section>
