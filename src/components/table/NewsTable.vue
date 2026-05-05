@@ -55,7 +55,7 @@ const onShopifyClick = (r: NewsBotResult) => {
     imgAlt: '',
     imgSrc: r.image ?? '',
     backlink: r.url ?? '',
-    body: r.body?.map((b) => `<p>${b}</p>`)?.join() || '',
+    body: r.body?.map((b) => `<p>${b}</p>`)?.join('') || '',
     publishedAt: r.publishedAt,
     title: r.title,
   });
