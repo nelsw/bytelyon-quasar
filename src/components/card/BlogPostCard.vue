@@ -83,6 +83,7 @@ const onPublish = () => {
               'e-scooter fire',
               'ev fire',
               'golf cart fire',
+              'lithium-ion battery fire',
               'rv fire',
             ]"
             class="flex col-md-1 col-sm-12"
