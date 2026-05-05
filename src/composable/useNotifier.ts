@@ -12,7 +12,7 @@ const options = (msg: string): QNotifyOptions => ({
   position: 'bottom-right',
   textColor: 'white',
   timeout: 5_000,
-  group: false,
+  group: true,
 });
 
 const symbolSpan = (s: string): string => `<span style="margin-right: 8px;">${s}</span>`;

@@ -4,22 +4,25 @@ import NewsTable from 'components/table/NewsTable.vue';
 import { onMounted, ref, watch } from 'vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import { useBots } from 'stores/bots';
-import type { Bot, BotType } from 'src/types/model';
+import type { Bot, BotType, Post } from 'src/types/model';
+import { BlogPost } from 'src/types/model';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
 import { useNews } from 'stores/news';
 
-const color = 'amber-13'
+const color = 'amber-13';
 
 const props = defineProps<{
-  botType: BotType,
+  botType: BotType;
   botId: string;
-}>()
+}>();
 
 const $bots = useBots();
 const $news = useNews();
 
+const dialog = ref(false);
+const post = ref<Post>(new BlogPost());
 const target = ref('');
 const frequency = ref<number>(1);
 const blackList = ref<string[]>([]);
@@ -37,11 +40,13 @@ const onUpdate = async () =>
     headless.value,
   );
 
+const onShow = (p:Post) => {
+  post.value = p;
+  dialog.value = true;
+}
 const onChangeBot = async () => {
   await $news.Load(props.botId);
-  const bot = $bots.model
-    .get(props.botType, [])
-    .find((b) => b.id === (props.botId)) as Bot;
+  const bot = $bots.model.get(props.botType, []).find((b) => b.id === props.botId) as Bot;
 
   target.value = bot.target;
   frequency.value = bot.frequency;
@@ -54,7 +59,7 @@ onMounted(onChangeBot);
 </script>
 
 <template>
-  <ShopifyDialog />
+  <ShopifyDialog v-model:show="dialog" v-model:post="post" />
   <div class="q-pa-sm q-gutter-y-sm">
     <div>
       <q-card flat style="background-color: transparent">
@@ -80,7 +85,7 @@ onMounted(onChangeBot);
       </q-card>
     </div>
     <div class="q-mx-md">
-      <NewsTable :bot-id="botId" />
+      <NewsTable @show="onShow" :bot-id="botId" />
     </div>
   </div>
 </template>

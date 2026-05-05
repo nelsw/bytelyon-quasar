@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NewsBotResult } from 'src/types/model';
+import type { NewsBotResult, Post } from 'src/types/model';
 import type { QTableColumn } from 'quasar';
 import { ref } from 'vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
@@ -8,8 +8,11 @@ import TrashBtn from 'components/btn/TrashBtn.vue';
 import FilterInput from 'components/input/FilterInput.vue';
 import ShopifyBtn from 'components/btn/ShopifyBtn.vue';
 import { Days, Minutes } from 'src/types/base';
-import { useArticles } from 'stores/articles';
 import { useNews } from 'stores/news';
+
+const emit = defineEmits<{
+  show: [Post];
+}>();
 
 const columns: QTableColumn<NewsBotResult>[] = [
   { name: 'ID', label: 'ID', field: 'id', align: 'left', style: 'width: 0;' },
@@ -33,7 +36,6 @@ const props = defineProps<{
   botId: string;
 }>();
 
-const $article = useArticles();
 const $results = useNews();
 const filter = ref<string>('');
 const columnNames = ref<string[]>(columns.map((col) => col.name));
@@ -46,6 +48,18 @@ const visibleCols = ref<string[]>(
 );
 
 const onDeleteResult = async (id: string) => await $results.Delete(props.botId, id);
+const onShopifyClick = (r: NewsBotResult) => {
+  emit('show', {
+    summary: '',
+    tags: [],
+    imgAlt: '',
+    imgSrc: r.image ?? '',
+    backlink: r.url ?? '',
+    body: r.body?.map((b) => `<p>${b}</p>`)?.join() || '',
+    publishedAt: r.publishedAt,
+    title: r.title,
+  });
+};
 </script>
 
 <template>
@@ -80,7 +94,11 @@ const onDeleteResult = async (id: string) => await $results.Delete(props.botId, 
             outline
           />
           <OpenInNewBtn v-else-if="col.name === 'Open'" :url="col.value" size="sm" color="teal" />
-          <ShopifyBtn v-else-if="col.name === 'Post'" @click="$article.load(props.row)" size="xs" />
+          <ShopifyBtn
+            v-else-if="col.name === 'Post'"
+            @click="onShopifyClick(props.row)"
+            size="xs"
+          />
           <span v-else>{{ col.value }}</span>
         </q-td>
       </q-tr>

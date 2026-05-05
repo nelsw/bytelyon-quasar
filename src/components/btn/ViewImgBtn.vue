@@ -25,8 +25,6 @@ const model = ref<boolean>(false);
     <slot />
   </q-btn>
   <ToolbarDialog v-model="model" :title="title">
-    <template #content>
-      <q-img :src="url" />
-    </template>
+    <q-img :src="url" />
   </ToolbarDialog>
 </template>

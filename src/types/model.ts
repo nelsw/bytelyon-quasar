@@ -105,13 +105,13 @@ export type Sitemap = {
   updated_at: Date;
   domain: string;
   nodes: SitemapNode[];
-}
+};
 
 export type SitemapNode = {
   label: string;
   url: string;
   children?: SitemapNode[];
-}
+};
 
 export interface Customer {
   id: string;
@@ -140,4 +140,51 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
+}
+
+export interface SEO {
+  backlink?: string | undefined;
+  keywords?: string[];
+}
+
+export interface Post extends SEO {
+  title: string;
+  body: string;
+  summary: string;
+  tags: string[];
+  imgSrc: string;
+  imgAlt: string;
+  publishedAt: string;
+}
+
+export interface Prompt {
+  system: string;
+  message: string;
+  result: string;
+  html: boolean;
+}
+
+export class BlogPost implements Post {
+  id: string;
+  title: string;
+  body: string;
+  summary: string;
+  tags: string[];
+  imgSrc: string;
+  imgAlt: string;
+  publishedAt: string;
+  backlink?: string | undefined;
+  keywords?: string[];
+
+  constructor() {
+    this.id = '';
+    this.title = '';
+    this.body = '';
+    this.summary = '';
+    this.tags = [];
+    this.imgSrc = '';
+    this.imgAlt = '';
+    this.publishedAt = '';
+    this.backlink = '';
+  }
 }

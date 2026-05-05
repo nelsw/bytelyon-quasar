@@ -64,7 +64,7 @@ const maximized = ref<boolean>(true);
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <slot name="content" />
+        <slot/>
       </q-card-section>
     </q-card>
   </q-dialog>

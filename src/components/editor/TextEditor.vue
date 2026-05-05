@@ -10,9 +10,8 @@ const allToolbarOptions = [
       icon: $q.iconSet.editor.align,
       fixedLabel: true,
       list: 'only-icons',
-      options: ['left', 'center', 'right', 'justify']
-
-    }
+      options: ['left', 'center', 'right', 'justify'],
+    },
   ],
   ['unordered', 'ordered'],
   ['bold', 'italic', 'underline'],
@@ -21,11 +20,11 @@ const allToolbarOptions = [
       icon: $q.iconSet.editor.formatting,
       fixedLabel: true,
       list: 'no-icons',
-      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code']
-    }
+      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'],
+    },
   ],
   ['link', 'hr'],
-  ['fullscreen']
+  ['fullscreen'],
 ];
 
 const props = defineProps<{
@@ -56,8 +55,8 @@ const toolbar = computed(() => {
         icon: $q.iconSet.editor.align,
         fixedLabel: true,
         list: 'only-icons',
-        options: ['left', 'center', 'right', 'justify']
-      }
+        options: ['left', 'center', 'right', 'justify'],
+      },
     ]);
   }
   if (props.order) {
@@ -75,7 +74,7 @@ const toolbar = computed(() => {
       label: $q.lang.editor.formatting,
       icon: $q.iconSet.editor.formatting,
       list: 'no-icons',
-      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code']
+      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'],
     });
   }
   if (props.size) {
@@ -85,7 +84,7 @@ const toolbar = computed(() => {
       fixedLabel: true,
       fixedIcon: true,
       list: 'no-icons',
-      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7']
+      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7'],
     });
   }
   fmt.push('removeFormat');
@@ -105,15 +104,14 @@ const toolbar = computed(() => {
       :toolbar="toolbar"
       :placeholder="placeholder ?? 'Text Editor'"
       :toolbar-toggle-color="color ?? 'primary'"
-      content-style="background-color: #232323"
+      :content-style="{backgroundColor: '#232323'}"
       dense
       dark
       square
       flat
     />
     <span v-if="label" class="q-ml-md text-grey-5" style="font-size: 11px">
-    {{ label }}
-  </span>
+      {{ label }}
+    </span>
   </div>
-
 </template>
