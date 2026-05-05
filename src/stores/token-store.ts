@@ -42,8 +42,8 @@ export const useTokenStore = defineStore('token-store', () => {
             .join('')
         )
       );
-    } catch (error) {
-      console.error('Error decoding JWT:', error);
+    } catch {
+      return undefined;
     }
   };
 
@@ -58,10 +58,21 @@ export const useTokenStore = defineStore('token-store', () => {
       .finally(() => Loading.hide());
   };
 
+  // Cannot be an arrow function give "this"
+  // async function Logout(this: thisType): Promise<NavigationFailure | void | undefined> {
+  //   Loading.show({ spinnerColor: 'primary' });
+  //   model.value = undefined
+  //   await this.router.push({ path: '/login' });
+  //   Loading.hide();
+  //   $notify.ok(null, `👋`, `Come back soon!`);
+  //   return;
+  // }
+
   const IsExpired = (): boolean => Date.now() > (claims()?.exp || 1) * 1000;
   const IsGuest = (): boolean => claims()?.jti === '01KM01JC9PS1R4X4FDJNFAR4AZ';
   const IsInvalid = (): boolean => !IsValid();
   const IsValid = (): boolean => !IsExpired();
+  const IsExperimental = (): boolean => claims()?.jti === '01KM010XK0HY8HWWFPJTZGRF0F';
 
   return {
     model,
@@ -69,7 +80,8 @@ export const useTokenStore = defineStore('token-store', () => {
     IsInvalid,
     IsExpired,
     IsGuest,
-    Login
+    IsExperimental,
+    Login,
   };
 }, {
   persist: {

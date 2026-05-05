@@ -3,6 +3,7 @@ import BotPage from 'pages/BotPage.vue';
 import NewsPage from 'pages/NewsPage.vue';
 import SitemapPage from 'pages/SitemapPage.vue';
 import SearchPage from 'pages/SearchPage.vue';
+import ShopifyPage from 'pages/ShopifyPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -46,6 +47,10 @@ const routes: RouteRecordRaw[] = [
         path: '/:botType(sitemap)/:botId',
         component: SitemapPage,
         props: true,
+      },
+      {
+        path: '/shopify',
+        component: ShopifyPage,
       },
     ],
   },

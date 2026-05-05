@@ -2,6 +2,7 @@
 import HeaderBtnGroup from 'components/btn/group/HeaderBtnGroup.vue';
 import { useBots } from 'stores/bots';
 import { onMounted } from 'vue';
+import CarlFab from 'components/fab/CarlFab.vue';
 onMounted(useBots().LoadAll)
 </script>
 <template>
@@ -12,6 +13,9 @@ onMounted(useBots().LoadAll)
     <q-page-container>
       <q-page>
         <router-view />
+        <q-page-sticky position="bottom-right" :offset="[18, 18]">
+          <CarlFab />
+        </q-page-sticky>
       </q-page>
     </q-page-container>
   </q-layout>

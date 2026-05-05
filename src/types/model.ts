@@ -112,3 +112,32 @@ export type SitemapNode = {
   url: string;
   children?: SitemapNode[];
 }
+
+export interface Customer {
+  id: string;
+  name: string;
+  city: string;
+  state: string;
+  email: string;
+  tags: string[];
+  orders: number;
+  phone: string;
+  spent: number;
+}
+
+export interface Order {
+  id: string;
+  price: number;
+  refunded: number;
+  shipping: number;
+  discounts: number;
+  createdAt: Date;
+  items: OrderItem[];
+}
+
+export interface OrderItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
