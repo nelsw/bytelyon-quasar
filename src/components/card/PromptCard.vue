@@ -14,8 +14,11 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   color?: string | undefined;
+  transparent?: boolean | undefined;
   systemPlaceholder?: string | undefined;
   messagePlaceholder?: string | undefined;
+  heading?: string | undefined;
+  subheading?: string | undefined;
 }>();
 
 const $notify = useNotifier();
@@ -64,11 +67,10 @@ const onSubmit = async () => {
     $notify.MembersOnly();
     return;
   }
-
   busy.value = true;
   await api
     .post<{ text: string }>(`/ai`, {
-      system: sys.value,
+      system: sys.value !== '' ? sys.value : (props.systemPlaceholder ?? ''),
       message: messageValue.value,
       html: true,
     })
@@ -79,21 +81,26 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <q-card>
+  <q-card :class="`${transparent ? 'bg-transparent' : ''}`" flat>
     <q-card-section>
-      <div class="flex justify-around items-center q-gutter-sm">
-        <div class="text-h4">Article Optimizer</div>
-        <div v-if="res === ''" class="text-body2 text-center">
-          Use the following context inputs to instruct AI on how to best optimize your text.
+      <div class="flex justify-between items-center">
+        <div class="flex items-center q-gutter-sm">
+          <span class="text-h5 text-weight-medium text-uppercase">
+            {{ heading ?? 'AI Prompt' }}
+          </span>
+          <span class="text-subtitle2">
+            {{ subheading ?? 'Define the following contexts to generate a response from AI' }}
+          </span>
         </div>
-        <div>
+        <div class="flex justify-around items-center q-gutter-sm">
           <q-btn
             @click="onCancel"
             class="q-mr-sm"
             color="grey-8"
             label="Cancel"
-            outline
             size="lg"
+            outline
+            square
           />
           <SubmitBtn
             v-if="res === ''"
@@ -105,38 +112,31 @@ const onSubmit = async () => {
         </div>
       </div>
     </q-card-section>
-    <q-separator />
-    <div v-if="res === ''">
-      <q-card-section>
-        <q-card-section>
-          <div class="col-grow q-gutter-sm">
-            <div>
-              <div class="flex items-center q-gutter-sm">
-                <span class="text-subtitle1 text-bold q-mr-sm">System</span>
-                <span class="text-subtitle2">Define a role or persona for the system.</span>
-              </div>
-              <TextEditor v-model="sys" :placeholder="systemPlaceholder" empty />
-            </div>
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <div class="col-grow q-gutter-sm">
-            <div>
-              <div class="flex items-center q-gutter-sm">
-                <span class="text-subtitle1 text-bold q-mr-sm">Message</span>
-                <span class="text-subtitle2">Describe what you want the system to create.</span>
-              </div>
-              <TextEditor v-model="msg" :placeholder="messagePlaceholder" empty />
-            </div>
-          </div>
-        </q-card-section>
-      </q-card-section>
-    </div>
-    <div v-else>
-      <q-card-section class="q-px-lg">
-        <div class="flex q-px-md" v-html="res" />
-      </q-card-section>
-    </div>
+    <q-card-section class="q-py-none">
+      <div class="q-gutter-sm">
+        <div class="flex items-center">
+          <span class="text-subtitle1 text-bold q-mr-sm">System</span>
+          <span class="text-subtitle2">Define a role or persona for the system.</span>
+        </div>
+        <TextEditor v-model="sys" :placeholder="systemPlaceholder" empty />
+      </div>
+    </q-card-section>
+    <q-card-section>
+      <div class="q-gutter-sm">
+        <div class="flex items-center">
+          <span class="text-subtitle1 text-bold q-mr-sm">Message</span>
+          <span class="text-subtitle2">Describe what you want the system to create.</span>
+        </div>
+        <TextEditor v-model="msg" :placeholder="messagePlaceholder" empty />
+      </div>
+    </q-card-section>
+      <q-separator spaced inset />
+    <q-card-section v-if="res !== ''">
+      <div class="q-gutter-sm">
+        <div class="text-subtitle1 text-bold q-mr-sm">Result</div>
+        <div v-html="res" />
+      </div>
+    </q-card-section>
   </q-card>
-  <InnerLoading :color="color" label="Waiting on AI response ..." />
+  <InnerLoading v-model="busy" :color="color" label="Waiting on AI to respond ..." />
 </template>

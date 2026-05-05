@@ -74,7 +74,8 @@ const onPublish = () => {
         <!--tag-->
         <div class="col-grow">
           <q-select
-            v-model="model.tags"
+            @update:model-value="(s) => model.tags=[s]"
+            :model-value="model.tags"
             :color="color ?? 'green-13'"
             :options="[
               'boat fire',
@@ -228,13 +229,15 @@ const onPublish = () => {
           model.imgAlt === '' ||
           model.summary === '' ||
           model.tags.length === 0 ||
-          model.body !== ''
+          model.body === ''
         "
       />
     </q-card-actions>
   </q-card>
   <q-dialog v-model="dialog" position="bottom" full-width persistent>
     <PromptCard
+      heading="Content Optimizer"
+      subheading="Instruct AI on how to best optimize this blog post."
       v-model:content="model.body"
       v-model:backlink="model.backlink"
       v-model:keywords="model.keywords"
