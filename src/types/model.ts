@@ -86,19 +86,21 @@ export type SerpResult = {
   title: string;
 };
 
-export type NewsBotResult = {
-  id: string;
-  botId: string;
+export type Image = {
+  altText: string;
   url: string;
-  title: string;
-  source: string;
-  description: string;
-  publishedAt: string;
-  body: string[];
-  image: string;
-  target: string;
-  type: BotType;
 };
+
+export interface News {
+  body: string[];
+  description: string;
+  image: Image;
+  keywords: string[];
+  publishedAt: string;
+  source: string;
+  title: string;
+  url: string;
+}
 
 export type Sitemap = {
   created_at: Date;
@@ -152,9 +154,9 @@ export interface Post extends SEO {
   body: string;
   summary: string;
   tags: string[];
-  imgSrc: string;
-  imgAlt: string;
+  image: Image;
   publishedAt: string;
+  keywords: string[];
 }
 
 export interface Prompt {
@@ -170,11 +172,10 @@ export class BlogPost implements Post {
   body: string;
   summary: string;
   tags: string[];
-  imgSrc: string;
-  imgAlt: string;
+  image: Image;
   publishedAt: string;
   backlink?: string | undefined;
-  keywords?: string[];
+  keywords: string[];
 
   constructor() {
     this.id = '';
@@ -182,9 +183,12 @@ export class BlogPost implements Post {
     this.body = '';
     this.summary = '';
     this.tags = [];
-    this.imgSrc = '';
-    this.imgAlt = '';
+    this.image = {
+      url: '',
+      altText: '',
+    };
     this.publishedAt = '';
     this.backlink = '';
+    this.keywords = [];
   }
 }

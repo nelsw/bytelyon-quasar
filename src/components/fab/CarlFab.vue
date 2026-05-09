@@ -6,7 +6,7 @@ const $auth = useTokenStore();
 const $router = useRouter();
 
 const onLogout = async () => {
-  $auth.model = undefined;
+  if ($auth.model) $auth.model.token = '';
   await $router.push('/login');
 };
 
@@ -16,7 +16,13 @@ const onHome = async () => {
 </script>
 
 <template>
-  <q-fab color="amber" text-color="black" icon="mdi-bug" direction="up">
+  <q-fab
+    v-if="$auth.IsExperimental()"
+    color="amber"
+    text-color="black"
+    icon="mdi-bug"
+    direction="up"
+  >
     <q-fab-action color="grey-8" @click="onLogout" icon="mdi-logout" />
     <q-fab-action color="primary" @click="onHome" icon="mdi-home" />
   </q-fab>

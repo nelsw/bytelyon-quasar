@@ -74,7 +74,7 @@ const onPublish = () => {
         <!--tag-->
         <div class="col-grow">
           <q-select
-            @update:model-value="(s) => model.tags=[s]"
+            @update:model-value="(s) => (model.tags = [s])"
             :model-value="model.tags"
             :color="color ?? 'green-13'"
             :options="[
@@ -123,7 +123,7 @@ const onPublish = () => {
       <!--img src-->
       <div class="col-grow q-mb-md">
         <q-input
-          v-model="model.imgSrc"
+          v-model="model.image.url"
           :color="color ?? 'green-13'"
           hint="Main image of the post; .webp, .jpg, .jpeg, or .png required."
           label="Image URL"
@@ -134,7 +134,7 @@ const onPublish = () => {
           <template #append>
             <ViewImgBtn
               title="Shopify Blog Post Image Preview"
-              :url="model.imgSrc"
+              :url="model.image.url"
               :color="color ?? 'green-13'"
             >
               <q-tooltip anchor="bottom middle" self="top end" :offset="[10, 10]">
@@ -148,9 +148,9 @@ const onPublish = () => {
       <!--img alt-->
       <div class="col-grow q-mb-md">
         <q-input
-          v-model="model.imgAlt"
+          v-model="model.image.altText"
           :color="color ?? 'green-13'"
-          :disable="model.imgSrc === ''"
+          :disable="model.image.url === ''"
           hint="Brief description of the image."
           label="Image Alt"
           filled
@@ -226,8 +226,8 @@ const onPublish = () => {
         label="Publish"
         :disable="
           model.title === '' ||
-          model.imgSrc === '' ||
-          model.imgAlt === '' ||
+          model.image.url === '' ||
+          model.image.altText === '' ||
           model.summary === '' ||
           model.tags.length === 0 ||
           model.body === ''

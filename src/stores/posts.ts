@@ -19,8 +19,8 @@ export const usePosts = defineStore(
     const publishable = computed(
       () =>
         model.value.title !== '' &&
-        model.value.imgSrc !== '' &&
-        model.value.imgAlt !== '' &&
+        model.value.image.url !== '' &&
+        model.value.image.altText !== '' &&
         model.value.summary !== '' &&
         model.value.tags.length !== 0 &&
         model.value.body !== '',
