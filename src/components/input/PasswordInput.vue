@@ -11,7 +11,6 @@ const model = defineModel<string>();
     lazy-rules="ondemand"
     name="password"
     type="password"
-    hint="Demo123!"
     autocomplete="current-password"
   >
     <template #prepend>

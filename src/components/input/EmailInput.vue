@@ -15,7 +15,6 @@ const model = defineModel<string>();
     name="email"
     type="email"
     autofocus
-    hint="demo@demo.com"
     autocomplete="username"
   >
     <template #prepend>

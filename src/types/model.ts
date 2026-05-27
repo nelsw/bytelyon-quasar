@@ -1,3 +1,5 @@
+import { type Image } from 'src/types/image';
+
 export class Map<T> {
   map: { [id: string]: T };
 
@@ -19,25 +21,12 @@ export const enum BotType {
 export const BotTypes: BotType[] = [BotType.News, BotType.Search, BotType.Sitemap];
 
 export type Bot = {
-  id: string;
   type: BotType;
   target: string;
   frequency: number;
   blackList: string[];
   headless?: boolean | undefined;
   workedAt?: Date | undefined;
-};
-
-export type Article = {
-  title: string;
-  body: string;
-  summary: string;
-  tags: string[];
-  image: string;
-  publishedAt: string;
-  prompt?: string;
-  url?: string;
-  keywords?: string[];
 };
 
 export type SearchBotData = {
@@ -86,35 +75,6 @@ export type SerpResult = {
   title: string;
 };
 
-export type Image = {
-  altText: string;
-  url: string;
-};
-
-export interface News {
-  body: string[];
-  description: string;
-  image: Image;
-  keywords: string[];
-  publishedAt: string;
-  source: string;
-  title: string;
-  url: string;
-}
-
-export type Sitemap = {
-  created_at: Date;
-  updated_at: Date;
-  domain: string;
-  nodes: SitemapNode[];
-};
-
-export type SitemapNode = {
-  label: string;
-  url: string;
-  children?: SitemapNode[];
-};
-
 export interface Customer {
   id: string;
   name: string;
@@ -150,13 +110,13 @@ export interface SEO {
 }
 
 export interface Post extends SEO {
-  title: string;
   body: string;
+  image: Image;
+  keywords: string[];
+  publishedAt: string;
   summary: string;
   tags: string[];
-  image: Image;
-  publishedAt: string;
-  keywords: string[];
+  title: string;
 }
 
 export interface Prompt {

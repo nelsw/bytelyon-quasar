@@ -18,7 +18,7 @@ export const useSearches = defineStore('searches', () => {
   const Load = async (botId: string) => {
     Loading.show({ spinnerColor: 'primary' });
     return await api
-      .get<SearchBotData[]>(`/bots?type=search&id=${botId}`)
+      .get<SearchBotData[]>(`/bots?type=search&query=${botId}`)
       .then((r: AxiosResponse<SearchBotData[]>) => model.value.set(botId, r.data))
       .catch($notify.err)
       .finally(Loading.hide);

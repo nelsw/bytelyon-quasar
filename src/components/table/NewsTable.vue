@@ -1,42 +1,31 @@
 <script setup lang="ts">
-import type { News, Post } from 'src/types/model';
+import type { Headline } from 'src/types/headline';
 import type { QTableColumn } from 'quasar';
 import { ref } from 'vue';
-import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import FilterInput from 'components/input/FilterInput.vue';
 import ShopifyBtn from 'components/btn/ShopifyBtn.vue';
-import { Days, Minutes } from 'src/types/base';
-import { useNews } from 'stores/news';
+import { age, less } from 'src/types/id';
+import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
+import { screenshot } from 'src/types/screenshot';
 
-const emit = defineEmits<{
-  show: [Post];
-}>();
-
-const columns: QTableColumn<News>[] = [
+const columns: QTableColumn<Headline>[] = [
   { name: 'URL', label: 'URL', field: 'url', align: 'left', style: 'width: 0;' },
-  {
-    name: 'Age',
-    label: 'Age',
-    field: 'publishedAt',
-    align: 'center',
-    format: (val) => `${Days(val)}d`,
-    sort: (a, b) => Minutes(a) - Minutes(b),
-  },
-  { name: 'Source', label: 'Source', field: 'source', align: 'left' },
+  { name: 'Age', label: 'Age', field: 'id', align: 'center', format: age, sort: less },
   { name: 'Title', label: 'Title', field: 'title', align: 'left' },
-  { name: 'Description', label: 'Description', field: 'description', align: 'left' },
   { name: 'Post', label: '', field: 'url', align: 'center', style: 'width: 0;' },
-  { name: 'Open', label: '', field: 'url', align: 'center', style: 'width: 0;' },
+  { name: 'View', label: '', field: 'url', align: 'center', style: 'width: 0;' },
   { name: 'Delete', label: '', field: 'url', align: 'center', style: 'width: 0;' },
 ];
 
-const props = defineProps<{
-  botId: string;
+const emit = defineEmits<{
+  shopify: [string];
+  delete: [string];
 }>();
 
-const $results = useNews();
+const model = defineModel<Headline[]>({ required: true });
+
 const filter = ref<string>('');
 const columnNames = ref<string[]>(columns.map((col) => col.name));
 const visibleCols = ref<string[]>(
@@ -46,30 +35,15 @@ const visibleCols = ref<string[]>(
     .filter((s) => s !== 'Source')
     .filter((s) => s !== 'Description'),
 );
-
-const onDeleteResult = async (url: string) => await $results.Delete(props.botId, url);
-const onShopifyClick = (r: News) => {
-  emit('show', {
-    summary: r.description,
-    tags: [],
-    image: r.image,
-    backlink: r.url,
-    body: r.body?.map((b) => `<p>${b}</p>`)?.join('') || '',
-    publishedAt: r.publishedAt,
-    title: r.title,
-    keywords: r.keywords.map((s) => s.trim()).filter((s) => s !== ''),
-  });
-};
 </script>
 
 <template>
   <q-table
     :columns="columns"
     :filter="filter"
-    :loading="$results.busy"
     :pagination="{ sortBy: 'Age', descending: true }"
     :rows-per-page-options="[10, 25, 50, 100, 0]"
-    :rows="$results.model.get($route.params.botId as string, [])"
+    :rows="model"
     :visible-columns="visibleCols"
     color="primary"
     row-key="url"
@@ -89,14 +63,19 @@ const onShopifyClick = (r: News) => {
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <TrashBtn
             v-if="col.name === 'Delete'"
-            @delete="onDeleteResult(props.row.url)"
+            @delete="emit('delete', props.row.url)"
             size="sm"
             outline
           />
-          <OpenInNewBtn v-else-if="col.name === 'Open'" :url="col.value" size="sm" color="teal" />
+          <ViewImgBtn
+            v-else-if="col.name === 'View'"
+            title="wat"
+            :url="screenshot(props.row.url, props.row.id)"
+            size="sm"
+          />
           <ShopifyBtn
             v-else-if="col.name === 'Post'"
-            @click="onShopifyClick(props.row)"
+            @click="emit('shopify', props.row.url)"
             size="xs"
           />
           <span v-else>{{ col.value }}</span>

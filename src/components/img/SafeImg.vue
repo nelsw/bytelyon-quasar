@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 const props = defineProps<{
   s3Key?: string;
   src?: string;
@@ -7,9 +6,8 @@ const props = defineProps<{
   errText?: boolean;
 }>();
 const onClick = () => {
-  if (props.open) open(src.value, '_blank');
+  if (props.open) open(props.src, '_blank');
 };
-const src = computed(() => props.src ?? `https://bytelyon-public.s3.amazonaws.com/${props.s3Key}`);
 </script>
 
 <template>
@@ -18,6 +16,8 @@ const src = computed(() => props.src ?? `https://bytelyon-public.s3.amazonaws.co
     :src="src"
     error-src="~assets/ByteLyon-Logo-OG.svg"
     :class="`${open ? 'cursor-pointer' : ''}`"
+    fit="contain"
+
   >
     <template v-slot:error>
       <div class="absolute-full flex flex-center">

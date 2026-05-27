@@ -5,7 +5,7 @@ import BlackListSelect from 'components/select/BlackListSelect.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import TargetInput from 'components/input/TargetInput.vue';
-import { useBots } from 'stores/bots';
+import { useBotStore } from 'src/stores/bot-store';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
 
 const props = defineProps<{
@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const color = 'green-13';
 
-const $bots = useBots();
+const $bots = useBotStore();
 
 const target = ref('');
 const frequency = ref(1);
@@ -31,7 +31,6 @@ const onSubmit = async () => {
 
   await $bots.Save(
     props.botType,
-    '',
     target.value,
     frequency.value,
     blackList.value

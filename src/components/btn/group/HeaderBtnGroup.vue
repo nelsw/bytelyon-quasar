@@ -2,9 +2,9 @@
 import { BotType } from 'src/types/model';
 import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
 import { useRoute } from 'vue-router';
-import { useBots } from 'stores/bots';
+import { useBotStore } from 'src/stores/bot-store';
 
-const $bots = useBots();
+const $bots = useBotStore();
 const $route = useRoute();
 </script>
 
@@ -45,7 +45,7 @@ const $route = useRoute();
             .get(BotType.News, [])
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
-          :to="`/${BotType.News}/${e.id}`"
+          :to="`/${BotType.News}/${e.target}`"
           clickable
           v-ripple
         >
@@ -78,7 +78,7 @@ const $route = useRoute();
             .get(BotType.Search, [])
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
-          :to="`/${BotType.Search}/${e.id}`"
+          :to="`/${BotType.Search}/${e.target}`"
           clickable
           v-ripple
         >
@@ -111,7 +111,7 @@ const $route = useRoute();
             .get(BotType.Sitemap, [])
             .sort((a, b) => a.target.localeCompare(b.target))"
           :key="e.target"
-          :to="`/${BotType.Sitemap}/${e.id}`"
+          :to="`/${BotType.Sitemap}/${e.target}`"
           clickable
           v-ripple
         >

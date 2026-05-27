@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import HeaderBtnGroup from 'components/btn/group/HeaderBtnGroup.vue';
-import { useBots } from 'stores/bots';
+import { useBotStore } from 'src/stores/bot-store';
 import { onMounted } from 'vue';
 import CarlFab from 'components/fab/CarlFab.vue';
-onMounted(useBots().LoadAll)
+onMounted(useBotStore().LoadAll)
 </script>
 <template>
   <q-layout view="lHh lpR lFr">

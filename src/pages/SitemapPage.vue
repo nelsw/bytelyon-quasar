@@ -2,83 +2,78 @@
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
-import type { Bot, BotType, Page, Sitemap, SitemapNode } from 'src/types/model';
+import type { Bot, BotType } from 'src/types/model';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import PageCard from 'components/card/PageCard.vue';
-import { useBots } from 'stores/bots';
-import { useSitemaps } from 'stores/sitemaps';
-import { usePages } from 'stores/pages';
+import { useBotStore } from 'src/stores/bot-store';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
+import type { UrlNode } from 'src/types/url-node';
+import { FromURLs } from 'src/types/url-node';
+import useSitemapsApi from 'src/composable/api/useSitemapsApi';
+import { type Snippet } from 'src/types/snippet';
 
 const color = 'amber-13';
 
 const props = defineProps<{
-  botType: BotType,
-  botId: string;
+  botType: BotType;
+  target: string;
 }>();
 
-const $sitemaps = useSitemaps();
-const $pages = usePages();
-const $bots = useBots();
+const $sitemaps = useSitemapsApi();
+const $bots = useBotStore();
 
-const target = ref('');
+const sitemap = ref<string[]>([]);
+const snippets = ref<Snippet[]>([]);
 const frequency = ref<number>(1);
 const headless = ref<boolean>(true);
 
-const nodes = ref<SitemapNode[]>([]);
-const pages = ref<Page[]>([]);
+const nodes = ref<UrlNode[]>([]);
 const treeRef = useTemplateRef<QTree>('my-sitemap-tree');
 const splitterModel = ref(50);
 const selected = ref<string>('');
 const expanded = ref<string[]>([]);
 const filter = ref<string>('');
 
-const onDeleteBot = async () => await $bots.Delete(props.botType, props.botId);
+const onDeleteBot = async () => await $bots.Delete(props.botType, props.target);
 
 const onChange = async () => {
-
-  const bot = $bots.model
-    .get(props.botType, [])
-    .find((b) => b.id === props.botId) as Bot;
-
-  await $sitemaps.Load(bot.target);
-
-  target.value = bot.target;
+  const bot = $bots.model.get(props.botType, []).find((b) => b.target === props.target) as Bot;
   frequency.value = bot.frequency;
   headless.value = bot.headless ?? true;
 
-  const node = $sitemaps.model
-    .get(bot.target, {} as Sitemap)
-    .nodes
-    .find((n: SitemapNode) => n.label === bot.target);
+  const urls = await $sitemaps.getUrls(props.target);
+  sitemap.value = urls;
+  nodes.value = FromURLs(urls);
 
-  nodes.value = node ? [node] : [];
-  expanded.value = [node?.label ?? ''];
-  selected.value = node?.label ?? '';
+  const node = nodes.value[0];
+  if (!node) return;
+
+  if (node.label) {
+    selected.value = node.label;
+    expanded.value = [selected.value];
+  }
+  if (node.url) {
+    snippets.value = await $sitemaps.getSnippets(props.target, node.url);
+  }
 };
 
 const onUpdate = async () =>
-  await $bots.Save(
-    props.botType,
-    props.botId,
-    target.value,
-    frequency.value,
-    [],
-    headless.value
-  );
+  await $bots.Save(props.botType, props.target, frequency.value, [], headless.value);
 
 watch(selected, async (newVal, oldVal) => {
-  const newN = treeRef.value?.getNodeByKey(newVal);
-  const oldN = treeRef.value?.getNodeByKey(oldVal);
-  if (newN) {
-    treeRef.value?.setExpanded(newVal, true);
-    const url = (newN as SitemapNode).url;
-    await $pages.load(url);
-    pages.value = $pages.model.get(url, []);
-  } else if (oldN) {
-    treeRef.value?.setExpanded(oldVal, false);
+  const tree = treeRef.value;
+  if (!tree) return;
+
+  const node = tree.getNodeByKey(newVal) as UrlNode;
+  if (node) {
+    tree.setExpanded(newVal, true);
+    if (node.url) {
+      snippets.value = await $sitemaps.getSnippets(props.target, node.url);
+    }
+  } else if (tree.getNodeByKey(oldVal)) {
+    tree.setExpanded(oldVal, false);
   }
 });
 watch(props, onChange);
@@ -130,9 +125,9 @@ onMounted(onChange);
       </ScrollArea>
     </template>
     <template #after>
-      <div class="flex row justify-evenly q-ma-xs">
-        <div v-for="(p, i) in pages" :key="i" class="col-md-6 col-sm-12">
-          <PageCard :page="p" class="q-ma-xs" />
+      <div v-if="snippets">
+        <div v-for="s in snippets" :key="s.id" class="">
+          <PageCard :id="s.id" :url="s.url" :title="s.title" :meta="s.meta" class="q-ma-xs" />
         </div>
       </div>
     </template>
