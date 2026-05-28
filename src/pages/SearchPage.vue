@@ -8,9 +8,10 @@ import BlackListSelect from 'components/select/BlackListSelect.vue';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import useSearchApi from 'src/composable/api/useSearchApi';
-import { type Serp } from 'src/types/serp';
+import { Rows, type Serp } from 'src/types/serp';
 import { ts } from 'src/types/id';
 import { screenshot } from 'src/types/screenshot';
+import SerpTable from 'components/table/SerpTable.vue';
 
 interface Option {
   label: string;
@@ -40,6 +41,7 @@ const onUpdate = async () =>
   await $bots.Save(props.botType, props.target, frequency.value, blackList.value, headless.value);
 
 const onChangeBot = async () => {
+  await $bots.Load(props.botType);
   const bot = $bots.model.get(props.botType, []).find((b) => b.target === props.target) as Bot;
   frequency.value = bot.frequency;
   blackList.value = bot.blackList ?? [];
@@ -64,15 +66,14 @@ const onDeleteResult = async () => {
   }
 };
 const url = computed(() => `google.com/search?q=${props.target.replaceAll(' ', '+')}`);
-
-
-
+const rows = computed(() => {
+  return Rows(serp.value);
+});
 watch(props, onChangeBot);
 watch(option, async (opt) => {
   if (!opt) return;
   serp.value = await $searches.getSerp(props.target, opt.value);
 });
-// watch(timestamp, onChangeResult);
 onMounted(onChangeBot);
 </script>
 
@@ -82,7 +83,7 @@ onMounted(onChangeBot);
       <q-card flat style="background-color: transparent">
         <q-card-section>
           <div class="flex row justify-between items-center">
-            <div class="flex row items-center q-gutter-sm">
+            <div v-if="!$bots.busy" class="flex row items-center q-gutter-sm">
               <div class="text-h5 text-weight-medium text-uppercase">
                 {{ target }}
               </div>
@@ -119,7 +120,7 @@ onMounted(onChangeBot);
                 </q-select>
               </div>
               <div class="q-ml-sm">
-                <ViewImgBtn title="Google SERP" :url="screenshot(url, option?.value ?? '')" />
+                <ViewImgBtn title="Google SERP" :url="screenshot(url, option?.value)" />
               </div>
             </div>
 
@@ -136,8 +137,7 @@ onMounted(onChangeBot);
     </div>
 
     <div class="q-mx-sm q-gutter-sm">
-      <pre>{{ serp }}</pre>
+      <SerpTable v-model="rows" :id="option?.value"/>
     </div>
   </div>
-  ¬
 </template>

@@ -7,6 +7,7 @@ defineProps<{
   url: string;
   color?: string | undefined;
   size?: string | undefined;
+  disable?: boolean | undefined;
 }>();
 
 const model = ref<boolean>(false);
@@ -15,8 +16,8 @@ const model = ref<boolean>(false);
 <template>
   <q-btn
     @click="model = true"
-    :color="url === '' ? 'grey-8' : (color ?? 'cyan-6')"
-    :disable="url === ''"
+    :color="(disable ?? url === '') ? 'grey-8' : (color ?? 'cyan-6')"
+    :disable="disable ?? url === ''"
     :size="size"
     icon="mdi-monitor-screenshot"
     dense

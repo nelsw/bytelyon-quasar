@@ -1,70 +1,70 @@
 <script setup lang="ts">
-import type { QTableColumn } from 'quasar';
-import type { SerpResult } from 'src/types/model';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import FilterInput from 'components/input/FilterInput.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
+import { Color, Columns, type Row } from 'src/types/serp';
+import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
+import { screenshot } from 'src/types/screenshot';
 
-const props = defineProps<{
-  loading: boolean;
-  name: string;
-  results: SerpResult[];
-}>()
+defineProps<{
+  id?: string | undefined;
+}>();
 
-const columns = computed(() => {
-  if (props.name.includes('Also ')) {
-    return [
-      { name: 'Rank', label: 'Rank', field: 'position', align: 'center', format: (val) => val+1 },
-      { name: 'Title', label: 'Title', field: 'title', align: 'left' },
-    ] as QTableColumn[];
-  }
-  return [
-    { name: 'Rank', label: 'Rank', field: 'position', align: 'center', format: (val) => val+1 },
-    { name: 'Source', label: 'Source', field: 'source', align: 'left' },
-    { name: 'Title', label: 'Title', field: 'title', align: 'left' },
-    { name: 'Description', label: 'Description', field: 'snippet', align: 'left' },
-    { name: 'Open', label: 'Open', field: 'url', align: 'center', style: 'width: 0;' },
-  ] as QTableColumn[];
-});
+const model = defineModel<Row[]>({ required: true });
 
 const filter = ref<string>('');
-const columnNames = ref<string[]>(columns.value.map((col) => col.name));
-const visibleCols = ref<string[]>(columnNames.value);
+const columnNames = ref<string[]>(Columns.map((col) => col.name));
+const visibleCols = ref<string[]>(
+  columnNames.value.filter((n) => n !== 'Description').filter((n) => n !== 'URL'),
+);
 </script>
 
 <template>
   <q-table
-    :loading="loading"
-    :columns="columns"
+    :columns="Columns"
     :filter="filter"
     :rows-per-page-options="[0]"
-    :rows="results"
+    :rows="model"
     :visible-columns="visibleCols"
     color="primary"
-    row-key="Rank"
-    rowsPerPageLabel="Organic Results per page"
-    binary-state-sort
+    row-key="uid"
+    rowsPerPageLabel="SERP Results"
     dense
     flat
-    :hide-header="name.includes('Also ')"
-    hide-bottom
   >
     <template #top>
-      <FilterInput v-model="filter" :placeholder="`${name} Results`" />
+      <FilterInput v-model="filter" placeholder="Results" />
       <q-space />
-      <ColumnsBtn v-if="name === 'Organic'" v-model="visibleCols" :names="columnNames" color="primary" />
+      <ColumnsBtn v-model="visibleCols" :names="columnNames" color="primary" />
     </template>
-    <template #body-cell-Rank="props">
+    <template #body-cell-Section="props">
       <q-td :props="props">
-        <q-badge outline color="primary" size="sm" >
-          <span class="text-white">{{props.pageIndex+1}}</span>
+        <q-badge outline :color="Color(props.row.section)" size="sm">
+          <span class="text-white">{{ props.value }}</span>
         </q-badge>
       </q-td>
     </template>
-    <template #body-cell-Open="props">
+    <template #body-cell-Rank="props">
       <q-td :props="props">
-        <OpenInNewBtn :url="props.value" size="sm"/>
+        <q-badge :color="Color(props.row.section)" size="sm">
+          <span class="text-dark text-weight-bolder">{{ props.value }}</span>
+        </q-badge>
+      </q-td>
+    </template>
+    <template #body-cell-View="props">
+      <q-td :props="props">
+        <ViewImgBtn
+          :title="props.row.title"
+          :url="screenshot(props.row.url, id)"
+          size="sm"
+          :disable="props.row.section !== `Sponsored`"
+        />
+      </q-td>
+    </template>
+    <template #body-cell-Visit="props">
+      <q-td :props="props">
+        <OpenInNewBtn :url="props.value" size="sm" />
       </q-td>
     </template>
   </q-table>

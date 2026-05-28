@@ -9,12 +9,12 @@ const onClick = () => open(props.url, '_blank');
 <template>
   <q-btn
     @click="onClick"
-    :color="url === '' ? 'grey-8' : color ?? 'teal'"
+    :color="url === '' || !url ? 'grey-8' : (color ?? 'teal')"
     dense
     flat
     icon="mdi-open-in-new"
-    :disable="!url"
+    :disable="url === '' || !url"
   >
-    <slot/>
-    </q-btn>
+    <slot />
+  </q-btn>
 </template>

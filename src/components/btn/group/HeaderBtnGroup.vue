@@ -3,9 +3,15 @@ import { BotType } from 'src/types/model';
 import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
 import { useRoute } from 'vue-router';
 import { useBotStore } from 'src/stores/bot-store';
+import { computed } from 'vue';
 
 const $bots = useBotStore();
 const $route = useRoute();
+
+// todo - remove menu element when bot is deleted
+const sitemapBots = computed(() => {
+  return $bots.model.get(BotType.Sitemap, []).sort((a, b) => a.target.localeCompare(b.target));
+});
 </script>
 
 <template>
@@ -107,9 +113,7 @@ const $route = useRoute();
         </q-item>
         <q-separator />
         <q-item
-          v-for="e in $bots.model
-            .get(BotType.Sitemap, [])
-            .sort((a, b) => a.target.localeCompare(b.target))"
+          v-for="e in sitemapBots"
           :key="e.target"
           :to="`/${BotType.Sitemap}/${e.target}`"
           clickable
