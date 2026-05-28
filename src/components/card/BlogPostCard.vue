@@ -12,6 +12,7 @@ import { Loading } from 'quasar';
 import { api } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
 import { useTokenStore } from 'stores/token-store';
+import { date } from 'quasar';
 
 defineProps<{
   color?: string | undefined;
@@ -34,6 +35,9 @@ const onPublish = () => {
     return;
   }
   Loading.show({ spinnerColor: 'primary' });
+  model.value.publishedAt = date
+    .extractDate(model.value.publishedAt, 'YYYY-MM-DD HH:mm')
+    .toISOString();
   return api
     .post<{ link: string }>(`/shopify`, model.value)
     .then((r) => $notify.ArticleCreated(r.data.link))
