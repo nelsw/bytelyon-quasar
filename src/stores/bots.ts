@@ -15,10 +15,28 @@ const $notify = useNotifier();
 
 export const useBotStore = defineStore('bots', () => {
   const model = ref<Model>({} as Model);
+  const save = async (bot: Bot, create :boolean) => {
+    const v = Validate(bot);
+    if (v.length > 0) {
+      $notify.warn(v);
+      return;
+    }
+
+    const msg = `${capitalize(bot.type)} Bot ${create ? 'Created' : 'Updated'}`;
+    try {
+      const bots = model.value[bot.type].filter((b) => b.target !== bot.target);
+      bots.push(await $api.save(bot));
+      model.value[bot.type] = bots.sort((a, b) => a.target.localeCompare(b.target));
+      return $notify.Icon(msg, 'mdi-content-save', create ? 'green-13' : 'amber-13');
+    } catch (e) {
+      return e;
+    }
+  };
   return {
     newsBots: computed(() => model.value['news'] as Bots),
     searchBots: computed(() => model.value['search'] as Bots),
     sitemapBots: computed(() => model.value['sitemap'] as Bots),
+    create: async (bot: Bot) => save(bot, true),
     delete: async (type: BotType, target: Target) => {
       try {
         const idx = model.value[type].findIndex((b) => b.target === target);
@@ -46,21 +64,6 @@ export const useBotStore = defineStore('bots', () => {
     },
     get: (type: BotType, target?: Target): Bot =>
       model.value[type]?.find((b) => b.target === target) ?? New(type, target),
-    save: async (bot: Bot) => {
-      const v = Validate(bot);
-      if (v.length > 0) {
-        $notify.warn(v);
-        return;
-      }
-      const msg = `${capitalize(bot.type)} Bot ${bot.id ? 'Updated' : 'Created'}`;
-      try {
-        const bots = model.value[bot.type].filter((b) => b.target !== bot.target);
-        bots.push(await $api.save(bot));
-        model.value[bot.type] = bots.sort((a, b) => a.target.localeCompare(b.target));
-        return $notify.Icon(msg, 'mdi-content-save', bot.id ? 'green-13' : 'amber-13');
-      } catch (e) {
-        return e;
-      }
-    },
+    update: async (bot: Bot) => save(bot, false),
   };
 });

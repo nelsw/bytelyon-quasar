@@ -18,9 +18,9 @@ const onHome = async () => {
 <template>
   <q-fab
     v-if="$auth.IsExperimental()"
-    color="amber"
+    color="deep-purple"
     text-color="black"
-    icon="mdi-bug"
+    icon="mdi-fire"
     direction="up"
   >
     <q-fab-action color="grey-8" @click="onLogout" icon="mdi-logout" />

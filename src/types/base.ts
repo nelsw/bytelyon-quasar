@@ -1,6 +1,7 @@
 import { date } from 'quasar';
 
-export const domain = (url: string) => {
+export const domain = (url: string|undefined) => {
+  if (!url) return '';
   if (url.startsWith('https://')) {
     url = url.substring(8);
   }

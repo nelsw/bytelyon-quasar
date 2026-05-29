@@ -1,49 +1,37 @@
 <script setup lang="ts">
-interface Option {
-  label: string;
-  value: number;
-}
-
 defineProps<{
-  color: string;
+  create?: boolean;
   hint?: boolean | undefined;
   label?: boolean | undefined;
 }>();
 
-// values in nanoseconds (int64)
-const hour = 3600000000000;
-const day = hour * 24;
-const week = day * 7;
-
-const never: Option = { label: 'Never (Paused)', value: 0 };
-const once: Option = { label: 'Once (Now)', value: 1 };
-const hourly: Option = { label: 'Hourly', value: hour };
-const daily: Option = { label: 'Daily', value: day };
-const weekly: Option = { label: 'Weekly', value: week };
+const never = { label: 'Never (Paused)', value: -1 };
+const once = { label: 'Once (Now)', value: 0 };
+const hourly = { label: 'Hourly', value: 1 };
+const daily = { label: 'Daily', value: 24 };
+const weekly = { label: 'Weekly', value: 7 * 24 };
 
 const model = defineModel<number>({ required: true });
 </script>
 
 <template>
   <q-select
-    @update:modelValue="(o: Option) => (model = o.value)"
+    @update:modelValue="(o) => (model = o.value)"
     :model-value="
-      model === 0
+      model === -1
         ? never
-        : model < hour
+        : model === 0
           ? once
-          : model < day
+          : model === 1
             ? hourly
-            : model < week
+            : model === 24
               ? daily
               : weekly
     "
-    :color="color"
-    :label="label ? `Repeats` : undefined"
+    :color="create ? 'green-13' : 'amber-13'"
     :hint="hint ? `Run on a schedule or 'On-Demand' (once & pause).` : undefined"
-    :options="
-      color === 'green-13' ? [once, hourly, daily, weekly] : [never, once, hourly, daily, weekly]
-    "
+    :label="label ? `Repeats` : undefined"
+    :options="create ? [once, hourly, daily, weekly] : [never, once, hourly, daily, weekly]"
     dense
     filled
     hide-bottom-space
@@ -51,8 +39,7 @@ const model = defineModel<number>({ required: true });
     square
   >
     <template #prepend>
-      <q-icon name="mdi-calendar-sync-outline" :color="color" />
+      <q-icon name="mdi-calendar-sync-outline" :color="(create ?? false) ? 'green-13' : 'amber-13'" />
     </template>
   </q-select>
 </template>
-

@@ -1,12 +1,6 @@
 <script setup lang="ts">
-
-type Option = {
-  label: string;
-  value: boolean;
-}
-
 defineProps<{
-  color: string;
+  create?: boolean;
   hint?: boolean | undefined;
   label?: boolean | undefined;
 }>();
@@ -19,12 +13,12 @@ const model = defineModel<boolean>({ required: true });
 
 <template>
   <q-select
-    @update:modelValue="(o: Option) => (model = o.value)"
+    @update:modelValue="(o) => (model = o.value)"
     :model-value="model ? headless : headful"
-    :color="color"
-    :hint="hint ? 'Headless (Quiet), Headful (Performant)': undefined"
+    :color="create ? 'green-13' : 'amber-13'"
+    :hint="hint ? 'Headless (Quiet), Headful (Performant)' : undefined"
     :label="label ? 'Browser' : undefined"
-    :options="[ headless, headful ]"
+    :options="[headless, headful]"
     dense
     filled
     hide-dropdown-icon
@@ -32,7 +26,7 @@ const model = defineModel<boolean>({ required: true });
     square
   >
     <template #prepend>
-      <q-icon name="mdi-robot-outline" :color="color" />
+      <q-icon name="mdi-robot-outline" :color="create ? 'green-13' : 'amber-13'" />
     </template>
   </q-select>
 </template>

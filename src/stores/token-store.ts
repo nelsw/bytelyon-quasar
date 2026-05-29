@@ -12,14 +12,10 @@ type Auth = {
 }
 
 type Claims = {
-  iss: string; //'https://ByteLyon.com';
-  sub: string; //'019ca7c8-437a-7134-8c2b-c30d17dd62fc';
   exp: number; //1772347378;
-  nbf: number; //1772345578;
-  iat: number; //1772345578;
   jti: string; //'48e36a74-5526-4998-acfa-16fe4968971e';
-  aud: string[]; // anonymous or identified
 }
+
 const $notify = useNotifier();
 
 export const useTokenStore = defineStore('token-store', () => {

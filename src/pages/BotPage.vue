@@ -13,21 +13,19 @@ const props = defineProps<{
   botType: BotType;
 }>();
 
-const color = 'green-13';
-
 const $bots = useBotStore();
 const $router = useRouter();
 
 const bot = ref<Bot>(New(props.botType));
 const onCreate = async () => {
-  if (!(await $bots.save(bot.value))) return;
+  if (!(await $bots.create(bot.value))) return;
   await $router.push({ path: `/${props.botType}/${bot.value.target}` });
 };
 </script>
 <template>
   <div class="q-pa-md">
     <div class="flex justify-center align-center">
-      <q-icon :color="color" name="mdi-new-box" size="6em" />
+      <q-icon color="green-13" name="mdi-new-box" size="6em" />
     </div>
     <div class="flex justify-center align-center">
       <div class="text-h4 text-center text-capitalize">
@@ -38,11 +36,11 @@ const onCreate = async () => {
       Aggregate news articles from popular & reputable digital publishers & RSS feeds.
     </p>
     <q-form @submit="onCreate" class="my-form">
-      <TargetInput v-model="bot.target" :color="color" />
-      <BrowserSelect v-model="bot.headless" :color="color" class="q-my-md" hint label />
-      <FrequencySelect v-model="bot.frequency" :color="color" class="q-my-md" hint label />
-      <BlackListSelect v-model="bot.blackList" :color="color" class="q-mt-md" hint label />
-      <SubmitBtn class="q-mt-md" :color="color" fullwidth />
+      <TargetInput v-model="bot.target" create/>
+      <BrowserSelect v-model="bot.headless" class="q-my-md" create hint label />
+      <FrequencySelect v-model="bot.frequency" class="q-my-md" create hint label />
+      <BlackListSelect v-model="bot.blacklist" class="q-mt-md" create hint label />
+      <SubmitBtn class="q-mt-md" color="green-13" fullwidth />
     </q-form>
   </div>
 </template>

@@ -13,7 +13,7 @@ onMounted(useBotStore().fetch);
     <q-page-container>
       <q-page>
         <router-view />
-        <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-page-sticky position="bottom-left" :offset="[18, 18]">
           <CarlFab />
         </q-page-sticky>
       </q-page>

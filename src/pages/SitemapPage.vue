@@ -14,8 +14,7 @@ import useSitemapsApi from 'src/composable/api/useSitemapsApi';
 import { type Snippet } from 'src/types/snippet';
 import { useRouter } from 'vue-router';
 import { type Bot, type BotType, New } from 'src/types/bot';
-
-const color = 'amber-13';
+import TargetInput from 'components/input/TargetInput.vue';
 
 const props = defineProps<{
   botType: BotType;
@@ -83,21 +82,16 @@ onMounted(onChange);
   <div class="q-pa-sm q-gutter-y-sm">
     <q-card flat style="background-color: transparent">
       <q-card-section>
-        <div class="flex justify-between items-center">
-          <div class="flex items-center q-gutter-sm">
-            <div class="text-h5 text-weight-medium text-uppercase">
-              {{ target }}
-            </div>
-            <BrowserSelect v-model="bot.headless" @update:model-value="$bots.save(bot)" :color="color" />
-            <FrequencySelect v-model="bot.frequency" @update:model-value="$bots.save(bot)" :color="color" />
-          </div>
-          <div class="flex row q-gutter-x-sm">
-            <TrashBtn @delete="onDelete" size="md">
-              <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
-                Delete Bot
-              </q-tooltip>
-            </TrashBtn>
-          </div>
+        <div class="flex row items-center q-gutter-sm">
+          <TargetInput class="col-3" v-model="bot.target" :hint="undefined" />
+          <BrowserSelect v-model="bot.headless" @update:model-value="$bots.update(bot)" />
+          <FrequencySelect v-model="bot.frequency" @update:model-value="$bots.update(bot)" />
+          <q-space />
+          <TrashBtn @delete="onDelete" size="md">
+            <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
+              Delete Bot
+            </q-tooltip>
+          </TrashBtn>
         </div>
       </q-card-section>
     </q-card>

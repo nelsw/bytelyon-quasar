@@ -3,7 +3,6 @@ import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
 import { useRoute } from 'vue-router';
 import { useBotStore } from 'src/stores/bots';
 
-// todo - remove menu element when bot is deleted
 const $bots = useBotStore();
 const $route = useRoute();
 </script>

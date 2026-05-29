@@ -6,12 +6,12 @@ export type Bots = Bot[];
 
 export type Bot = {
   id?: ULID;
-  blackList: string[];
+  blacklist: string[];
   frequency: number;
   headless: boolean;
   target: Target;
   type: BotType;
-  workedAt: Date;
+  ranAt: Date;
 };
 
 export type Target = string;
@@ -32,10 +32,10 @@ export const Validate = (bot: Bot): string => {
 };
 
 export const New = (type: BotType, target?: Target): Bot => ({
-  blackList: [],
+  blacklist: [],
   frequency: 1,
   headless: true,
   target: target ?? '',
   type,
-  workedAt: new Date(),
+  ranAt: new Date(0),
 });

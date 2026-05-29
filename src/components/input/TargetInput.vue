@@ -1,53 +1,43 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 defineProps<{
-  color: string;
+  create?: boolean;
 }>();
 
 const $route = useRoute();
-
 const model = defineModel<string>({ required: true });
-
-const label = computed(() => {
-  if ($route.params.botType === 'news') {
-    return 'Topic';
-  } else if ($route.params.botType === 'sitemap') {
-    return 'Domain';
-  } else {
-    return 'Query';
-  }
-});
-
-const hint = computed(() => {
-  if ($route.params.botType === 'news') {
-    return 'Collect articles for this topic (e.g. btc forecast)';
-  } else if ($route.params.botType === 'sitemap') {
-    return 'Map all pages & links for this domain (e.g. publix.com)';
-  } else {
-    return 'Scrape the SERP & result pages this query';
-  }
-});
 </script>
 
 <template>
   <q-input
     v-model="model"
-    autofocus
-    :color="color"
-    :disable="color === 'amber-13'"
-    :hint="hint"
-    :label="label"
+    :color="create ? 'green-13' : 'amber-13'"
+    :hint="
+      $route.params.botType === 'news'
+        ? 'Collect articles for this topic (e.g. btc forecast)'
+        : $route.params.botType === 'search'
+          ? 'Scrape the SERP & result pages this query'
+          : 'Map all pages & links for this domain (e.g. publix.com)'
+    "
+    :label="
+      $route.params.botType === 'news'
+        ? 'Topic'
+        : $route.params.botType === 'search'
+          ? 'Query'
+          : 'Domain'
+    "
+    :readonly="!create"
     class="text-body1"
-    hide-bottom-space
+    autofocus
+    dense
     filled
+    hide-bottom-space
     options-dense
     square
-    dense
   >
     <template #prepend>
-      <q-icon name="mdi-help-circle-outline" :color="color" />
+      <q-icon name="mdi-help-circle-outline" :color="create ? 'green-13' : 'amber-13'" />
     </template>
   </q-input>
 </template>

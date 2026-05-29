@@ -13,13 +13,12 @@ import { screenshot } from 'src/types/screenshot';
 import SerpTable from 'components/table/SerpTable.vue';
 import { type Bot, type BotType, New } from 'src/types/bot';
 import { useRouter } from 'vue-router';
+import TargetInput from 'components/input/TargetInput.vue';
 
 interface Option {
   label: string;
   value: string;
 }
-
-const color = 'amber-13';
 
 const props = defineProps<{
   botType: BotType;
@@ -73,38 +72,21 @@ onMounted(onChangeBot);
 </script>
 
 <template>
-  <div class="q-px-sm q-gutter-y-sm">
+  <div class="q-pa-sm q-gutter-y-sm">
     <div>
       <q-card flat style="background-color: transparent">
         <q-card-section>
-          <div class="flex row justify-between items-center">
-            <div class="flex row items-center q-gutter-sm">
-              <div class="text-h5 text-weight-medium text-uppercase">
-                {{ target }}
-              </div>
-              <BrowserSelect
-                v-model="bot.headless"
-                @update:model-value="$bots.save(bot)"
-                :color="color"
-              />
-              <FrequencySelect
-                v-model="bot.frequency"
-                @update:model-value="$bots.save(bot)"
-                :color="color"
-              />
-              <BlackListSelect
-                v-model="bot.blackList"
-                @update:model-value="$bots.save(bot)"
-                :color="color"
-              />
-            </div>
-            <div class="flex row q-gutter-x-sm">
-              <TrashBtn @delete="onDelete" size="md">
-                <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
-                  Delete Bot
-                </q-tooltip>
-              </TrashBtn>
-            </div>
+          <div class="flex row items-center q-gutter-sm">
+            <TargetInput class="col-3" v-model="bot.target" :hint="undefined" />
+            <BrowserSelect v-model="bot.headless" @update:model-value="$bots.update(bot)" />
+            <FrequencySelect v-model="bot.frequency" @update:model-value="$bots.update(bot)" />
+            <BlackListSelect v-model="bot.blacklist" @update:model-value="$bots.update(bot)" />
+            <q-space />
+            <TrashBtn @delete="onDelete" size="md">
+              <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
+                Delete Bot
+              </q-tooltip>
+            </TrashBtn>
           </div>
           <q-separator spaced />
           <div class="flex row justify-between">
@@ -142,7 +124,6 @@ onMounted(onChangeBot);
         </q-card-section>
       </q-card>
     </div>
-
     <div class="q-mx-sm q-gutter-sm">
       <SerpTable v-model="rows" :id="option?.value" />
     </div>

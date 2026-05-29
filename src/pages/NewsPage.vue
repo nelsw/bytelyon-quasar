@@ -12,8 +12,7 @@ import BrowserSelect from 'components/select/BrowserSelect.vue';
 import { useNewsStore } from 'stores/news';
 import { New } from 'src/types/bot';
 import { useRouter } from 'vue-router';
-
-const color = 'amber-13';
+import TargetInput from 'components/input/TargetInput.vue';
 
 const props = defineProps<{
   botType: BotType;
@@ -55,23 +54,15 @@ onMounted(onChange);
         <q-card-section>
           <div class="flex justify-between items-center">
             <div class="flex items-center q-gutter-sm">
-              <div class="text-h5 text-weight-medium text-uppercase">
-                {{ target }}
-              </div>
+              <TargetInput v-model="bot.target" :hint="undefined" />
               <BrowserSelect
                 v-model="bot.headless"
-                @update:model-value="$bots.save(bot)"
-                :color="color"
+                @update:model-value="$bots.update(bot)"
               />
-              <FrequencySelect
-                v-model="bot.frequency"
-                @update:model-value="$bots.save(bot)"
-                :color="color"
-              />
+              <FrequencySelect v-model="bot.frequency" @update:model-value="$bots.update(bot)" />
               <BlackListSelect
-                v-model="bot.blackList"
-                @update:model-value="$bots.save(bot)"
-                :color="color"
+                v-model="bot.blacklist"
+                @update:model-value="$bots.update(bot)"
               />
             </div>
             <div class="flex row q-gutter-x-sm">

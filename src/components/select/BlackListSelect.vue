@@ -1,7 +1,6 @@
 <script setup lang="ts">
-
 defineProps<{
-  color: string;
+  create?: boolean;
   hint?: boolean | undefined;
   icon?: boolean | undefined;
   label?: boolean | undefined;
@@ -14,7 +13,7 @@ const model = defineModel<string[]>({ required: true });
   <q-select
     v-if="$route.params.botType !== 'sitemap'"
     v-model="model"
-    :color="color"
+    :color="create ? 'green' : 'amber-13'"
     :hint="
       !hint
         ? undefined
@@ -35,7 +34,7 @@ const model = defineModel<string[]>({ required: true });
     square
   >
     <template #prepend>
-      <q-icon name="mdi-playlist-remove" :color="color" />
+      <q-icon name="mdi-playlist-remove" :color="create ? 'green' : 'amber-13'" />
     </template>
   </q-select>
 </template>
