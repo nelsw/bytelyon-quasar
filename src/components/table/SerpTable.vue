@@ -71,3 +71,21 @@ const visibleCols = ref<string[]>(
     </template>
   </q-table>
 </template>
+<style lang="scss" scoped>
+.my-avatar {
+  margin-right: 0;
+  margin-left: 8px;
+
+
+  border-left-width: 0;
+  border-top-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+  border-left-style: solid;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+
+  border-radius: 0 4px 4px 0;
+}
+</style>

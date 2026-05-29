@@ -16,6 +16,7 @@ const $notify = useNotifier();
 export const useBotStore = defineStore('bots', () => {
   const model = ref<Model>({} as Model);
   const save = async (bot: Bot, create :boolean) => {
+    console.debug('saving...', bot);
     const v = Validate(bot);
     if (v.length > 0) {
       $notify.warn(v);

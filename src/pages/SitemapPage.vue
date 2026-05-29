@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, useTemplateRef, watch } from 'vue';
+import { onMounted, onUpdated, ref, useTemplateRef, watch } from 'vue';
 import { QTree, useMeta } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
@@ -48,13 +48,12 @@ const onChange = async () => {
   sitemap.value = urls;
   nodes.value = FromURLs(urls);
 
-  const node = nodes.value[0];
+  const node = nodes.value[1];
   if (!node) return;
 
-  if (node.label) {
-    selected.value = node.label;
-    expanded.value = [selected.value];
-  }
+  selected.value = node.label;
+  expanded.value = [selected.value];
+
   if (node.url) {
     snippets.value = await $sitemaps.getSnippets(props.target, node.url);
   }
@@ -76,6 +75,7 @@ watch(selected, async (newVal, oldVal) => {
 });
 watch(props, onChange);
 onMounted(onChange);
+onUpdated(onChange);
 useMeta(() => ({ title: `Sitemap | ${props.target}` }));
 </script>
 
