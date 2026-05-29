@@ -34,7 +34,7 @@ const model = defineModel<string>({ required: true });
     filled
     hide-bottom-space
     options-dense
-    square
+
   >
     <template #prepend>
       <q-icon name="mdi-help-circle-outline" :color="create ? 'green-13' : 'amber-13'" />

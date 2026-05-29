@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
-import { QTree } from 'quasar';
+import { QTree, useMeta } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import PageCard from 'components/card/PageCard.vue';
@@ -76,6 +76,7 @@ watch(selected, async (newVal, oldVal) => {
 });
 watch(props, onChange);
 onMounted(onChange);
+useMeta(() => ({ title: `Sitemap | ${props.target}` }));
 </script>
 
 <template>

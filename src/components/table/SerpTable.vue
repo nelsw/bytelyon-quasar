@@ -32,22 +32,24 @@ const visibleCols = ref<string[]>(
     rowsPerPageLabel="SERP Results"
     dense
     flat
+    hide-bottom
+    wrap-cells
   >
     <template #top>
-      <FilterInput v-model="filter" placeholder="Results" />
+      <FilterInput v-model="filter" placeholder="Filter Search Results" />
       <q-space />
       <ColumnsBtn v-model="visibleCols" :names="columnNames" color="primary" />
     </template>
     <template #body-cell-Section="props">
       <q-td :props="props">
-        <q-badge outline :color="Color(props.row.section)" size="sm">
+        <q-badge outline :color="Color(props.row.section)">
           <span class="text-white">{{ props.value }}</span>
         </q-badge>
       </q-td>
     </template>
     <template #body-cell-Rank="props">
       <q-td :props="props">
-        <q-badge :color="Color(props.row.section)" size="sm">
+        <q-badge :color="Color(props.row.section)">
           <span class="text-dark text-weight-bolder">{{ props.value }}</span>
         </q-badge>
       </q-td>

@@ -31,7 +31,6 @@ const model = defineModel<string[]>({ required: true });
     multiple
     use-chips
     use-input
-    square
   >
     <template #prepend>
       <q-icon name="mdi-playlist-remove" :color="create ? 'green' : 'amber-13'" />

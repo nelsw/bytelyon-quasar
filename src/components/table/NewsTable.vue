@@ -53,7 +53,7 @@ const visibleCols = ref<string[]>(
     flat
   >
     <template #top-left>
-      <FilterInput v-model="filter" placeholder="Filter News Results" />
+      <FilterInput v-model="filter" placeholder="Filter News Headlines" />
     </template>
     <template #top-right>
       <ColumnsBtn v-model="visibleCols" :names="columnNames" />

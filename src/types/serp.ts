@@ -136,7 +136,7 @@ export const Columns: QTableColumn<Row>[] = [
     name: 'Section',
     label: 'Section',
     field: 'section',
-    align: 'center',
+
     sortable: false,
     sort: SectionSort,
     style: 'width: 0;',
@@ -151,7 +151,7 @@ export const Columns: QTableColumn<Row>[] = [
     sort: (a: number, b: number) => a - b,
   },
 
-  { name: 'Source', label: 'Source', field: 'source', align: 'left', style: 'width: 0;' },
+  { name: 'Source', label: 'Source', field: 'source', align: 'left' },
   { name: 'Title', label: 'Title', field: 'title', align: 'left' },
   {
     name: 'Description',

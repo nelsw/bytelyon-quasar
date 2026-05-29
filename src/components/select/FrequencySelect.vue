@@ -36,7 +36,6 @@ const model = defineModel<number>({ required: true });
     filled
     hide-bottom-space
     hide-dropdown-icon
-    square
   >
     <template #prepend>
       <q-icon name="mdi-calendar-sync-outline" :color="(create ?? false) ? 'green-13' : 'amber-13'" />

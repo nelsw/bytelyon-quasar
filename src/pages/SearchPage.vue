@@ -14,6 +14,7 @@ import SerpTable from 'components/table/SerpTable.vue';
 import { type Bot, type BotType, New } from 'src/types/bot';
 import { useRouter } from 'vue-router';
 import TargetInput from 'components/input/TargetInput.vue';
+import { useMeta } from 'quasar';
 
 interface Option {
   label: string;
@@ -69,6 +70,7 @@ watch(option, async (opt) => {
   serp.value = await $searches.getSerp(props.target, opt.value);
 });
 onMounted(onChangeBot);
+useMeta(() => ({ title: `Search | ${props.target}` }));
 </script>
 
 <template>
@@ -89,31 +91,24 @@ onMounted(onChangeBot);
             </TrashBtn>
           </div>
           <q-separator spaced />
-          <div class="flex row justify-between">
-            <div class="flex row justify-start items-center">
-              <div>
-                <q-select
-                  v-model="option"
-                  :options="options"
-                  hide-dropdown-icon
-                  dense
-                  hide-hint
-                  hide-bottom-space
-                  filled
-                  options-dense
-                  square
-                >
-                  <template #prepend>
-                    <q-icon name="mdi-calendar-clock-outline" color="primary" />
-                  </template>
-                </q-select>
-              </div>
-              <div class="q-ml-sm">
-                <ViewImgBtn title="Google SERP" :url="screenshot(url, option?.value)" />
-              </div>
-            </div>
+          <div class="flex row justify-between items-center">
+            <q-select
+              v-model="option"
+              :options="options"
+              hide-dropdown-icon
+              dense
+              hide-hint
+              hide-bottom-space
+              filled
+              options-dense
+            >
+              <template #prepend>
+                <q-icon name="mdi-calendar-clock-outline" color="primary" />
+              </template>
+            </q-select>
 
             <div class="flex row justify-start q-gutter-x-sm">
+              <ViewImgBtn title="Google SERP" :url="screenshot(url, option?.value)" />
               <TrashBtn @click="onDeleteResult()" outline>
                 <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
                   Delete Result

@@ -23,7 +23,6 @@ const model = defineModel<boolean>({ required: true });
     filled
     hide-dropdown-icon
     hide-bottom-space
-    square
   >
     <template #prepend>
       <q-icon name="mdi-robot-outline" :color="create ? 'green-13' : 'amber-13'" />

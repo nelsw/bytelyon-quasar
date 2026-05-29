@@ -13,6 +13,7 @@ import { useNewsStore } from 'stores/news';
 import { New } from 'src/types/bot';
 import { useRouter } from 'vue-router';
 import TargetInput from 'components/input/TargetInput.vue';
+import { useMeta } from 'quasar';
 
 const props = defineProps<{
   botType: BotType;
@@ -44,6 +45,7 @@ const onDelete = async () => {
 };
 watch(props, onChange);
 onMounted(onChange);
+useMeta(() => ({ title: `News | ${props.target}` }));
 </script>
 
 <template>
@@ -55,15 +57,9 @@ onMounted(onChange);
           <div class="flex justify-between items-center">
             <div class="flex items-center q-gutter-sm">
               <TargetInput v-model="bot.target" :hint="undefined" />
-              <BrowserSelect
-                v-model="bot.headless"
-                @update:model-value="$bots.update(bot)"
-              />
+              <BrowserSelect v-model="bot.headless" @update:model-value="$bots.update(bot)" />
               <FrequencySelect v-model="bot.frequency" @update:model-value="$bots.update(bot)" />
-              <BlackListSelect
-                v-model="bot.blacklist"
-                @update:model-value="$bots.update(bot)"
-              />
+              <BlackListSelect v-model="bot.blacklist" @update:model-value="$bots.update(bot)" />
             </div>
             <div class="flex row q-gutter-x-sm">
               <TrashBtn @delete="onDelete" size="md">
