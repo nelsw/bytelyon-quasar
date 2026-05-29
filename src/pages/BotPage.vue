@@ -1,44 +1,29 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { BotType } from 'src/types/model';
+import { ref } from 'vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import TargetInput from 'components/input/TargetInput.vue';
-import { useBotStore } from 'src/stores/bot-store';
+import { useBotStore } from 'src/stores/bots';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
+import { type Bot, type BotType, New } from 'src/types/bot';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
-  botType: BotType,
+  botType: BotType;
 }>();
 
 const color = 'green-13';
 
 const $bots = useBotStore();
+const $router = useRouter();
 
-const target = ref('');
-const frequency = ref(1);
-const blackList = ref<string[]>([]);
-const headless = ref<boolean>(true);
-
-const description = computed(() =>
-  props.botType === BotType.News
-    ? 'Aggregate news articles from popular & reputable digital publishers & RSS feeds.'
-    : undefined
-);
-
-const onSubmit = async () => {
-
-  await $bots.Save(
-    props.botType,
-    target.value,
-    frequency.value,
-    blackList.value
-  );
-
+const bot = ref<Bot>(New(props.botType));
+const onCreate = async () => {
+  if (!(await $bots.save(bot.value))) return;
+  await $router.push({ path: `/${props.botType}/${bot.value.target}` });
 };
 </script>
-
 <template>
   <div class="q-pa-md">
     <div class="flex justify-center align-center">
@@ -49,14 +34,14 @@ const onSubmit = async () => {
         {{ botType }}
       </div>
     </div>
-    <p v-if="description" class="text-body1 text-center q-mt-sm">
-      {{ description }}
+    <p v-if="botType === 'news'" class="text-body1 text-center q-mt-sm">
+      Aggregate news articles from popular & reputable digital publishers & RSS feeds.
     </p>
-    <q-form @submit="onSubmit" class="my-form">
-      <TargetInput v-model="target" :color="color" />
-      <BrowserSelect v-model="headless"  :color="color" class="q-my-md" hint label />
-      <FrequencySelect v-model="frequency" :color="color" class="q-my-md" hint label />
-      <BlackListSelect v-model="blackList" :color="color" class="q-mt-md" hint label />
+    <q-form @submit="onCreate" class="my-form">
+      <TargetInput v-model="bot.target" :color="color" />
+      <BrowserSelect v-model="bot.headless" :color="color" class="q-my-md" hint label />
+      <FrequencySelect v-model="bot.frequency" :color="color" class="q-my-md" hint label />
+      <BlackListSelect v-model="bot.blackList" :color="color" class="q-mt-md" hint label />
       <SubmitBtn class="q-mt-md" :color="color" fullwidth />
     </q-form>
   </div>

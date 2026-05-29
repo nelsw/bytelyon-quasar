@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BotType } from 'src/types/model';
 import { useRoute } from 'vue-router';
 
 defineProps<{
@@ -12,9 +11,9 @@ const $route = useRoute();
 const model = defineModel<string>({ required: true });
 
 const label = computed(() => {
-  if ($route.params.botType === BotType.News) {
+  if ($route.params.botType === 'news') {
     return 'Topic';
-  } else if ($route.params.botType === BotType.Sitemap) {
+  } else if ($route.params.botType === 'sitemap') {
     return 'Domain';
   } else {
     return 'Query';
@@ -22,9 +21,9 @@ const label = computed(() => {
 });
 
 const hint = computed(() => {
-  if ($route.params.botType === BotType.News) {
+  if ($route.params.botType === 'news') {
     return 'Collect articles for this topic (e.g. btc forecast)';
-  } else if ($route.params.botType === BotType.Sitemap) {
+  } else if ($route.params.botType === 'sitemap') {
     return 'Map all pages & links for this domain (e.g. publix.com)';
   } else {
     return 'Scrape the SERP & result pages this query';

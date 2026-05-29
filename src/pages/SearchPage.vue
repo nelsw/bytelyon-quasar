@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { Bot, BotType } from 'src/types/model';
 import TrashBtn from 'components/btn/TrashBtn.vue';
-import { useBotStore } from 'src/stores/bot-store';
+import { useBotStore } from 'src/stores/bots';
 import { computed, onMounted, ref, watch } from 'vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
 import BlackListSelect from 'components/select/BlackListSelect.vue';
@@ -12,6 +11,8 @@ import { Rows, type Serp } from 'src/types/serp';
 import { ts } from 'src/types/id';
 import { screenshot } from 'src/types/screenshot';
 import SerpTable from 'components/table/SerpTable.vue';
+import { type Bot, type BotType, New } from 'src/types/bot';
+import { useRouter } from 'vue-router';
 
 interface Option {
   label: string;
@@ -27,26 +28,20 @@ const props = defineProps<{
 
 const $bots = useBotStore();
 const $searches = useSearchApi();
+const $router = useRouter();
 
+const bot = ref<Bot>(New(props.botType, props.target));
 const serp = ref<Serp>();
 const options = ref<Option[]>([]);
 const option = ref<Option>();
-const frequency = ref<number>(1);
-const blackList = ref<string[]>([]);
-const headless = ref<boolean>(true);
 
-const onDeleteBot = async () => await $bots.Delete(props.botType, props.target);
-
-const onUpdate = async () =>
-  await $bots.Save(props.botType, props.target, frequency.value, blackList.value, headless.value);
+const onDelete = async () => {
+  await $bots.delete(props.botType, props.target);
+  await $router.replace({ path: `/${props.botType}` });
+};
 
 const onChangeBot = async () => {
-  await $bots.Load(props.botType);
-  const bot = $bots.model.get(props.botType, []).find((b) => b.target === props.target) as Bot;
-  frequency.value = bot.frequency;
-  blackList.value = bot.blackList ?? [];
-  headless.value = bot.headless ?? true;
-
+  bot.value = $bots.get(props.botType, props.target);
   options.value = (await $searches.getIds(props.target)).map((id) => {
     return {
       label: ts(id),
@@ -83,16 +78,28 @@ onMounted(onChangeBot);
       <q-card flat style="background-color: transparent">
         <q-card-section>
           <div class="flex row justify-between items-center">
-            <div v-if="!$bots.busy" class="flex row items-center q-gutter-sm">
+            <div class="flex row items-center q-gutter-sm">
               <div class="text-h5 text-weight-medium text-uppercase">
                 {{ target }}
               </div>
-              <BrowserSelect v-model="headless" @update:model-value="onUpdate" :color="color" />
-              <FrequencySelect v-model="frequency" @update:model-value="onUpdate" :color="color" />
-              <BlackListSelect v-model="blackList" @update:model-value="onUpdate" :color="color" />
+              <BrowserSelect
+                v-model="bot.headless"
+                @update:model-value="$bots.save(bot)"
+                :color="color"
+              />
+              <FrequencySelect
+                v-model="bot.frequency"
+                @update:model-value="$bots.save(bot)"
+                :color="color"
+              />
+              <BlackListSelect
+                v-model="bot.blackList"
+                @update:model-value="$bots.save(bot)"
+                :color="color"
+              />
             </div>
             <div class="flex row q-gutter-x-sm">
-              <TrashBtn @delete="onDeleteBot" size="md">
+              <TrashBtn @delete="onDelete" size="md">
                 <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
                   Delete Bot
                 </q-tooltip>
@@ -137,7 +144,7 @@ onMounted(onChangeBot);
     </div>
 
     <div class="q-mx-sm q-gutter-sm">
-      <SerpTable v-model="rows" :id="option?.value"/>
+      <SerpTable v-model="rows" :id="option?.value" />
     </div>
   </div>
 </template>

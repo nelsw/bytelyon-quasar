@@ -1,7 +1,7 @@
 import { type ULID } from 'ulid';
 import { type Image } from 'src/types/image';
 
-export interface Article {
+export type Article = {
   body: string[];
   description: string;
   id: ULID;
@@ -10,5 +10,4 @@ export interface Article {
   source: string;
   title: string;
   url: string;
-}
-
+};

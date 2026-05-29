@@ -2,25 +2,25 @@ import { domain } from 'src/types/base';
 import { format, type QTableColumn, uid } from 'quasar';
 import capitalize = format.capitalize;
 
-export interface Serp {
-  sponsored: Item[];
-  organic: Item[];
-  forum: Item[];
-  video: Item[];
-  article: Item[];
-  people_also_ask: Item[];
-  people_also_search_for: Item[];
-}
+export type Serp = {
+  sponsored: Item[] | null;
+  organic: Item[] | null;
+  forum: Item[] | null;
+  video: Item[] | null;
+  article: Item[] | null;
+  people_also_ask: Item[] | null;
+  people_also_search_for: Item[] | null;
+};
 
-export interface Item {
+export type Item = {
   link: string;
   position: number;
   snippet: string;
   source: string;
   title: string;
-}
+};
 
-export interface Row {
+export type Row = {
   uid: string;
   description: string;
   rank: number;
@@ -28,7 +28,7 @@ export interface Row {
   source: string;
   title: string;
   url: string;
-}
+};
 
 export const Rows = (serp?: Serp): Row[] => {
   if (!serp) return [];
@@ -36,6 +36,7 @@ export const Rows = (serp?: Serp): Row[] => {
 
   let maxTitleLen = 0;
   for (const key of Object.keys(serp) as Array<keyof Serp>) {
+    if (serp[key] === null) continue;
     let rank = 1;
     for (const item of serp[key]) {
       let section: string = key;
@@ -59,14 +60,10 @@ export const Rows = (serp?: Serp): Row[] => {
 
       let title = item.title;
       if (section === 'Sponsored' && title.length > maxTitleLen) {
-          maxTitleLen = title.length;
+        maxTitleLen = title.length;
       }
 
-      if (
-        section !== 'Sponsored' &&
-        maxTitleLen > 0 &&
-        title.length > maxTitleLen
-      ) {
+      if (section !== 'Sponsored' && maxTitleLen > 0 && title.length > maxTitleLen) {
         title = title.substring(0, maxTitleLen - 3) + '...';
       }
 

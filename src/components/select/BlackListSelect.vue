@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { BotType } from 'src/types/model';
 
 defineProps<{
   color: string;
@@ -13,13 +12,13 @@ const model = defineModel<string[]>({ required: true });
 
 <template>
   <q-select
-    v-if="$route.params.botType !== BotType.Sitemap"
+    v-if="$route.params.botType !== 'sitemap'"
     v-model="model"
     :color="color"
     :hint="
       !hint
         ? undefined
-        : $route.params.botType === BotType.News
+        : $route.params.botType === 'news'
           ? 'Exclude articles that contain these keywords'
           : 'Exclude result pages that contain these domains'
     "

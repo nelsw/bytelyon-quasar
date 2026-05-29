@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/ArticlePage.vue'),
       },
       {
-        path: '/:botType(news|search|sitemap)/:target?',
+        path: '/:botType(news|search|sitemap)',
         component: BotPage,
         props: true,
       },

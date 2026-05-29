@@ -1,6 +1,6 @@
 import type { ULID } from 'ulid';
 
-export interface Headline {
+export type Headline = {
   id: ULID;
   title: string;
   url: string;

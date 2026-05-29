@@ -2,10 +2,9 @@
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import { QTree } from 'quasar';
 import FilterInput from 'components/input/FilterInput.vue';
-import type { Bot, BotType } from 'src/types/model';
 import ScrollArea from 'components/scroll-area/ScrollArea.vue';
 import PageCard from 'components/card/PageCard.vue';
-import { useBotStore } from 'src/stores/bot-store';
+import { useBotStore } from 'src/stores/bots';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
 import TrashBtn from 'components/btn/TrashBtn.vue';
 import FrequencySelect from 'components/select/FrequencySelect.vue';
@@ -13,6 +12,8 @@ import type { UrlNode } from 'src/types/url-node';
 import { FromURLs } from 'src/types/url-node';
 import useSitemapsApi from 'src/composable/api/useSitemapsApi';
 import { type Snippet } from 'src/types/snippet';
+import { useRouter } from 'vue-router';
+import { type Bot, type BotType, New } from 'src/types/bot';
 
 const color = 'amber-13';
 
@@ -23,11 +24,11 @@ const props = defineProps<{
 
 const $sitemaps = useSitemapsApi();
 const $bots = useBotStore();
+const $router = useRouter();
 
+const bot = ref<Bot>(New(props.botType, props.target));
 const sitemap = ref<string[]>([]);
 const snippets = ref<Snippet[]>([]);
-const frequency = ref<number>(1);
-const headless = ref<boolean>(true);
 
 const nodes = ref<UrlNode[]>([]);
 const treeRef = useTemplateRef<QTree>('my-sitemap-tree');
@@ -36,12 +37,13 @@ const selected = ref<string>('');
 const expanded = ref<string[]>([]);
 const filter = ref<string>('');
 
-const onDeleteBot = async () => await $bots.Delete(props.botType, props.target);
+const onDelete = async () => {
+  await $bots.delete(props.botType, props.target);
+  await $router.replace({ path: `/${props.botType}` });
+};
 
 const onChange = async () => {
-  const bot = $bots.model.get(props.botType, []).find((b) => b.target === props.target) as Bot;
-  frequency.value = bot.frequency;
-  headless.value = bot.headless ?? true;
+  bot.value = $bots.get(props.botType, props.target);
 
   const urls = await $sitemaps.getUrls(props.target);
   sitemap.value = urls;
@@ -58,9 +60,6 @@ const onChange = async () => {
     snippets.value = await $sitemaps.getSnippets(props.target, node.url);
   }
 };
-
-const onUpdate = async () =>
-  await $bots.Save(props.botType, props.target, frequency.value, [], headless.value);
 
 watch(selected, async (newVal, oldVal) => {
   const tree = treeRef.value;
@@ -89,11 +88,11 @@ onMounted(onChange);
             <div class="text-h5 text-weight-medium text-uppercase">
               {{ target }}
             </div>
-            <BrowserSelect v-model="headless" @update:model-value="onUpdate" :color="color" />
-            <FrequencySelect v-model="frequency" @update:model-value="onUpdate" :color="color" />
+            <BrowserSelect v-model="bot.headless" @update:model-value="$bots.save(bot)" :color="color" />
+            <FrequencySelect v-model="bot.frequency" @update:model-value="$bots.save(bot)" :color="color" />
           </div>
           <div class="flex row q-gutter-x-sm">
-            <TrashBtn @delete="onDeleteBot" size="md">
+            <TrashBtn @delete="onDelete" size="md">
               <q-tooltip anchor="center start" self="center end" :offset="[10, 10]">
                 Delete Bot
               </q-tooltip>

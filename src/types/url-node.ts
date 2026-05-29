@@ -1,13 +1,13 @@
 import { uid } from 'quasar';
 
-interface Data {
+type Data = {
   id: string;
   label: string;
   url: string;
   children: Data[];
 }
 
-interface Node extends Data {
+type Node = Data & {
   kids: Map<string, Node>;
 }
 

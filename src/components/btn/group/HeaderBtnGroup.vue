@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { BotType } from 'src/types/model';
 import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
 import { useRoute } from 'vue-router';
-import { useBotStore } from 'src/stores/bot-store';
-import { computed } from 'vue';
-
-const $bots = useBotStore();
-const $route = useRoute();
+import { useBotStore } from 'src/stores/bots';
 
 // todo - remove menu element when bot is deleted
-const sitemapBots = computed(() => {
-  return $bots.model.get(BotType.Sitemap, []).sort((a, b) => a.target.localeCompare(b.target));
-});
+const $bots = useBotStore();
+const $route = useRoute();
 </script>
 
 <template>
@@ -37,7 +31,7 @@ const sitemapBots = computed(() => {
       label="News"
     >
       <q-list>
-        <q-item :to="`/${BotType.News}`" clickable v-ripple active-class="text-green-13">
+        <q-item :to="`/news`" clickable v-ripple active-class="text-green-13">
           <q-item-section class="q-pr-none" style="min-width: 32px" avatar>
             <q-icon name="mdi-plus" color="green-13" />
           </q-item-section>
@@ -47,11 +41,9 @@ const sitemapBots = computed(() => {
         </q-item>
         <q-separator />
         <q-item
-          v-for="e in $bots.model
-            .get(BotType.News, [])
-            .sort((a, b) => a.target.localeCompare(b.target))"
+          v-for="e in $bots.newsBots"
           :key="e.target"
-          :to="`/${BotType.News}/${e.target}`"
+          :to="`/news/${e.target}`"
           clickable
           v-ripple
         >
@@ -70,7 +62,7 @@ const sitemapBots = computed(() => {
       label="Search"
     >
       <q-list>
-        <q-item :to="`/${BotType.Search}`" clickable v-ripple>
+        <q-item :to="`/search`" clickable v-ripple>
           <q-item-section class="q-pr-none" style="min-width: 32px" avatar>
             <q-icon name="mdi-plus" color="green-13" />
           </q-item-section>
@@ -80,11 +72,9 @@ const sitemapBots = computed(() => {
         </q-item>
         <q-separator />
         <q-item
-          v-for="e in $bots.model
-            .get(BotType.Search, [])
-            .sort((a, b) => a.target.localeCompare(b.target))"
+          v-for="e in $bots.searchBots"
           :key="e.target"
-          :to="`/${BotType.Search}/${e.target}`"
+          :to="`/search/${e.target}`"
           clickable
           v-ripple
         >
@@ -103,7 +93,7 @@ const sitemapBots = computed(() => {
       label="Sitemap"
     >
       <q-list>
-        <q-item :to="`/${BotType.Sitemap}`" clickable v-ripple>
+        <q-item :to="`/sitemap`" clickable v-ripple>
           <q-item-section class="q-pr-none" style="min-width: 32px" avatar>
             <q-icon name="mdi-plus" color="green-13" />
           </q-item-section>
@@ -113,9 +103,9 @@ const sitemapBots = computed(() => {
         </q-item>
         <q-separator />
         <q-item
-          v-for="e in sitemapBots"
+          v-for="e in $bots.sitemapBots"
           :key="e.target"
-          :to="`/${BotType.Sitemap}/${e.target}`"
+          :to="`/sitemap/${e.target}`"
           clickable
           v-ripple
         >
