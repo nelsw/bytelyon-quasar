@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import FilterInput from 'components/input/FilterInput.vue';
 import ColumnsBtn from 'components/btn/ColumnsBtn.vue';
 import OpenInNewBtn from 'components/btn/OpenInNewBtn.vue';
-import { Color, Columns, type Row } from 'src/types/serp';
+import { Color, Columns, type Serp } from 'src/types/serp';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import { screenshot } from 'src/types/screenshot';
 
@@ -11,12 +11,12 @@ defineProps<{
   id?: string | undefined;
 }>();
 
-const model = defineModel<Row[]>({ required: true });
+const model = defineModel<Serp>({ required: true });
 
 const filter = ref<string>('');
 const columnNames = ref<string[]>(Columns.map((col) => col.name));
 const visibleCols = ref<string[]>(
-  columnNames.value.filter((n) => n !== 'Description').filter((n) => n !== 'URL'),
+  columnNames.value.filter((n) => n !== 'Snippet').filter((n) => n !== 'Link'),
 );
 </script>
 
@@ -28,7 +28,6 @@ const visibleCols = ref<string[]>(
     :rows="model"
     :visible-columns="visibleCols"
     color="primary"
-    row-key="uid"
     rowsPerPageLabel="SERP Results"
     dense
     flat
@@ -50,7 +49,7 @@ const visibleCols = ref<string[]>(
     <template #body-cell-Rank="props">
       <q-td :props="props">
         <q-badge :color="Color(props.row.section)">
-          <span class="text-dark text-weight-bolder">{{ props.value }}</span>
+          <span class="text-dark text-weight-bolder">{{ props.value + 1 }}</span>
         </q-badge>
       </q-td>
     </template>
@@ -58,9 +57,9 @@ const visibleCols = ref<string[]>(
       <q-td :props="props">
         <ViewImgBtn
           :title="props.row.title"
-          :url="screenshot(props.row.url, id)"
+          :url="screenshot(props.row.link, id)"
           size="sm"
-          :disable="props.row.section !== `Sponsored`"
+          :disable="props.row.section !== `sponsored`"
         />
       </q-td>
     </template>
@@ -71,21 +70,3 @@ const visibleCols = ref<string[]>(
     </template>
   </q-table>
 </template>
-<style lang="scss" scoped>
-.my-avatar {
-  margin-right: 0;
-  margin-left: 8px;
-
-
-  border-left-width: 0;
-  border-top-style: solid;
-  border-right-style: solid;
-  border-bottom-style: solid;
-  border-left-style: solid;
-  border-top-color: transparent;
-  border-right-color: transparent;
-  border-bottom-color: transparent;
-
-  border-radius: 0 4px 4px 0;
-}
-</style>

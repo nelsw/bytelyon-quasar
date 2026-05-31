@@ -7,7 +7,7 @@ import BlackListSelect from 'components/select/BlackListSelect.vue';
 import BrowserSelect from 'components/select/BrowserSelect.vue';
 import ViewImgBtn from 'components/btn/ViewImgBtn.vue';
 import useSearchApi from 'src/composable/api/useSearchApi';
-import { Rows, type Serp } from 'src/types/serp';
+import { type Serp } from 'src/types/serp';
 import { ts } from 'src/types/id';
 import { screenshot } from 'src/types/screenshot';
 import SerpTable from 'components/table/SerpTable.vue';
@@ -31,7 +31,7 @@ const $searches = useSearchApi();
 const $router = useRouter();
 
 const bot = ref<Bot>(New(props.botType, props.target));
-const serp = ref<Serp>();
+const serp = ref<Serp>([]);
 const options = ref<Option[]>([]);
 const option = ref<Option>();
 
@@ -61,9 +61,7 @@ const onDeleteResult = async () => {
   }
 };
 const url = computed(() => `google.com/search?q=${props.target.replaceAll(' ', '+')}`);
-const rows = computed(() => {
-  return Rows(serp.value);
-});
+
 watch(props, onChangeBot);
 watch(option, async (opt) => {
   if (!opt) return;
@@ -120,7 +118,7 @@ useMeta(() => ({ title: `Search | ${props.target}` }));
       </q-card>
     </div>
     <div class="q-mx-sm q-gutter-sm">
-      <SerpTable v-model="rows" :id="option?.value" />
+      <SerpTable v-model="serp" :id="option?.value" />
     </div>
   </div>
 </template>
