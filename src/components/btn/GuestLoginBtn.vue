@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { useTokenStore } from 'stores/token-store';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from 'stores/auth';
 
-const credentials = {
-  username: 'demo@demo.com',
-  password: 'Demo123!',
-};
-
-const $auth = useTokenStore();
+const $auth = useAuthStore();
 const $router = useRouter();
 
 const onClick = async () => {
-  if (await $auth.Login(credentials)) {
+  if (
+    await $auth.fetchToken({
+      username: 'demo@demo.com',
+      password: 'Demo123!',
+    })
+  ) {
     await $router.push(($router.currentRoute.value.query.next as string) ?? '/');
   }
 };

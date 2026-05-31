@@ -11,15 +11,15 @@ import { BlogPost, type Post } from 'src/types/model';
 import { Loading } from 'quasar';
 import { api } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
-import { useTokenStore } from 'stores/token-store';
 import { date } from 'quasar';
+import { useAuthStore } from 'stores/auth';
 
 defineProps<{
   color?: string | undefined;
 }>();
 
 const $notify = useNotifier();
-const $auth = useTokenStore();
+const $auth = useAuthStore();
 
 const model = defineModel<Post>({ required: false, default: new BlogPost() });
 
@@ -30,7 +30,7 @@ const onAccept = (s: string) => {
 };
 const onCancel = () => (dialog.value = false);
 const onPublish = () => {
-  if ($auth.IsGuest()) {
+  if ($auth.isGuest) {
     $notify.MembersOnly();
     return;
   }

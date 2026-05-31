@@ -2,10 +2,10 @@
 import { api } from 'boot/axios';
 import { computed, ref } from 'vue';
 import useNotifier from 'src/composable/useNotifier';
-import { useTokenStore } from 'stores/token-store';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import TextEditor from 'components/editor/TextEditor.vue';
 import InnerLoading from 'components/loading/InnerLoading.vue';
+import { useAuthStore } from 'stores/auth';
 
 const emit = defineEmits<{
   cancel: [void];
@@ -22,7 +22,7 @@ const props = defineProps<{
 }>();
 
 const $notify = useNotifier();
-const $auth = useTokenStore();
+const $auth = useAuthStore();
 
 const content = defineModel<string>('content', { required: false, default: '' });
 const backlink = defineModel<string | undefined>('backlink', { required: false, default: '' });
@@ -63,7 +63,7 @@ const messageValue = computed(() => {
 });
 
 const onSubmit = async () => {
-  if ($auth.IsGuest()) {
+  if ($auth.isGuest) {
     $notify.MembersOnly();
     return;
   }

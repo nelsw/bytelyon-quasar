@@ -5,9 +5,9 @@ import { api } from 'boot/axios';
 import OrderTable from 'components/table/OrderTable.vue';
 import type { Customer, Order } from 'src/types/model';
 import { type AxiosResponse } from 'axios';
-import { useTokenStore } from 'stores/token-store';
 import { useRouter } from 'vue-router';
 import useNotifier from 'src/composable/useNotifier';
+import { useAuthStore } from 'stores/auth';
 
 interface model {
   customers: Customer[];
@@ -15,7 +15,7 @@ interface model {
 }
 
 const $notify = useNotifier();
-const $auth = useTokenStore();
+const $auth = useAuthStore();
 const $router = useRouter();
 
 const busy = ref<boolean>(true);
@@ -25,7 +25,7 @@ const model = ref<model>({
 });
 
 onMounted(async () => {
-  if ($auth.IsGuest()) {
+  if ($auth.isGuest) {
     $notify.MembersOnly();
     await $router.push({ path: '/' });
     return;

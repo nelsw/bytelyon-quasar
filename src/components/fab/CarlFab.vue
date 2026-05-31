@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useTokenStore } from 'stores/token-store';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from 'stores/auth';
 
-const $auth = useTokenStore();
+const $auth = useAuthStore();
 const $router = useRouter();
 
 const onLogout = async () => {
-  if ($auth.model) $auth.model.token = '';
+  $auth.clearToken();
   await $router.push('/login');
 };
 
@@ -17,7 +17,7 @@ const onHome = async () => {
 
 <template>
   <q-fab
-    v-if="$auth.IsExperimental()"
+    v-if="$auth.isExperimental"
     color="deep-purple"
     text-color="black"
     icon="mdi-fire"

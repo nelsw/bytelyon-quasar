@@ -2,19 +2,22 @@
 import LogoImg from 'components/img/LogoImg.vue';
 import PasswordInput from 'components/input/PasswordInput.vue';
 import EmailInput from 'components/input/EmailInput.vue';
-import { useTokenStore } from 'stores/token-store';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import GuestLoginBtn from 'components/btn/GuestLoginBtn.vue';
+import { useAuthStore } from 'stores/auth';
 
 const $router = useRouter();
-const $auth = useTokenStore();
+const $auth = useAuthStore();
 
 const credentials = ref({ username: '', password: '' });
 
 const onSubmit = async () => {
-  if (!(await $auth.Login(credentials.value))) return;
-  await $router.push(($router.currentRoute.value.query.next as string) ?? '/');
+  const ok = await $auth.fetchToken(credentials.value)
+  if (!ok) return;
+console.log(ok);
+  await $router.push({name: 'Home'});
+  console.log(ok);
 };
 </script>
 <template>
