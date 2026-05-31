@@ -31,7 +31,7 @@ export default defineBoot(({ app, store, router }) => {
   api.interceptors.request.use(
     async (c: InternalAxiosRequestConfig) => {
 
-      c.headers.setAuthorization($token.authorization);
+      c.headers.Authorization = $token.authorization;
 
       const controller = new AbortController();
       if (c.url !== '/auth' && $token.isInvalid) {

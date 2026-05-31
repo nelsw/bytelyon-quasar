@@ -13,11 +13,8 @@ const $auth = useAuthStore();
 const credentials = ref({ username: '', password: '' });
 
 const onSubmit = async () => {
-  const ok = await $auth.fetchToken(credentials.value)
-  if (!ok) return;
-console.log(ok);
-  await $router.push({name: 'Home'});
-  console.log(ok);
+  if (!(await $auth.fetchToken(credentials.value))) return;
+  await $router.push(($router.currentRoute.value.query.next as string) ?? '/');
 };
 </script>
 <template>

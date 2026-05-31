@@ -60,6 +60,7 @@ export const useBotStore = defineStore('bots', () => {
         model.value['search'] = searchBots.sort((a, b) => a.target.localeCompare(b.target));
         model.value['sitemap'] = sitemapBots.sort((a, b) => a.target.localeCompare(b.target));
       } catch (e) {
+        console.error(e);
         return e;
       }
     },
