@@ -17,7 +17,6 @@ export const useAuthStore = defineStore(
     const fetchToken = async (creds: AxiosBasicCredentials) => {
       try {
         model.value = await $api.post(creds);
-        console.log(model.value);
         return true;
       } catch (e) {
         console.error(e);
@@ -31,6 +30,7 @@ export const useAuthStore = defineStore(
     /* helpers */
 
     return {
+      model,
       clearToken,
       fetchToken,
       authorization: computed(() => `Bearer ${model.value.context?.token}`),

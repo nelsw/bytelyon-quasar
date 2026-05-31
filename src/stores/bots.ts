@@ -34,6 +34,7 @@ export const useBotStore = defineStore('bots', () => {
     }
   };
   return {
+    model,
     newsBots: computed(() => model.value['news'] as Bots),
     searchBots: computed(() => model.value['search'] as Bots),
     sitemapBots: computed(() => model.value['sitemap'] as Bots),

@@ -83,7 +83,7 @@ export const useNewsStore = defineStore('news', () => {
   };
 
   return {
-
+    model,
     topic,
     url,
     article,
