@@ -48,7 +48,7 @@ const onChange = async () => {
   sitemap.value = urls;
   nodes.value = FromURLs(urls);
 
-  const node = nodes.value[1];
+  const node = nodes.value[0];
   if (!node) return;
 
   selected.value = node.label;
