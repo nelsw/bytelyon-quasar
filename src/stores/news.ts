@@ -99,7 +99,7 @@ export const useNewsStore = defineStore(
   {
     persist: {
       debug: true,
-      storage: localStorage,
+      storage: sessionStorage,
     },
   },
 );
