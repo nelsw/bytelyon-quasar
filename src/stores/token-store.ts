@@ -68,7 +68,10 @@ export const useTokenStore = defineStore('token-store', () => {
   const IsGuest = (): boolean => claims()?.jti === '01KM01JC9PS1R4X4FDJNFAR4AZ';
   const IsInvalid = (): boolean => !IsValid();
   const IsValid = (): boolean => !IsExpired();
-  const IsExperimental = (): boolean => claims()?.jti === '01KM010XK0HY8HWWFPJTZGRF0F';
+  const IsExperimental = (): boolean => {
+    const jti = claims()?.jti;
+    return jti === '01KM010XK0HY8HWWFPJTZGRF0F' || jti === '01KMXGBJJE2GMCA1A9EXDGF4AJ';
+  };
 
   return {
     model,
