@@ -37,6 +37,12 @@ export const Color = (section: string): string => {
 
 export const Source = (s: string, i: Item) => s || domain(i.link);
 export const Section = (s:string) => {
+  if (s === 'people_also_ask') {
+    return 'Also Asked'
+  }
+  if (s === 'people_also_search_for') {
+    return 'Also Searched';
+  }
   const arr = s.split('_');
   for (let j = 0; j < arr.length; j++) {
     arr[j] = capitalize(arr[j] as string);

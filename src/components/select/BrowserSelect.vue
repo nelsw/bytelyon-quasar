@@ -6,7 +6,7 @@ defineProps<{
 }>();
 
 const headless = { label: 'Headless', value: true };
-const headful = { label: 'Headful', value: false };
+const headful = { label: 'Headed', value: false };
 
 const model = defineModel<boolean>({ required: true });
 </script>
