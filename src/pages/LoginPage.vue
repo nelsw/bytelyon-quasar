@@ -2,20 +2,13 @@
 import LogoImg from 'components/img/LogoImg.vue';
 import PasswordInput from 'components/input/PasswordInput.vue';
 import EmailInput from 'components/input/EmailInput.vue';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import GuestLoginBtn from 'components/btn/GuestLoginBtn.vue';
-import { useAuthStore } from 'stores/auth';
+import { useUserStore } from 'src/stores/user';
+import { ref } from 'vue';
 
-const $router = useRouter();
-const $auth = useAuthStore();
-
-const credentials = ref({ username: '', password: '' });
-
-const onSubmit = async () => {
-  if (!(await $auth.fetchToken(credentials.value))) return;
-  await $router.push(($router.currentRoute.value.query.next as string) ?? '/');
-};
+const $user = useUserStore();
+const email = ref('');
+const pass = ref('');
 </script>
 <template>
   <div class="absolute-center q-px-md">
@@ -38,9 +31,9 @@ const onSubmit = async () => {
         </span>
       </p>
     </div>
-    <q-form @submit.prevent="onSubmit" class="row">
-      <EmailInput v-model="credentials.username" />
-      <PasswordInput v-model="credentials.password" />
+    <q-form @submit.prevent="$user.login(email, pass)" class="row">
+      <EmailInput v-model="email" />
+      <PasswordInput v-model="pass"/>
       <q-btn
         label="Login"
         color="indigo-14"
