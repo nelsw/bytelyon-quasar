@@ -16,7 +16,7 @@ defineProps<{
     auto-close
     noIconAnimation
   >
-    <template v-if="$q.screen.gt.xs" #label>
+    <template v-if="$q.screen.gt.sm" #label>
       <span class="q-ml-sm text-white"> {{ label }} </span>
     </template>
     <slot />

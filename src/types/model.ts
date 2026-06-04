@@ -19,14 +19,12 @@ export interface Order {
   shipping: number;
   discounts: number;
   createdAt: Date;
-  items: OrderItem[];
-}
-
-export interface OrderItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
+  items: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
 }
 
 export interface Post {

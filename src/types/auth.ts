@@ -1,5 +1,4 @@
 const guestUserId = '01KM01JC9PS1R4X4FDJNFAR4AZ';
-const carlUserId = '01KM010XK0HY8HWWFPJTZGRF0F';
 
 export type Auth = {
   readonly context: {
@@ -27,10 +26,6 @@ export class JwtAuth {
 
   get IsValid() {
     return this.claims.exp * 1000 > Date.now();
-  }
-
-  get IsExperimental() {
-    return this.userId === carlUserId;
   }
 
   get IsGuest() {
