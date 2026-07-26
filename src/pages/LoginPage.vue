@@ -1,21 +1,6 @@
 <script setup lang="ts">
 import LogoImg from 'components/img/LogoImg.vue';
-import PasswordInput from 'components/input/PasswordInput.vue';
-import EmailInput from 'components/input/EmailInput.vue';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import GuestLoginBtn from 'components/btn/GuestLoginBtn.vue';
-import { useAuthStore } from 'stores/auth';
 
-const $router = useRouter();
-const $auth = useAuthStore();
-
-const credentials = ref({ username: '', password: '' });
-
-const onSubmit = async () => {
-  if (!(await $auth.fetchToken(credentials.value))) return;
-  await $router.push(($router.currentRoute.value.query.next as string) ?? '/');
-};
 </script>
 <template>
   <div class="absolute-center q-px-md">
@@ -37,23 +22,9 @@ const onSubmit = async () => {
           <span class="text-bold text-italic">Hunter</span>
         </span>
       </p>
+      <p>
+        Unleashing 8/1/2027
+      </p>
     </div>
-    <q-form @submit.prevent="onSubmit" class="row">
-      <EmailInput v-model="credentials.username" />
-      <PasswordInput v-model="credentials.password" />
-      <q-btn
-        label="Login"
-        color="indigo-14"
-        class="q-my-md full-width text-weight-bold"
-        size="lg"
-        type="submit"
-      />
-      <GuestLoginBtn
-        class="full-width text-weight-bold"
-        color="indigo-14"
-        label="Guest Login"
-        outline
-      />
-    </q-form>
   </div>
 </template>

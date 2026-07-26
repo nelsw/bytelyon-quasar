@@ -16,10 +16,6 @@ export const domain = (url: string|undefined) => {
   return url;
 };
 
-export const base64 = (s: string) =>
-  btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-
 export const Sleep = (ms:number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const Money = (n: number): string => {

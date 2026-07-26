@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HeaderBtnDropdown from 'components/btn/dropdown/HeaderBtnDropdown.vue';
+import HeaderBtn from './HeaderBtn.vue';
 import { useRoute } from 'vue-router';
 import { useBotStore } from 'src/stores/bots';
 
@@ -8,22 +8,8 @@ const $route = useRoute();
 </script>
 
 <template>
-  <q-btn-group spread square stretch>
-    <HeaderBtnDropdown
-      :active="$route.path === '/prompt'"
-      color="teal-3"
-      icon="mdi-flask-plus"
-      label="Prompt"
-      to="/prompt"
-    />
-    <HeaderBtnDropdown
-      :active="$route.path === '/article'"
-      color="lime-3"
-      icon="mdi-receipt-text-send"
-      label="Article"
-      to="/article"
-    />
-    <HeaderBtnDropdown
+  <q-btn-group spread square stretch unelevated>
+    <HeaderBtn
       :active="$route.params.botType === 'news'"
       icon="mdi-newspaper"
       color="purple-3"
@@ -53,8 +39,8 @@ const $route = useRoute();
           </q-item-section>
         </q-item>
       </q-list>
-    </HeaderBtnDropdown>
-    <HeaderBtnDropdown
+    </HeaderBtn>
+    <HeaderBtn
       :active="$route.params.botType === 'search'"
       icon="mdi-web"
       color="deep-purple-3"
@@ -84,8 +70,8 @@ const $route = useRoute();
           </q-item-section>
         </q-item>
       </q-list>
-    </HeaderBtnDropdown>
-    <HeaderBtnDropdown
+    </HeaderBtn>
+    <HeaderBtn
       :active="$route.params.botType === 'sitemap'"
       icon="mdi-sitemap"
       color="indigo-3"
@@ -115,6 +101,6 @@ const $route = useRoute();
           </q-item-section>
         </q-item>
       </q-list>
-    </HeaderBtnDropdown>
+    </HeaderBtn>
   </q-btn-group>
 </template>

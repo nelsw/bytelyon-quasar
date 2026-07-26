@@ -12,14 +12,14 @@ import { Loading } from 'quasar';
 import { api } from 'boot/axios';
 import useNotifier from 'src/composable/useNotifier';
 import { date } from 'quasar';
-import { useAuthStore } from 'stores/auth';
+import { useUserStore } from 'src/stores/user';
 
 defineProps<{
   color?: string | undefined;
 }>();
 
 const $notify = useNotifier();
-const $auth = useAuthStore();
+const $auth = useUserStore();
 
 const model = defineModel<Post>({ required: false, default: new BlogPost() });
 
@@ -30,7 +30,7 @@ const onAccept = (s: string) => {
 };
 const onCancel = () => (dialog.value = false);
 const onPublish = () => {
-  if ($auth.isGuest) {
+  if ($auth.auth.IsGuest) {
     $notify.MembersOnly();
     return;
   }

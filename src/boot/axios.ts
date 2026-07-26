@@ -6,7 +6,7 @@ import axios, {
   type AxiosInstance,
   type InternalAxiosRequestConfig
 } from 'axios';
-import { useAuthStore } from 'stores/auth';
+import { useUserStore } from 'stores/user';
 
 declare module 'vue' {
   interface ComponentCustomProperties {
@@ -25,26 +25,24 @@ export default defineBoot(({ app, store, router }) => {
   app.config.globalProperties.$api = api;
 
   // for browser refresh
-  const $token = useAuthStore(store);
+  const $user = useUserStore(store);
 
   // handle bad token
   api.interceptors.request.use(
     async (c: InternalAxiosRequestConfig) => {
-
-      c.headers.Authorization = $token.authorization;
-
+      c.headers.setAuthorization('Bearer ' + $user.auth.token);
       const controller = new AbortController();
-      if (c.url !== '/auth' && $token.isInvalid) {
+      if (c.url !== '/auth' && $user.auth.IsInvalid) {
         controller.abort();
         await router.replace({ name: 'Login', query: { next: router.currentRoute.value.path } });
       }
 
       return {
         ...c,
-        signal: controller.signal
+        signal: controller.signal,
       };
     },
-    (e: AxiosError) => Promise.reject(e)
+    (e: AxiosError) => Promise.reject(e),
   );
 
   // handle unauthorized & forbidden response status
@@ -58,7 +56,7 @@ export default defineBoot(({ app, store, router }) => {
     async (e: AxiosError) => {
       console.error(e);
       return Promise.reject(e);
-    }
+    },
   );
 });
 

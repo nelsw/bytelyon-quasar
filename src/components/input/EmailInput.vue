@@ -9,13 +9,12 @@ const model = defineModel<string>();
       (val: string) => (val && val.length > 0) || 'Email is required',
       (val: string) => /.+@.+\..+/.test(val) || 'Email must be valid',
     ]"
+    autofocus
     class="col-all"
     label="Email"
     lazy-rules="ondemand"
     name="email"
     type="email"
-    autofocus
-    autocomplete="username"
   >
     <template #prepend>
       <q-icon name="mdi-email-outline" />

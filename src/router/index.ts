@@ -6,7 +6,7 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
-import { useAuthStore } from 'stores/auth';
+import { useUserStore } from 'stores/user';
 
 /*
  * If not building with SSR mode, you can
@@ -51,9 +51,9 @@ export default defineRouter(async function () {
       }, null, 2)}`);
     }
 
-    const $auth = useAuthStore();
+    const $user = useUserStore();
 
-    if (to.name === 'Login' || $auth.isValid) {
+    if (to.name === 'Login' || $user.auth.IsValid) {
       next();
     } else if (to.name === 'Home') {
       next({ name: 'Login' });

@@ -5,7 +5,7 @@ import useNotifier from 'src/composable/useNotifier';
 import SubmitBtn from 'components/btn/SubmitBtn.vue';
 import TextEditor from 'components/editor/TextEditor.vue';
 import InnerLoading from 'components/loading/InnerLoading.vue';
-import { useAuthStore } from 'stores/auth';
+import { useUserStore } from 'src/stores/user';
 
 const emit = defineEmits<{
   cancel: [void];
@@ -22,7 +22,7 @@ const props = defineProps<{
 }>();
 
 const $notify = useNotifier();
-const $auth = useAuthStore();
+const $auth = useUserStore();
 
 const content = defineModel<string>('content', { required: false, default: '' });
 const backlink = defineModel<string | undefined>('backlink', { required: false, default: '' });
@@ -63,7 +63,7 @@ const messageValue = computed(() => {
 });
 
 const onSubmit = async () => {
-  if ($auth.isGuest) {
+  if ($auth.auth.IsGuest) {
     $notify.MembersOnly();
     return;
   }

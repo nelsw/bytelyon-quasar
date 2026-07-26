@@ -7,7 +7,7 @@ import type { Customer, Order } from 'src/types/model';
 import { type AxiosResponse } from 'axios';
 import { useRouter } from 'vue-router';
 import useNotifier from 'src/composable/useNotifier';
-import { useAuthStore } from 'stores/auth';
+import { useUserStore } from 'src/stores/user';
 
 interface model {
   customers: Customer[];
@@ -15,7 +15,7 @@ interface model {
 }
 
 const $notify = useNotifier();
-const $auth = useAuthStore();
+const $user = useUserStore();
 const $router = useRouter();
 
 const busy = ref<boolean>(true);
@@ -25,7 +25,7 @@ const model = ref<model>({
 });
 
 onMounted(async () => {
-  if ($auth.isGuest) {
+  if ($user.auth.IsGuest) {
     $notify.MembersOnly();
     await $router.push({ path: '/' });
     return;
