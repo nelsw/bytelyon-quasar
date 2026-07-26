@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import LogoImg from 'components/img/LogoImg.vue';
-import PasswordInput from 'components/input/PasswordInput.vue';
-import EmailInput from 'components/input/EmailInput.vue';
-import GuestLoginBtn from 'components/btn/GuestLoginBtn.vue';
-import { useUserStore } from 'src/stores/user';
-import { ref } from 'vue';
 
-const $user = useUserStore();
-const email = ref('');
-const pass = ref('');
 </script>
 <template>
   <div class="absolute-center q-px-md">
@@ -30,23 +22,9 @@ const pass = ref('');
           <span class="text-bold text-italic">Hunter</span>
         </span>
       </p>
+      <p>
+        Unleashing 8/1/2027
+      </p>
     </div>
-    <q-form @submit.prevent="$user.login(email, pass)" class="row">
-      <EmailInput v-model="email" />
-      <PasswordInput v-model="pass"/>
-      <q-btn
-        label="Login"
-        color="indigo-14"
-        class="q-my-md full-width text-weight-bold"
-        size="lg"
-        type="submit"
-      />
-      <GuestLoginBtn
-        class="full-width text-weight-bold"
-        color="indigo-14"
-        label="Guest Login"
-        outline
-      />
-    </q-form>
   </div>
 </template>
